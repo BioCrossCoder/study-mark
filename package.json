@@ -1,0 +1,33 @@
+{
+  "name": "study-mark",
+  "description": "An advanced knowledge management tool based on browser built-in Favorites",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "wxt",
+    "dev:firefox": "wxt -b firefox",
+    "build": "wxt build",
+    "build:firefox": "wxt build -b firefox",
+    "zip": "wxt zip",
+    "zip:firefox": "wxt zip -b firefox",
+    "compile": "vue-vine-tsc --noEmit",
+    "postinstall": "wxt prepare"
+  },
+  "dependencies": {
+    "@primeuix/themes": "^2.0.3",
+    "pinia": "^3.0.4",
+    "primevue": "^4.5.5",
+    "vue": "^3.5.29",
+    "vue-router": "^5.0.4",
+    "vue-vine": "^1.7.27"
+  },
+  "devDependencies": {
+    "@wxt-dev/module-vue": "^1.0.3",
+    "sass": "^1.99.0",
+    "typescript": "^5.9.3",
+    "vue-tsc": "^3.2.5",
+    "vue-vine-tsc": "^1.7.27",
+    "wxt": "^0.20.25"
+  }
+}
