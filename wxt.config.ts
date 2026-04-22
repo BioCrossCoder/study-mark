@@ -28,6 +28,14 @@ export default defineConfig({
     ],
   }),
   manifest: {
-    permissions: ["sidePanel"],
+    permissions: [
+      "storage",
+      "tabs",
+      "sidePanel",
+      "history",
+      "bookmarks",
+      "unlimitedStorage",
+      "downloads",
+    ],
   },
 });
