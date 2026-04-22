@@ -39,5 +39,8 @@ export default defineConfig({
       "unlimitedStorage",
       "downloads",
     ],
-  },
+    default_locale: "en",
+    name: "__MSG_extName__",
+    description: "__MSG_extDescription__",
+  }
 });
