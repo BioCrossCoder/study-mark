@@ -1,4 +1,4 @@
-import HelloWorld from "@/components/HelloWorld.vue";
+import HelloWorld from "@/components/HelloWorld.vine";
 
 export default function Page() {
   vineStyle.scoped(scss`
