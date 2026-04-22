@@ -12,15 +12,15 @@ export default defineConfig({
         extensions: [".vine.ts"],
         routesFolder: [
           {
-            src: "entrypoints/popup/pages",
+            src: "src/entrypoints/popup/pages",
             path: "popup/",
           },
           {
-            src: "entrypoints/sidepanel/pages",
+            src: "src/entrypoints/sidepanel/pages",
             path: "sidepanel/",
           },
           {
-            src: "entrypoints/bookmarks/pages",
+            src: "src/entrypoints/bookmarks/pages",
             path: "bookmarks/",
           },
         ],
@@ -42,5 +42,6 @@ export default defineConfig({
     default_locale: "en",
     name: "__MSG_extName__",
     description: "__MSG_extDescription__",
-  }
+  },
+  srcDir: "src",
 });

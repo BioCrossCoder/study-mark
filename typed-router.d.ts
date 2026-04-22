@@ -61,19 +61,19 @@ declare module 'vue-router/auto-routes' {
    * @internal
    */
   export interface _RouteFileInfoMap {
-    'entrypoints/bookmarks/pages/index.vine.ts': {
+    'src/entrypoints/bookmarks/pages/index.vine.ts': {
       routes:
         | '/bookmarks/'
       views:
         | never
     }
-    'entrypoints/popup/pages/index.vine.ts': {
+    'src/entrypoints/popup/pages/index.vine.ts': {
       routes:
         | '/popup/'
       views:
         | never
     }
-    'entrypoints/sidepanel/pages/index.vine.ts': {
+    'src/entrypoints/sidepanel/pages/index.vine.ts': {
       routes:
         | '/sidepanel/'
       views:
