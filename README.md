@@ -1,7 +1,11 @@
-# WXT + Vue 3
+# Study Mark
 
-This template should help get you started developing with Vue 3 in WXT.
+English | [中文](README.zh.md)
 
-## Recommended IDE Setup
+## Introduction
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar).
+***An advanced knowledge management tool based on browser built-in Favorites.***
+
+## Features
+
+// TODO
