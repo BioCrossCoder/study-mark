@@ -1,8 +1,15 @@
 {
   "extends": "./.wxt/tsconfig.json",
   "include": [
-    "./typed-router.d.ts"
+    "**/*.ts",
+    "./typed-router.d.ts",
+    "./.wxt/wxt.d.ts"
   ],
+  "compilerOptions": {
+    "types": [
+      "vue-vine/macros"
+    ]
+  },
   "vueCompilerOptions": {
     "plugins": [
       "vue-router/volar/sfc-route-blocks",
