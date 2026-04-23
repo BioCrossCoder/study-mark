@@ -1,7 +1,29 @@
-import Button from "primevue/button";
-
+import { Splitter, SplitterPanel, Toolbar, Tree } from "primevue";
+import FavoritesTree from "@/components/FavoritesTree.vine";
+import { useRouter } from "vue-router";
 export default function Page() {
+  const router = useRouter();
+  function onClickStar() {
+    router.push("/sidepanel/favorites");
+  }
   return vine`
-    <Button>side panel</Button>
+    <div class="h-screen flex flex-col">
+      <Toolbar>
+        <template #start>
+          <i
+            class="pi pi-star hover:cursor-pointer hover:text-primary-300"
+            @click="onClickStar"
+          />
+        </template>
+      </Toolbar>
+      <Splitter layout="vertical" class="h-full">
+        <SplitterPanel>
+          chat
+        </SplitterPanel>
+        <SplitterPanel>
+          task
+        </SplitterPanel>
+      </Splitter>
+    </div>
   `;
 }

@@ -1,5 +1,3 @@
-import HelloWorld from "@/components/HelloWorld.vine";
-
 export default function Page() {
   return vine`
     <div>
@@ -10,6 +8,5 @@ export default function Page() {
       <img src="@/assets/vue.svg" class="h-[6em] p-[1.5em] will-change-filter transition-[filter] duration-300 hover:drop-shadow-[0_0_2em_#42b883aa]" alt="Vue logo" />
     </a>
     </div>
-    <HelloWorld msg="WXT + Vue" />
   `;
 }

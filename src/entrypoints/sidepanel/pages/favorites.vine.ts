@@ -1,8 +1,5 @@
-import Button from "primevue/button";
 import FavoritesTree from "@/components/FavoritesTree.vine";
 
 export default function Page() {
-  return vine`
-    <FavoritesTree/>
-  `;
+  return vine`<FavoritesTree/>`;
 }

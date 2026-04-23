@@ -48,6 +48,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/sidepanel/favorites': RouteRecordInfo<
+      '/sidepanel/favorites',
+      '/sidepanel/favorites',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
   }
 
   /**
@@ -76,6 +83,12 @@ declare module 'vue-router/auto-routes' {
     'src/entrypoints/sidepanel/pages/index.vine.ts': {
       routes:
         | '/sidepanel/'
+      views:
+        | never
+    }
+    'src/entrypoints/sidepanel/pages/favorites.vine.ts': {
+      routes:
+        | '/sidepanel/favorites'
       views:
         | never
     }
