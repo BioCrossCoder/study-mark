@@ -1,9 +1,16 @@
 import { RouterView, useRouter } from "vue-router";
-import { initSelectionStore } from "@/stores/selections";
+import { initSelectionStore } from "@/entrypoints/sidepanel/stores/selections";
+import { initConnectionStore, useConnectionStore } from "./stores/connection";
 
 export default function App() {
   const router = useRouter();
-  initSelectionStore();
-  onBeforeMount(() => router.replace("/sidepanel"));
+  onMounted(() => {
+    router.replace("/sidepanel");
+    initSelectionStore();
+    initConnectionStore();
+  });
+  onUnmounted(() => {
+    useConnectionStore().close();
+  });
   return vine`<RouterView/>`;
 }

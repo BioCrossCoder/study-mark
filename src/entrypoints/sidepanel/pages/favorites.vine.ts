@@ -1,4 +1,4 @@
-import FavoritesTree from "@/components/FavoritesTree.vine";
+import FavoritesTree from "@/entrypoints/sidepanel/components/FavoritesTree.vine";
 
 export default function Page() {
   return vine`<FavoritesTree/>`;

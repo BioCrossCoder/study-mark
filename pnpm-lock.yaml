@@ -14,6 +14,15 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.2.4
         version: 4.2.4(vite@8.0.9(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.3))
+      '@tanstack/ai':
+        specifier: ^0.13.0
+        version: 0.13.0
+      '@tanstack/ai-anthropic':
+        specifier: ^0.8.1
+        version: 0.8.1(@tanstack/ai@0.13.0)(zod@4.3.6)
+      '@tanstack/ai-vue':
+        specifier: ^0.6.19
+        version: 0.6.19(@tanstack/ai@0.13.0)(vue@3.5.32(typescript@5.9.3))
       primeicons:
         specifier: ^7.0.0
         version: 7.0.0
@@ -60,6 +69,9 @@ packages:
   '@1natsu/wait-element@4.2.0':
     resolution: {integrity: sha512-Om0Q+WE9mNrpY4AwMTvkFiYHv8VM7TML3PvOqXy+w6kAjLjKhGYHYX+305+a6J8RVpds9s7IF2Z5aOPYwULFNw==}
 
+  '@ag-ui/core@0.0.49':
+    resolution: {integrity: sha512-9ywypwjUGtIvTxJ2eKQjhPZgLnSFAfNK7vZUcT7Bz4ur4yAIB+lAFtzvu7VDYe6jsUx/6N/71Dh4R0zX5woNVw==}
+
   '@aklinker1/rollup-plugin-visualizer@5.12.0':
     resolution: {integrity: sha512-X24LvEGw6UFmy0lpGJDmXsMyBD58XmX1bbwsaMLhNoM+UMQfQ3b2RtC+nz4b/NoRK5r6QJSKJHBNVeUdwqybaQ==}
     engines: {node: '>=14'}
@@ -68,6 +80,15 @@ packages:
       rollup: 2.x || 3.x || 4.x
     peerDependenciesMeta:
       rollup:
+        optional: true
+
+  '@anthropic-ai/sdk@0.71.2':
+    resolution: {integrity: sha512-TGNDEUuEstk/DKu0/TflXAEt+p+p/WhTlFzEnoosvbaDU2LTjm42igSdlL0VijrKpWejtOKxX0b8A7uc+XiSAQ==}
+    hasBin: true
+    peerDependencies:
+      zod: ^3.25.0 || ^4.0.0
+    peerDependenciesMeta:
+      zod:
         optional: true
 
   '@babel/code-frame@7.29.0':
@@ -801,6 +822,35 @@ packages:
     peerDependencies:
       vite: ^5.2.0 || ^6 || ^7 || ^8
 
+  '@tanstack/ai-anthropic@0.8.1':
+    resolution: {integrity: sha512-RxqAXGnbyRzdpBbHWmecNrrEKeNOAMUjtrvIUDuZzKCk5sm3yqbe7H6PkmbwD5GLr0YFojIaNPmTL8HDCD9TrA==}
+    peerDependencies:
+      '@tanstack/ai': ^0.13.0
+      zod: ^4.0.0
+
+  '@tanstack/ai-client@0.7.14':
+    resolution: {integrity: sha512-/MzRKILuZRK/3LVX6PP1gJcTyEpP0k6+9NdhYSEQk/ReA5Ol4+H3sRHsuTRBbYPFCztEkvVSCIBSLO+xq/0vSA==}
+
+  '@tanstack/ai-event-client@0.2.7':
+    resolution: {integrity: sha512-DcdDNrt1T2ng8CVo0pTx1172CEdGzFg4w/azLFFc/z5WHGAAMkw2ZD/ucSc1VlYlCWCNxwSO6otUqxmJDi9gJQ==}
+    peerDependencies:
+      '@tanstack/ai': 0.13.0
+
+  '@tanstack/ai-vue@0.6.19':
+    resolution: {integrity: sha512-at+dRDpP/vAzGrvmpwRclDApEF1MU5NQPjvVn9dQDTji3eVWe4SgctsgxQ2YhAAjyV/YYxsYO3dTgyixYbG+Pw==}
+    peerDependencies:
+      '@tanstack/ai': ^0.13.0
+      vue: '>=3.5.0'
+
+  '@tanstack/ai@0.13.0':
+    resolution: {integrity: sha512-4M0wBvi4Mhc50mpQmmJuT31C5ROGfh8FOQIAzHzc8qQs14ziHDh9Wx1hjDeezGnlqjCTJVGTExFpPGOFOLRz1A==}
+    engines: {node: '>=18'}
+
+  '@tanstack/devtools-event-client@0.4.3':
+    resolution: {integrity: sha512-OZI6QyULw0FI0wjgmeYzCIfbgPsOEzwJtCpa69XrfLMtNXLGnz3d/dIabk7frg0TmHo+Ah49w5I4KC7Tufwsvw==}
+    engines: {node: '>=18'}
+    hasBin: true
+
   '@ts-morph/common@0.27.0':
     resolution: {integrity: sha512-Wf29UqxWDpc+i61k3oIOzcUfQt79PIT9y/MWfAGlrkjg6lBC1hwDECLXPVJAhWjiGbfBCxZd65F/LIZF3+jeJQ==}
 
@@ -828,43 +878,51 @@ packages:
   '@types/node@25.6.0':
     resolution: {integrity: sha512-+qIYRKdNYJwY3vRCZMdJbPLJAtGjQBudzZzdzwQYkEPQd+PJGixUL5QfvCLDaULoLv+RhT3LDkwEfKaAkgSmNQ==}
 
-  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260422.1':
-    resolution: {integrity: sha512-W/lGgoEfbdI/QWYqcNP0fSa4DHQKKEMLzDPsE6fA64zmfCNsTO9M7ttK0acKiLsGB16pr0lubuMDRNN5kXyQ8w==}
+  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260423.1':
+    resolution: {integrity: sha512-wbLr6o5fROaCYt6cOpFhbe92FJAOdhAHwm/s8I/IyN5HbL1ULgel/wHaZiR+ws+27rgruNUiCENzTUg9vSz2bA==}
+    engines: {node: '>=16.20.0'}
     cpu: [arm64]
     os: [darwin]
 
-  '@typescript/native-preview-darwin-x64@7.0.0-dev.20260422.1':
-    resolution: {integrity: sha512-6tZ2yAcKLBIghwKyC74vDqb/7rB99fTpERv9f64iA1tMh6l+WHIuQb6z3mIFVOYBIl2pN9CYasURLroKYtUz1w==}
+  '@typescript/native-preview-darwin-x64@7.0.0-dev.20260423.1':
+    resolution: {integrity: sha512-13MpNT+4MgkgrfiW2u03rnER5aB3yz9fA0bWEYh6IH3rIqA2AR3Dntp3QXW4sQrZf0SriXqHe2R7X3HCT5xmqA==}
+    engines: {node: '>=16.20.0'}
     cpu: [x64]
     os: [darwin]
 
-  '@typescript/native-preview-linux-arm64@7.0.0-dev.20260422.1':
-    resolution: {integrity: sha512-7HL4E7kP0ociYB8R4+QuIbzfT3pjdesNY+ax/q6fP3IMd3/QNAL/qsm/NaokjXke+I7uYxKqQ8Qo/t5MSv/r+A==}
+  '@typescript/native-preview-linux-arm64@7.0.0-dev.20260423.1':
+    resolution: {integrity: sha512-ICIkJDTqmn0R4Vs811+Ht2RYTk1OCrAhHCu0JthmhR216T1Tqgi5DWRoCprp3RL1qU6fLnxxrIpEbNlNN7XFYA==}
+    engines: {node: '>=16.20.0'}
     cpu: [arm64]
     os: [linux]
 
-  '@typescript/native-preview-linux-arm@7.0.0-dev.20260422.1':
-    resolution: {integrity: sha512-EWP1Jq2I8MMSkoF9D6ztXgRmnUy2KcaZfL9FYcdm3Am6ZYuI6/SCR3HVIVYbaixAJXe/qUh5MN3LzJbl/4hefQ==}
+  '@typescript/native-preview-linux-arm@7.0.0-dev.20260423.1':
+    resolution: {integrity: sha512-CxUA15qbPQRvz2nanBpiv1h4tgXTCJJwqOtgKMSdIuPkow8dyYW3ba5oLoH/jZhS4792XislX659hlFrfiU6CQ==}
+    engines: {node: '>=16.20.0'}
     cpu: [arm]
     os: [linux]
 
-  '@typescript/native-preview-linux-x64@7.0.0-dev.20260422.1':
-    resolution: {integrity: sha512-fDqkLf2Hv7X1Cy1B5OMcljPt/+8GpnTxFM9rDCFrYAPgOolIQJ9qwkb+xGfvAtxkkE5sZIvGPcqjP9PWQHt2qw==}
+  '@typescript/native-preview-linux-x64@7.0.0-dev.20260423.1':
+    resolution: {integrity: sha512-cWLFS4R8dOU1YuUJ/2VLeGMVIjgI3GGb/f9rRY5MbWHq5l3NNZh8y1QwAOrTh3+g3q6+znArfxVnD2hZHUz8Mw==}
+    engines: {node: '>=16.20.0'}
     cpu: [x64]
     os: [linux]
 
-  '@typescript/native-preview-win32-arm64@7.0.0-dev.20260422.1':
-    resolution: {integrity: sha512-l1tDnyNQSqxFkKz683dD8EORQtcQqZyWkTDnRtHmaPg2mTRxhxSekL/HcsHx/1/DoGTfl310O+CmXzd2mTq3pQ==}
+  '@typescript/native-preview-win32-arm64@7.0.0-dev.20260423.1':
+    resolution: {integrity: sha512-OWaGUI4+dHqYZv+k6sITx9Y27FNy3XzNFk4OrOiYtBkIO/xrb9TPMP4A5XI4n5zwRLIv3xne9g039xgRbaeyoQ==}
+    engines: {node: '>=16.20.0'}
     cpu: [arm64]
     os: [win32]
 
-  '@typescript/native-preview-win32-x64@7.0.0-dev.20260422.1':
-    resolution: {integrity: sha512-VQbDQlp1bjV5nnHagQLXQAhid3S48l1OToIBjvqlw18s0V0YSgoyNL6E/rE7FBdkGrTLf/rtKjo42IZnt3tvqA==}
+  '@typescript/native-preview-win32-x64@7.0.0-dev.20260423.1':
+    resolution: {integrity: sha512-5MQjO/qdLwXpjW7Dy/1lNv7Vtpvo6bhCkbjan4PoRN5/eeyqEqDWxdf8AGE4btLmHqyIjEHRuYf7kp2tlAr6lQ==}
+    engines: {node: '>=16.20.0'}
     cpu: [x64]
     os: [win32]
 
-  '@typescript/native-preview@7.0.0-dev.20260422.1':
-    resolution: {integrity: sha512-8CR8zHFlLpSL5OXY4Wbz2DmiDOoat1JBMkydZUHwQIS4cpoTN7SHjk2BN8i51XHUy0jMF5airL0TlY3GOfZmKg==}
+  '@typescript/native-preview@7.0.0-dev.20260423.1':
+    resolution: {integrity: sha512-9WD7TJJlGvt9PQqJI/+44dVP4oqGQFIkYrpXt7nlQ0WgNIErN52x/XhxmJ4nWft06qejgPiUbPo4aYRNOmIHXg==}
+    engines: {node: '>=16.20.0'}
     hasBin: true
 
   '@umami/node@0.4.0':
@@ -1793,6 +1851,10 @@ packages:
     resolution: {integrity: sha512-fi0NG4bPjCHunUJffmLd0gxssIgkNmArMvis4iNah6Owg1MCJjWhEcDLmsK6iGkJq3tHwbDkTlce70/tmXN4cQ==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
 
+  json-schema-to-ts@3.1.1:
+    resolution: {integrity: sha512-+DWg8jCJG2TEnpy7kOm/7/AxaYoaRbjVB4LFZLySZlWn8exGs3A4OLJR966cVvU26N7X9TWxl+Jsw7dzAqKT6g==}
+    engines: {node: '>=16'}
+
   json-schema-traverse@0.4.1:
     resolution: {integrity: sha512-xbbCH5dCYU5T8LcEhhuh7HJ88HXuW3qsI3Y0zOZFKfZEHcpWiHU/Jxzk629Brsab/mMiHQti9wMP+845RPe3Vg==}
 
@@ -2135,6 +2197,9 @@ packages:
   parse-json@7.1.1:
     resolution: {integrity: sha512-SgOTCX/EZXtZxBE5eJ97P4yGM5n37BwRU+YMsH4vNzFqJV/oWFXXCmwFlgWUM4PrakybVOueJJ6pwHqSVhTFDw==}
     engines: {node: '>=16'}
+
+  partial-json@0.1.7:
+    resolution: {integrity: sha512-Njv/59hHaokb/hRUjce3Hdv12wd60MtM9Z5Olmn+nehe0QDAsRtRbJPvJ0Z91TusF0SuZRIvnM+S4l6EIP8leA==}
 
   path-browserify@1.0.1:
     resolution: {integrity: sha512-b7uo2UCUOYZcnF/3ID0lulOJi/bafxa1xPe7ZPsammBSpjSWQkjNxlt635YGS2MiR9GjvuXCtz2emr3jbsz98g==}
@@ -2638,6 +2703,9 @@ packages:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
     engines: {node: '>=8.0'}
 
+  ts-algebra@2.0.0:
+    resolution: {integrity: sha512-FPAhNPFMrkwz76P7cdjdmiShwMynZYN6SgOujD1urY4oNm80Ou9oMdmbR45LotcKOXoy7wSmHkRFE6Mxbrhefw==}
+
   ts-morph@26.0.0:
     resolution: {integrity: sha512-ztMO++owQnz8c/gIENcM9XfCEzgoGphTv+nKpYNM1bgsdOVC/jRZuEBf6N+mLLDNg68Kl+GgUZfOySaRiG1/Ug==}
 
@@ -2911,6 +2979,9 @@ packages:
   zip-dir@2.0.0:
     resolution: {integrity: sha512-uhlsJZWz26FLYXOD6WVuq+fIcZ3aBPGo/cFdiLlv3KNwpa52IF3ISV8fLhQLiqVu5No3VhlqlgthN6gehil1Dg==}
 
+  zod@3.25.76:
+    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
+
   zod@4.3.6:
     resolution: {integrity: sha512-rftlrkhHZOcjDwkGlnUtZZkvaPHCsDATp4pGpuOOMDaTdDDXF91wuVDJoWoPsKX/3YPQ5fHuF3STjcYyKr+Qhg==}
 
@@ -2921,12 +2992,22 @@ snapshots:
       defu: 6.1.7
       many-keys-map: 3.0.3
 
+  '@ag-ui/core@0.0.49':
+    dependencies:
+      zod: 3.25.76
+
   '@aklinker1/rollup-plugin-visualizer@5.12.0':
     dependencies:
       open: 8.4.2
       picomatch: 2.3.2
       source-map: 0.7.6
       yargs: 17.7.2
+
+  '@anthropic-ai/sdk@0.71.2(zod@4.3.6)':
+    dependencies:
+      json-schema-to-ts: 3.1.1
+    optionalDependencies:
+      zod: 4.3.6
 
   '@babel/code-frame@7.29.0':
     dependencies:
@@ -3520,6 +3601,36 @@ snapshots:
       tailwindcss: 4.2.4
       vite: 8.0.9(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.3)
 
+  '@tanstack/ai-anthropic@0.8.1(@tanstack/ai@0.13.0)(zod@4.3.6)':
+    dependencies:
+      '@anthropic-ai/sdk': 0.71.2(zod@4.3.6)
+      '@tanstack/ai': 0.13.0
+      zod: 4.3.6
+
+  '@tanstack/ai-client@0.7.14':
+    dependencies:
+      '@tanstack/ai': 0.13.0
+      '@tanstack/ai-event-client': 0.2.7(@tanstack/ai@0.13.0)
+
+  '@tanstack/ai-event-client@0.2.7(@tanstack/ai@0.13.0)':
+    dependencies:
+      '@tanstack/ai': 0.13.0
+      '@tanstack/devtools-event-client': 0.4.3
+
+  '@tanstack/ai-vue@0.6.19(@tanstack/ai@0.13.0)(vue@3.5.32(typescript@5.9.3))':
+    dependencies:
+      '@tanstack/ai': 0.13.0
+      '@tanstack/ai-client': 0.7.14
+      vue: 3.5.32(typescript@5.9.3)
+
+  '@tanstack/ai@0.13.0':
+    dependencies:
+      '@ag-ui/core': 0.0.49
+      '@tanstack/ai-event-client': 0.2.7(@tanstack/ai@0.13.0)
+      partial-json: 0.1.7
+
+  '@tanstack/devtools-event-client@0.4.3': {}
+
   '@ts-morph/common@0.27.0':
     dependencies:
       fast-glob: 3.3.3
@@ -3550,36 +3661,36 @@ snapshots:
     dependencies:
       undici-types: 7.19.2
 
-  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260422.1':
+  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260423.1':
     optional: true
 
-  '@typescript/native-preview-darwin-x64@7.0.0-dev.20260422.1':
+  '@typescript/native-preview-darwin-x64@7.0.0-dev.20260423.1':
     optional: true
 
-  '@typescript/native-preview-linux-arm64@7.0.0-dev.20260422.1':
+  '@typescript/native-preview-linux-arm64@7.0.0-dev.20260423.1':
     optional: true
 
-  '@typescript/native-preview-linux-arm@7.0.0-dev.20260422.1':
+  '@typescript/native-preview-linux-arm@7.0.0-dev.20260423.1':
     optional: true
 
-  '@typescript/native-preview-linux-x64@7.0.0-dev.20260422.1':
+  '@typescript/native-preview-linux-x64@7.0.0-dev.20260423.1':
     optional: true
 
-  '@typescript/native-preview-win32-arm64@7.0.0-dev.20260422.1':
+  '@typescript/native-preview-win32-arm64@7.0.0-dev.20260423.1':
     optional: true
 
-  '@typescript/native-preview-win32-x64@7.0.0-dev.20260422.1':
+  '@typescript/native-preview-win32-x64@7.0.0-dev.20260423.1':
     optional: true
 
-  '@typescript/native-preview@7.0.0-dev.20260422.1':
+  '@typescript/native-preview@7.0.0-dev.20260423.1':
     optionalDependencies:
-      '@typescript/native-preview-darwin-arm64': 7.0.0-dev.20260422.1
-      '@typescript/native-preview-darwin-x64': 7.0.0-dev.20260422.1
-      '@typescript/native-preview-linux-arm': 7.0.0-dev.20260422.1
-      '@typescript/native-preview-linux-arm64': 7.0.0-dev.20260422.1
-      '@typescript/native-preview-linux-x64': 7.0.0-dev.20260422.1
-      '@typescript/native-preview-win32-arm64': 7.0.0-dev.20260422.1
-      '@typescript/native-preview-win32-x64': 7.0.0-dev.20260422.1
+      '@typescript/native-preview-darwin-arm64': 7.0.0-dev.20260423.1
+      '@typescript/native-preview-darwin-x64': 7.0.0-dev.20260423.1
+      '@typescript/native-preview-linux-arm': 7.0.0-dev.20260423.1
+      '@typescript/native-preview-linux-arm64': 7.0.0-dev.20260423.1
+      '@typescript/native-preview-linux-x64': 7.0.0-dev.20260423.1
+      '@typescript/native-preview-win32-arm64': 7.0.0-dev.20260423.1
+      '@typescript/native-preview-win32-x64': 7.0.0-dev.20260423.1
 
   '@umami/node@0.4.0': {}
 
@@ -4571,6 +4682,11 @@ snapshots:
 
   json-parse-even-better-errors@3.0.2: {}
 
+  json-schema-to-ts@3.1.1:
+    dependencies:
+      '@babel/runtime': 7.28.2
+      ts-algebra: 2.0.0
+
   json-schema-traverse@0.4.1:
     optional: true
 
@@ -4932,6 +5048,8 @@ snapshots:
       json-parse-even-better-errors: 3.0.2
       lines-and-columns: 2.0.4
       type-fest: 3.13.1
+
+  partial-json@0.1.7: {}
 
   path-browserify@1.0.1: {}
 
@@ -5416,6 +5534,8 @@ snapshots:
     dependencies:
       is-number: 7.0.0
 
+  ts-algebra@2.0.0: {}
+
   ts-morph@26.0.0:
     dependencies:
       '@ts-morph/common': 0.27.0
@@ -5583,7 +5703,7 @@ snapshots:
 
   vue-vine-tsc@1.7.27(typescript@5.9.3):
     dependencies:
-      '@typescript/native-preview': 7.0.0-dev.20260422.1
+      '@typescript/native-preview': 7.0.0-dev.20260423.1
       '@volar/language-core': 2.4.20
       '@volar/typescript': 2.4.20
       '@vue-vine/language-service': 1.7.27(typescript@5.9.3)
@@ -5783,5 +5903,7 @@ snapshots:
     dependencies:
       async: 3.2.6
       jszip: 3.10.1
+
+  zod@3.25.76: {}
 
   zod@4.3.6: {}

@@ -1,14 +1,13 @@
 import { Splitter, SplitterPanel, Toolbar, Tree } from "primevue";
-import FavoritesTree from "@/components/FavoritesTree.vine";
+import FavoritesTree from "@/entrypoints/sidepanel/components/FavoritesTree.vine";
 import { useRouter } from "vue-router";
-import { useSelectionStore } from "@/stores/selections";
+import ChatWindow from "../components/ChatWindow.vine";
+
 export default function Page() {
   const router = useRouter();
   function onClickStar() {
     router.push("/sidepanel/favorites");
   }
-  const selection = useSelectionStore().value;
-  // TODO add selection to chat
   return vine`
     <div class="h-screen flex flex-col">
       <Toolbar>
@@ -21,7 +20,7 @@ export default function Page() {
       </Toolbar>
       <Splitter layout="vertical" class="h-full">
         <SplitterPanel>
-          chat
+          <ChatWindow/>
         </SplitterPanel>
         <SplitterPanel>
           task

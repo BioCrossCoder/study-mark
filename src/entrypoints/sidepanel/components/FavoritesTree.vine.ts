@@ -10,7 +10,7 @@ import {
 import { TreeNode } from "primevue/treenode";
 import { useFavoritesDataSync } from "@/composables/useFavoritesDataSync";
 import { useRouter } from "vue-router";
-import { useSelectionStore } from "@/stores/selections";
+import { useSelectionStore } from "@/entrypoints/sidepanel/stores/selections";
 
 export default function FavoritesTree() {
   const keyword = ref("");
