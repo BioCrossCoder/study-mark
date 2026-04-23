@@ -19,10 +19,6 @@ export default defineConfig({
             src: "src/entrypoints/sidepanel/pages",
             path: "sidepanel/",
           },
-          {
-            src: "src/entrypoints/bookmarks/pages",
-            path: "bookmarks/",
-          },
         ],
       }),
       VineVitePlugin(),
