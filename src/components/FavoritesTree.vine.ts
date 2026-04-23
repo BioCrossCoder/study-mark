@@ -10,6 +10,7 @@ import {
 import { TreeNode } from "primevue/treenode";
 import { useFavoritesDataSync } from "@/composables/useFavoritesDataSync";
 import { useRouter } from "vue-router";
+import { useSelectionStore } from "@/stores/selections";
 
 export default function FavoritesTree() {
   const keyword = ref("");
@@ -30,9 +31,9 @@ export default function FavoritesTree() {
     },
   );
   const nodes = computed(() => showFavorites(data.value));
-  const selectedKeys = ref<TreeSelectionKeys>();
+  const selectedKeys = useSelectionStore().value;
   const router = useRouter();
-  function onClickChat(selectionKeys?: TreeSelectionKeys) {
+  function onClickChat() {
     router.push("/sidepanel");
   }
   return vine`
@@ -41,7 +42,7 @@ export default function FavoritesTree() {
         <template #start>
           <i 
             class="pi pi-comments hover:cursor-pointer hover:text-primary-300"
-            @click="()=>onClickChat(selectedKeys)"
+            @click="onClickChat"
           />
         </template>
         <template #center>
