@@ -87,7 +87,7 @@ export default function FavoritesTree() {
               <div>{{node.label}}</div>
               <i
                 class="pi pi-pen-to-square mx-2 hover:text-primary-300"
-                @click="(event)=>onClickEdit(event,node)"
+                @click="(event:PointerEvent)=>onClickEdit(event,node)"
               />
             </div>
           </template>
