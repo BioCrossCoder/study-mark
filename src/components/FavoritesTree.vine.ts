@@ -2,6 +2,7 @@ import {
   IconField,
   InputIcon,
   InputText,
+  ScrollPanel,
   Toolbar,
   Tree,
   TreeSelectionKeys,
@@ -35,59 +36,63 @@ export default function FavoritesTree() {
     router.push("/sidepanel");
   }
   return vine`
-    <Toolbar>
-      <template #start>
-        <i 
-          class="pi pi-comments hover:cursor-pointer hover:text-primary-300"
-          @click="()=>onClickChat(selectedKeys)"
-        />
-      </template>
-      <template #center>
-        <IconField>
-          <InputIcon class="pi pi-search"/>
-          <InputText v-model="keyword" placeholder="Search"/>
-        </IconField>
-      </template>
-      <template #end>
-        <i class="pi pi-star-fill"/>
-      </template>
-    </Toolbar>
-    <Tree
-      v-model:selectionKeys="selectedKeys"
-      class="w-full"
-      :value="nodes"
-      selectionMode="checkbox"
-    >
-      <template #header>
-        <Toolbar>
-          <template #center>
-          <div class="flex justify-around">
-            <i
-              class="pi pi-external-link mx-2 hover:cursor-pointer hover:text-primary-300 "
-              @click="()=>onClickOpen(data,selectedKeys)"
-            />
-            <i
-              class="pi pi-folder-plus mx-2 hover:cursor-pointer hover:text-primary-300 "
-              @click="onClickAddFolder"
-            />
-            <i
-              class="pi pi-trash mx-2 hover:cursor-pointer hover:text-red-400 "
-              @click="()=>onClickDelete(data,selectedKeys)"
-            />
-          </div>
-          </template>
-        </Toolbar>
-      </template>
-      <template #default="{node}">
-        <div class="flex justify-between">
-          <div>{{node.label}}</div>
-          <i
-            class="pi pi-pen-to-square mx-2 hover:text-primary-300"
-            @click="(event)=>onClickEdit(event,node)"
+    <div class="h-screen flex flex-col overflow-hidden">
+      <Toolbar>
+        <template #start>
+          <i 
+            class="pi pi-comments hover:cursor-pointer hover:text-primary-300"
+            @click="()=>onClickChat(selectedKeys)"
           />
-        </div>
-      </template>
-    </Tree>
+        </template>
+        <template #center>
+          <IconField>
+            <InputIcon class="pi pi-search"/>
+            <InputText v-model="keyword" placeholder="Search"/>
+          </IconField>
+        </template>
+        <template #end>
+          <i class="pi pi-star-fill"/>
+        </template>
+      </Toolbar>
+      <ScrollPanel style="width: 100%; height: 100%">
+        <Tree
+          v-model:selectionKeys="selectedKeys"
+          class="w-full h-full"
+          :value="nodes"
+          selectionMode="checkbox"
+        >
+          <template #header>
+            <Toolbar>
+              <template #center>
+              <div class="flex justify-around">
+                <i
+                  class="pi pi-external-link mx-2 hover:cursor-pointer hover:text-primary-300 "
+                  @click="()=>onClickOpen(data,selectedKeys)"
+                />
+                <i
+                  class="pi pi-folder-plus mx-2 hover:cursor-pointer hover:text-primary-300 "
+                  @click="onClickAddFolder"
+                />
+                <i
+                  class="pi pi-trash mx-2 hover:cursor-pointer hover:text-red-400 "
+                  @click="()=>onClickDelete(data,selectedKeys)"
+                />
+              </div>
+              </template>
+            </Toolbar>
+          </template>
+          <template #default="{node}">
+            <div class="flex justify-between">
+              <div>{{node.label}}</div>
+              <i
+                class="pi pi-pen-to-square mx-2 hover:text-primary-300"
+                @click="(event)=>onClickEdit(event,node)"
+              />
+            </div>
+          </template>
+        </Tree>
+      </ScrollPanel>
+    </div>
   `;
 }
 
