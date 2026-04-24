@@ -18,7 +18,7 @@ export default function Page() {
           />
         </template>
       </Toolbar>
-      <Splitter layout="vertical" class="h-full">
+      <Splitter layout="vertical" class="flex-1">
         <SplitterPanel>
           <ChatWindow/>
         </SplitterPanel>

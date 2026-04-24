@@ -131,6 +131,7 @@ function onClickDelete(
   value: globalThis.Browser.bookmarks.BookmarkTreeNode[],
   selectionKeys?: TreeSelectionKeys,
 ) {
+  // TODO add confirm
   function dfs(nodes: globalThis.Browser.bookmarks.BookmarkTreeNode[]) {
     if (!selectionKeys) {
       return;
