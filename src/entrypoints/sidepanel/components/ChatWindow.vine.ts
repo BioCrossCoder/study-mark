@@ -27,16 +27,17 @@ export default function ChatWindow() {
     [ChatMessageSender.User]: "justify-self-start",
   };
   // TODO quote selection
+  // TODO context memory
   return vine`
-    <div class="h-full flex flex-col">
-      <ScrollPanel style="width: 100%; height:100%;" class="overflow-hidden max-h-65">
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <ScrollPanel style="width: 100%; height:100%;" class="overflow-hidden">
         <ChatBubble
           v-for="{sender,message,timestamp} in history"
           :class="'w-3/4'+' '+messagePosition[sender]"
           :sender="sender" :message="message" :timestamp="timestamp"
         />
       </ScrollPanel>
-      <div class="w-full flex">
+      <div class="w-full flex my-2">
         <InputText type="text" v-model="question" class="w-full ml-2"/>
         <Button icon="pi pi-send" class="flex-none mr-2" @click="handleSubmit"/>
       </div>

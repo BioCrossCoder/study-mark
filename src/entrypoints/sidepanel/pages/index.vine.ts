@@ -1,5 +1,4 @@
-import { Splitter, SplitterPanel, Toolbar, Tree } from "primevue";
-import FavoritesTree from "@/entrypoints/sidepanel/components/FavoritesTree.vine";
+import { Toolbar } from "primevue";
 import { useRouter } from "vue-router";
 import ChatWindow from "../components/ChatWindow.vine";
 
@@ -18,14 +17,7 @@ export default function Page() {
           />
         </template>
       </Toolbar>
-      <Splitter layout="vertical" class="flex-1">
-        <SplitterPanel>
-          <ChatWindow/>
-        </SplitterPanel>
-        <SplitterPanel>
-          task
-        </SplitterPanel>
-      </Splitter>
+      <ChatWindow/>
     </div>
   `;
 }
