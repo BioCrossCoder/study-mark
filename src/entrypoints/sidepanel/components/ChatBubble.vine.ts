@@ -1,5 +1,6 @@
 import { Panel } from "primevue";
 import { marked } from "marked";
+import { ChatMessage } from '@/common/types';
 
 export default function ChatBubble(props: ChatMessage) {
   return vine`
@@ -15,15 +16,4 @@ export default function ChatBubble(props: ChatMessage) {
       </template>
     </Panel>
   `;
-}
-
-export type ChatMessage = {
-  sender: ChatMessageSender;
-  message: string;
-  timestamp: Date;
-};
-
-export const enum ChatMessageSender {
-  User = "pi pi-user",
-  Robot = "pi pi-microchip-ai",
 }

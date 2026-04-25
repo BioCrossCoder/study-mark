@@ -1,11 +1,13 @@
 import { useConnectionStore } from "../stores/connection";
 import { Button, IconField, InputIcon, InputText, ScrollPanel } from "primevue";
-import ChatBubble, { ChatMessage, ChatMessageSender } from "./ChatBubble.vine";
+import ChatBubble from "./ChatBubble.vine";
+import { ChatMessageSender } from "@/common/enums";
+import { useChatStore } from "../stores/chat";
 
 export default function ChatWindow() {
   const question = ref("");
   const connection = useConnectionStore();
-  const history = ref(new Array<ChatMessage>());
+  const { history } = useChatStore();
   connection.listen((message) => {
     const lastMessage = history.value.at(-1);
     if (lastMessage?.sender === ChatMessageSender.Robot) {
