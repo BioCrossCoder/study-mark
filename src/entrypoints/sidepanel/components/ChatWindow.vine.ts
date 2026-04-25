@@ -7,9 +7,10 @@ import { MessagesSquare } from "@lucide/vue";
 
 export default function ChatWindow() {
   const question = ref("");
+  const isQuestionEmpty = computed(() => question.value.length === 0);
   const connection = useConnectionStore();
   const { history } = useChatStore();
-  const empty = computed(() => history.value.length === 0);
+  const isContextEmpty = computed(() => history.value.length === 0);
   const bottomAnchor = ref<HTMLDivElement>();
   function scrollToBottom(behavior: ScrollBehavior) {
     bottomAnchor.value?.scrollIntoView({
@@ -31,6 +32,9 @@ export default function ChatWindow() {
     scrollToBottom("smooth");
   });
   function handleSubmit() {
+    if (isQuestionEmpty.value) {
+      return;
+    }
     history.value.push({
       sender: ChatMessageSender.User,
       message: question.value,
@@ -47,7 +51,7 @@ export default function ChatWindow() {
   // TODO quote selection
   return vine`
     <div class="flex-1 flex flex-col overflow-hidden">
-      <div v-if="empty" class="h-full flex justify-center items-center">
+      <div v-if="isContextEmpty" class="h-full flex justify-center items-center">
         <MessagesSquare class="w-[50vw] h-[50vw]" stroke-width="1.2"/>
       </div>
       <ScrollPanel v-else style="width: 100%; height:100%;" class="overflow-hidden">
@@ -60,7 +64,7 @@ export default function ChatWindow() {
       </ScrollPanel>
       <div class="w-full flex my-2">
         <InputText type="text" v-model="question" class="w-full ml-2" @keydown.enter="handleSubmit"/>
-        <Button icon="pi pi-send" class="flex-none mr-2" @click="handleSubmit"/>
+        <Button icon="pi pi-send" class="flex-none mr-2" @click="handleSubmit" :disabled="isQuestionEmpty"/>
       </div>
     </div>
   `;
