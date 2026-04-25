@@ -7,11 +7,16 @@ export default function ChatWindow() {
   const connection = useConnectionStore();
   const history = ref(new Array<ChatMessage>());
   connection.listen((message) => {
-    history.value.push({
-      sender: ChatMessageSender.Robot,
-      message,
-      timestamp: new Date(),
-    });
+    const lastMessage = history.value.at(-1);
+    if (lastMessage?.sender === ChatMessageSender.Robot) {
+      lastMessage.message = message;
+    } else {
+      history.value.push({
+        sender: ChatMessageSender.Robot,
+        message,
+        timestamp: new Date(),
+      });
+    }
   });
   function handleSubmit() {
     history.value.push({
@@ -27,7 +32,6 @@ export default function ChatWindow() {
     [ChatMessageSender.User]: "justify-self-start",
   };
   // TODO quote selection
-  // TODO context memory
   return vine`
     <div class="flex-1 flex flex-col overflow-hidden">
       <ScrollPanel style="width: 100%; height:100%;" class="overflow-hidden">

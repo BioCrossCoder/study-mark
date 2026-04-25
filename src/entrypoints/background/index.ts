@@ -1,5 +1,5 @@
 import { Channel } from "@/common/enums";
-import { chat, streamToText } from "@tanstack/ai";
+import { chat, StreamChunk } from "@tanstack/ai";
 import { createAnthropicChat } from "@tanstack/ai-anthropic";
 import { model, apiKey, baseURL } from "@/../env.json";
 import { chatContext } from "@/stores/chat";
@@ -29,10 +29,15 @@ const callbacks: Record<
       messages,
       stream: true,
     });
-    // TODO stream output
-    const text = await streamToText(stream);
+    let text = "";
+    for await (const chunk of stream) {
+      const content = ((chunk as StreamChunk).content ?? "") as string;
+      if (content.length > text.length) {
+        text = content;
+        port.postMessage(text);
+      }
+    }
     messages.push({ role: "assistant", content: text });
     chatContext.setValue(messages);
-    port.postMessage(text);
   },
 };
