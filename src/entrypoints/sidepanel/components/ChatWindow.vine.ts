@@ -59,7 +59,7 @@ export default function ChatWindow() {
         <div ref="bottomAnchor"/>
       </ScrollPanel>
       <div class="w-full flex my-2">
-        <InputText type="text" v-model="question" class="w-full ml-2"/>
+        <InputText type="text" v-model="question" class="w-full ml-2" @keydown.enter="handleSubmit"/>
         <Button icon="pi pi-send" class="flex-none mr-2" @click="handleSubmit"/>
       </div>
     </div>
