@@ -17,10 +17,13 @@ export const [useConnectionStore, initConnectionStore] = defineVibe(
       listeners.forEach(port.onMessage.removeListener);
       port.disconnect();
     }
+    function send<T>(message: T) {
+      port.postMessage(message);
+    }
     return {
+      send,
       listen,
       close,
-      port,
     };
   },
 );

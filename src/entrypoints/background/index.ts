@@ -3,23 +3,18 @@ import { chat, StreamChunk } from "@tanstack/ai";
 import { createAnthropicChat } from "@tanstack/ai-anthropic";
 import { model, apiKey, baseURL } from "@/../env.json";
 import { chatContext } from "@/stores/chat";
-import { signalMessageSchema } from "@/common/types";
+import {
+  textMessageSchema,
+  signalMessageSchema,
+  TextMessage,
+  SignalMessage,
+} from "@/common/types";
 
 export default defineBackground(() => {
   browser.runtime.onConnect.addListener((port) => {
     const callback = callbacks[port.name];
     if (callback && !port.onMessage.hasListener(callback)) {
       port.onMessage.addListener(callback);
-    }
-  });
-  browser.runtime.onMessage.addListener((message) => {
-    const { success, data } = signalMessageSchema.safeParse(message);
-    if (success) {
-      switch (data.content) {
-        case "clear":
-          chatContext.setValue([]);
-          break;
-      }
     }
   });
 });
@@ -33,22 +28,41 @@ const callbacks: Record<
   ((message: any, port: globalThis.Browser.runtime.Port) => void) | undefined
 > = {
   [Channel.SidePanel]: async (message, port) => {
-    const messages = await chatContext.getValue();
-    messages.push({ role: "user", content: message });
-    const stream = chat({
-      adapter,
-      messages,
-      stream: true,
-    });
-    let text = "";
-    for await (const chunk of stream) {
-      const content = ((chunk as StreamChunk).content ?? "") as string;
-      if (content.length > text.length) {
-        text = content;
-        port.postMessage(text);
+    // [HandleSignal]
+    const signalMessage = signalMessageSchema.safeParse(message);
+    if (signalMessage.success && signalMessage.data.content === "clear") {
+      chatContext.setValue([]);
+      return;
+    } // [/]
+    // [HandleText]
+    const textMessage = textMessageSchema.safeParse(message);
+    if (textMessage.success) {
+      const messages = await chatContext.getValue();
+      let { content } = textMessage.data;
+      messages.push({ role: "user", content });
+      const stream = chat({
+        adapter,
+        messages,
+        stream: true,
+      });
+      content = "";
+      for await (const chunk of stream) {
+        const text = ((chunk as StreamChunk).content ?? "") as string;
+        if (text.length > content.length) {
+          content = text;
+          port.postMessage({
+            type: "text",
+            content,
+          } as TextMessage);
+        }
       }
-    }
-    messages.push({ role: "assistant", content: text });
-    chatContext.setValue(messages);
+      port.postMessage({
+        type: "signal",
+        content: "finish",
+      } as SignalMessage);
+      messages.push({ role: "assistant", content });
+      chatContext.setValue(messages);
+      return;
+    } // [/]
   },
 };

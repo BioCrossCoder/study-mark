@@ -3,6 +3,7 @@ import { useRouter } from "vue-router";
 import ChatWindow from "../components/ChatWindow.vine";
 import { useChatStore } from "../stores/chat";
 import { SignalMessage } from "@/common/types";
+import { useConnectionStore } from "../stores/connection";
 
 export default function Page() {
   const router = useRouter();
@@ -10,10 +11,11 @@ export default function Page() {
     router.push("/sidepanel/favorites");
   }
   const { history } = useChatStore();
+  const connection = useConnectionStore();
   function onClickClear() {
     // TODO add confirm
     history.value.length = 0;
-    browser.runtime.sendMessage<SignalMessage>({
+    connection.send<SignalMessage>({
       type: "signal",
       content: "clear",
     });
