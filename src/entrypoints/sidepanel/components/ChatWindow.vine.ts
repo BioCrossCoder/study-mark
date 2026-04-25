@@ -3,11 +3,13 @@ import { Button, IconField, InputIcon, InputText, ScrollPanel } from "primevue";
 import ChatBubble from "./ChatBubble.vine";
 import { ChatMessageSender } from "@/common/enums";
 import { useChatStore } from "../stores/chat";
+import { MessagesSquare } from "@lucide/vue";
 
 export default function ChatWindow() {
   const question = ref("");
   const connection = useConnectionStore();
   const { history } = useChatStore();
+  const empty = computed(() => history.value.length === 0);
   connection.listen((message) => {
     const lastMessage = history.value.at(-1);
     if (lastMessage?.sender === ChatMessageSender.Robot) {
@@ -36,7 +38,10 @@ export default function ChatWindow() {
   // TODO quote selection
   return vine`
     <div class="flex-1 flex flex-col overflow-hidden">
-      <ScrollPanel style="width: 100%; height:100%;" class="overflow-hidden">
+      <div v-if="empty" class="h-full flex justify-center items-center">
+        <MessagesSquare class="w-[50vw] h-[50vw]" stroke-width="1.2"/>
+      </div>
+      <ScrollPanel v-else style="width: 100%; height:100%;" class="overflow-hidden">
         <ChatBubble
           v-for="{sender,message,timestamp} in history"
           :class="'w-3/4'+' '+messagePosition[sender]"

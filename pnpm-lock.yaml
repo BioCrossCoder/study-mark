@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@lucide/vue':
+        specifier: ^1.11.0
+        version: 1.11.0(vue@3.5.32(typescript@5.9.3))
       '@primeuix/themes':
         specifier: ^2.0.3
         version: 2.0.3
@@ -20,9 +23,6 @@ importers:
       '@tanstack/ai-anthropic':
         specifier: ^0.8.1
         version: 0.8.1(@tanstack/ai@0.13.0)(zod@4.3.6)
-      '@tanstack/ai-vue':
-        specifier: ^0.6.19
-        version: 0.6.19(@tanstack/ai@0.13.0)(vue@3.5.32(typescript@5.9.3))
       marked:
         specifier: ^18.0.2
         version: 18.0.2
@@ -387,6 +387,11 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
+
+  '@lucide/vue@1.11.0':
+    resolution: {integrity: sha512-ISNBw5Xm7cwfwMQ/sEYelzBCpBnpIcAJUUfIBV62Q6fL10WIEZBrVho1tjragziFTVImDupJYzWozxRn55Fc1g==}
+    peerDependencies:
+      vue: '>=3.0.1'
 
   '@module-federation/error-codes@0.22.0':
     resolution: {integrity: sha512-xF9SjnEy7vTdx+xekjPCV5cIHOGCkdn3pIxo9vU7gEZMIw0SvAEdsy6Uh17xaCpm8V0FWvR0SZoK9Ik6jGOaug==}
@@ -831,19 +836,10 @@ packages:
       '@tanstack/ai': ^0.13.0
       zod: ^4.0.0
 
-  '@tanstack/ai-client@0.7.14':
-    resolution: {integrity: sha512-/MzRKILuZRK/3LVX6PP1gJcTyEpP0k6+9NdhYSEQk/ReA5Ol4+H3sRHsuTRBbYPFCztEkvVSCIBSLO+xq/0vSA==}
-
   '@tanstack/ai-event-client@0.2.7':
     resolution: {integrity: sha512-DcdDNrt1T2ng8CVo0pTx1172CEdGzFg4w/azLFFc/z5WHGAAMkw2ZD/ucSc1VlYlCWCNxwSO6otUqxmJDi9gJQ==}
     peerDependencies:
       '@tanstack/ai': 0.13.0
-
-  '@tanstack/ai-vue@0.6.19':
-    resolution: {integrity: sha512-at+dRDpP/vAzGrvmpwRclDApEF1MU5NQPjvVn9dQDTji3eVWe4SgctsgxQ2YhAAjyV/YYxsYO3dTgyixYbG+Pw==}
-    peerDependencies:
-      '@tanstack/ai': ^0.13.0
-      vue: '>=3.5.0'
 
   '@tanstack/ai@0.13.0':
     resolution: {integrity: sha512-4M0wBvi4Mhc50mpQmmJuT31C5ROGfh8FOQIAzHzc8qQs14ziHDh9Wx1hjDeezGnlqjCTJVGTExFpPGOFOLRz1A==}
@@ -3268,6 +3264,10 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
+  '@lucide/vue@1.11.0(vue@3.5.32(typescript@5.9.3))':
+    dependencies:
+      vue: 3.5.32(typescript@5.9.3)
+
   '@module-federation/error-codes@0.22.0': {}
 
   '@module-federation/runtime-core@0.22.0':
@@ -3615,21 +3615,10 @@ snapshots:
       '@tanstack/ai': 0.13.0
       zod: 4.3.6
 
-  '@tanstack/ai-client@0.7.14':
-    dependencies:
-      '@tanstack/ai': 0.13.0
-      '@tanstack/ai-event-client': 0.2.7(@tanstack/ai@0.13.0)
-
   '@tanstack/ai-event-client@0.2.7(@tanstack/ai@0.13.0)':
     dependencies:
       '@tanstack/ai': 0.13.0
       '@tanstack/devtools-event-client': 0.4.3
-
-  '@tanstack/ai-vue@0.6.19(@tanstack/ai@0.13.0)(vue@3.5.32(typescript@5.9.3))':
-    dependencies:
-      '@tanstack/ai': 0.13.0
-      '@tanstack/ai-client': 0.7.14
-      vue: 3.5.32(typescript@5.9.3)
 
   '@tanstack/ai@0.13.0':
     dependencies:
