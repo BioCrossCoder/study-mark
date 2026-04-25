@@ -10,6 +10,13 @@ export default function ChatWindow() {
   const connection = useConnectionStore();
   const { history } = useChatStore();
   const empty = computed(() => history.value.length === 0);
+  const bottomAnchor = ref<HTMLDivElement>();
+  function scrollToBottom(behavior: ScrollBehavior) {
+    bottomAnchor.value?.scrollIntoView({
+      behavior,
+      block: "end",
+    });
+  }
   connection.listen((message) => {
     const lastMessage = history.value.at(-1);
     if (lastMessage?.sender === ChatMessageSender.Robot) {
@@ -21,6 +28,7 @@ export default function ChatWindow() {
         timestamp: new Date(),
       });
     }
+    scrollToBottom("smooth");
   });
   function handleSubmit() {
     history.value.push({
@@ -30,6 +38,7 @@ export default function ChatWindow() {
     });
     connection.port.postMessage(question.value);
     question.value = "";
+    scrollToBottom("instant");
   }
   const messagePosition = {
     [ChatMessageSender.Robot]: "justify-self-end",
@@ -47,6 +56,7 @@ export default function ChatWindow() {
           :class="'w-3/4'+' '+messagePosition[sender]"
           :sender="sender" :message="message" :timestamp="timestamp"
         />
+        <div ref="bottomAnchor"/>
       </ScrollPanel>
       <div class="w-full flex my-2">
         <InputText type="text" v-model="question" class="w-full ml-2"/>
