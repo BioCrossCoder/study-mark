@@ -1,5 +1,12 @@
 import { useConnectionStore } from "../stores/connection";
-import { Button, IconField, InputIcon, InputText, ScrollPanel } from "primevue";
+import {
+  Button,
+  IconField,
+  InputIcon,
+  InputText,
+  ScrollPanel,
+  ScrollTop,
+} from "primevue";
 import ChatBubble from "./ChatBubble.vine";
 import { ChatMessageSender } from "@/common/enums";
 import { useChatStore } from "../stores/chat";
@@ -72,8 +79,8 @@ export default function ChatWindow() {
     scrollToBottom("instant");
   }
   const messagePosition = {
-    [ChatMessageSender.Robot]: "justify-self-end",
-    [ChatMessageSender.User]: "justify-self-start",
+    [ChatMessageSender.Robot]: "justify-self-start",
+    [ChatMessageSender.User]: "justify-self-end",
   };
   // TODO quote selection
   return vine`
@@ -88,6 +95,7 @@ export default function ChatWindow() {
           :sender="sender" :message="message" :timestamp="timestamp"
         />
         <div ref="bottomAnchor"/>
+        <ScrollTop target="parent" :threshold="0"/>
       </ScrollPanel>
       <div class="w-full flex my-2">
         <InputText type="text" v-model="question" class="w-full ml-2" @keydown.enter="handleSubmit"/>
