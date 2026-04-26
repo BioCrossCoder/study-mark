@@ -23,6 +23,10 @@ const adapter = createAnthropicChat(model as any, apiKey, {
   baseURL,
 });
 
+function send<T>(port: globalThis.Browser.runtime.Port, message: T) {
+  port.postMessage(message);
+}
+
 const callbacks: Record<
   string,
   ((message: any, port: globalThis.Browser.runtime.Port) => void) | undefined
@@ -50,16 +54,16 @@ const callbacks: Record<
         const text = ((chunk as StreamChunk).content ?? "") as string;
         if (text.length > content.length) {
           content = text;
-          port.postMessage({
+          send<TextMessage>(port, {
             type: "text",
             content,
-          } as TextMessage);
+          });
         }
       }
-      port.postMessage({
+      send<SignalMessage>(port, {
         type: "signal",
         content: "finish",
-      } as SignalMessage);
+      });
       messages.push({ role: "assistant", content });
       chatContext.setValue(messages);
       return;
