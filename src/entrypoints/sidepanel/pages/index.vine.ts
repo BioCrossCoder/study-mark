@@ -7,12 +7,12 @@ import { useConnectionStore } from "../stores/connection";
 
 export default function Page() {
   const router = useRouter();
-  function onClickStar() {
+  function enterFavoritesPage() {
     router.push("/sidepanel/favorites");
   }
   const { history } = useChatStore();
   const connection = useConnectionStore();
-  function onClickClear() {
+  function handleClear() {
     // TODO add confirm
     history.value.length = 0;
     connection.send<SignalMessage>({
@@ -26,13 +26,13 @@ export default function Page() {
         <template #start>
           <i
             class="pi pi-star hover:cursor-pointer hover:text-primary-300"
-            @click="onClickStar"
+            @click="enterFavoritesPage"
           />
         </template>
         <template #end>
           <i
             class="pi pi-trash hover:cursor-pointer hover:text-red-400"
-            @click="onClickClear"
+            @click="handleClear"
           />
         </template>
       </Toolbar>

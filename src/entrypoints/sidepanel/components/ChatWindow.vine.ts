@@ -82,6 +82,9 @@ export default function ChatWindow() {
     [ChatMessageSender.Robot]: "justify-self-start",
     [ChatMessageSender.User]: "justify-self-end",
   };
+  function handleClear() {
+    question.value = "";
+  }
   // TODO quote selection
   return vine`
     <div class="flex-1 flex flex-col overflow-hidden">
@@ -98,7 +101,12 @@ export default function ChatWindow() {
         <ScrollTop target="parent" :threshold="0"/>
       </ScrollPanel>
       <div class="w-full flex my-2">
-        <InputText type="text" v-model="question" class="w-full ml-2" @keydown.enter="handleSubmit"/>
+        <IconField class="w-full ml-2">
+          <InputText type="text" v-model="question" @keydown.enter="handleSubmit" class="w-full"/>
+          <InputIcon v-if="!isQuestionEmpty">
+            <i class="pi pi-times-circle hover:cursor-pointer hover:text-red-300" @click="handleClear"/>
+          </InputIcon>
+        </IconField>
         <Button :icon="buttonIcon" class="flex-none mr-2" @click="handleSubmit" :disabled="isSubmitDisabled"/>
       </div>
     </div>

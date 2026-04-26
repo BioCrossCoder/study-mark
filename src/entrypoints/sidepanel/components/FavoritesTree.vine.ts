@@ -14,6 +14,7 @@ import { useSelectionStore } from "@/entrypoints/sidepanel/stores/selections";
 
 export default function FavoritesTree() {
   const keyword = ref("");
+  const isKeywordEmpty = computed(() => keyword.value.length === 0);
   const data = ref(new Array<globalThis.Browser.bookmarks.BookmarkTreeNode>());
   const refresh = async (value: string) => {
     data.value = await loadFavorites(value);
@@ -33,8 +34,11 @@ export default function FavoritesTree() {
   const nodes = computed(() => showFavorites(data.value));
   const selectedKeys = useSelectionStore().value;
   const router = useRouter();
-  function onClickChat() {
+  function enterChatPage() {
     router.push("/sidepanel");
+  }
+  function handleClear() {
+    keyword.value = "";
   }
   return vine`
     <div class="h-screen flex flex-col overflow-hidden">
@@ -42,13 +46,16 @@ export default function FavoritesTree() {
         <template #start>
           <i 
             class="pi pi-comments hover:cursor-pointer hover:text-primary-300"
-            @click="onClickChat"
+            @click="enterChatPage"
           />
         </template>
         <template #center>
           <IconField>
             <InputIcon class="pi pi-search"/>
             <InputText v-model="keyword" placeholder="Search"/>
+            <InputIcon v-if="!isKeywordEmpty">
+              <i class="pi pi-times-circle hover:cursor-pointer hover:text-red-300" @click="handleClear"/>
+            </InputIcon>
           </IconField>
         </template>
         <template #end>
@@ -68,15 +75,15 @@ export default function FavoritesTree() {
               <div class="flex justify-around">
                 <i
                   class="pi pi-external-link mx-2 hover:cursor-pointer hover:text-primary-300 "
-                  @click="()=>onClickOpen(data,selectedKeys)"
+                  @click="()=>handleOpen(data,selectedKeys)"
                 />
                 <i
                   class="pi pi-folder-plus mx-2 hover:cursor-pointer hover:text-primary-300 "
-                  @click="onClickAddFolder"
+                  @click="handleAddFolder"
                 />
                 <i
                   class="pi pi-trash mx-2 hover:cursor-pointer hover:text-red-400 "
-                  @click="()=>onClickDelete(data,selectedKeys)"
+                  @click="()=>handleDelete(data,selectedKeys)"
                 />
               </div>
               </template>
@@ -87,7 +94,7 @@ export default function FavoritesTree() {
               <div>{{node.label}}</div>
               <i
                 class="pi pi-pen-to-square mx-2 hover:text-primary-300"
-                @click="(event:PointerEvent)=>onClickEdit(event,node)"
+                @click="(event:PointerEvent)=>handleEdit(event,node)"
               />
             </div>
           </template>
@@ -97,7 +104,7 @@ export default function FavoritesTree() {
   `;
 }
 
-function onClickOpen(
+function handleOpen(
   value: globalThis.Browser.bookmarks.BookmarkTreeNode[],
   selectionKeys?: TreeSelectionKeys,
 ) {
@@ -118,7 +125,7 @@ function onClickOpen(
   dfs(value);
 }
 
-function onClickAddFolder() {
+function handleAddFolder() {
   // TODO open creating folder dialog
 }
 
@@ -127,7 +134,7 @@ type TreeSelection = {
   partialChecked: boolean;
 };
 
-function onClickDelete(
+function handleDelete(
   value: globalThis.Browser.bookmarks.BookmarkTreeNode[],
   selectionKeys?: TreeSelectionKeys,
 ) {
@@ -157,7 +164,7 @@ function onClickDelete(
   dfs(value);
 }
 
-function onClickEdit(event: PointerEvent, node: TreeNode) {
+function handleEdit(event: PointerEvent, node: TreeNode) {
   event.stopPropagation();
   // TODO open editing bookmark dialog
 }
