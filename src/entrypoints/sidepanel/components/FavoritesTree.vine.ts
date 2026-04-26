@@ -50,18 +50,27 @@ export default function FavoritesTree() {
           />
         </template>
         <template #center>
-          <IconField>
-            <InputIcon class="pi pi-search"/>
-            <InputText v-model="keyword" placeholder="Search"/>
-            <InputIcon v-if="!isKeywordEmpty">
-              <i class="pi pi-times-circle hover:cursor-pointer hover:text-red-300" @click="handleClear"/>
-            </InputIcon>
-          </IconField>
-        </template>
-        <template #end>
-          <i class="pi pi-star-fill"/>
+          <i
+            class="pi pi-external-link mx-2 hover:cursor-pointer hover:text-primary-300 "
+            @click="()=>handleOpen(data,selectedKeys)"
+          />
+          <i
+            class="pi pi-folder-plus mx-2 hover:cursor-pointer hover:text-primary-300 "
+            @click="handleAddFolder"
+          />
+          <i
+            class="pi pi-trash mx-2 hover:cursor-pointer hover:text-red-400 "
+            @click="()=>handleDelete(data,selectedKeys)"
+          />
         </template>
       </Toolbar>
+      <IconField class="m-2">
+        <InputIcon class="pi pi-search"/>
+        <InputText v-model="keyword" placeholder="Search" class="w-full"/>
+        <InputIcon v-if="!isKeywordEmpty">
+          <i class="pi pi-times-circle hover:cursor-pointer hover:text-red-300" @click="handleClear"/>
+        </InputIcon>
+      </IconField>
       <ScrollPanel style="width: 100%; height: 100%">
         <Tree
           v-model:selectionKeys="selectedKeys"
@@ -69,26 +78,6 @@ export default function FavoritesTree() {
           :value="nodes"
           selectionMode="checkbox"
         >
-          <template #header>
-            <Toolbar>
-              <template #center>
-              <div class="flex justify-around">
-                <i
-                  class="pi pi-external-link mx-2 hover:cursor-pointer hover:text-primary-300 "
-                  @click="()=>handleOpen(data,selectedKeys)"
-                />
-                <i
-                  class="pi pi-folder-plus mx-2 hover:cursor-pointer hover:text-primary-300 "
-                  @click="handleAddFolder"
-                />
-                <i
-                  class="pi pi-trash mx-2 hover:cursor-pointer hover:text-red-400 "
-                  @click="()=>handleDelete(data,selectedKeys)"
-                />
-              </div>
-              </template>
-            </Toolbar>
-          </template>
           <template #default="{node}">
             <div class="flex justify-between">
               <div>{{node.label}}</div>
