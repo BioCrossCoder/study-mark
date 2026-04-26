@@ -11,6 +11,7 @@ export default function Page() {
     router.push("/sidepanel/favorites");
   }
   const { history } = useChatStore();
+  const isHistoryEmpty = computed(() => history.value.length === 0);
   const connection = useConnectionStore();
   function handleClear() {
     // TODO add confirm
@@ -31,6 +32,7 @@ export default function Page() {
         </template>
         <template #end>
           <i
+            v-if="!isHistoryEmpty"
             class="pi pi-trash hover:cursor-pointer hover:text-red-400"
             @click="handleClear"
           />
