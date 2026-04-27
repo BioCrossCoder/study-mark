@@ -3,6 +3,8 @@ import { TreeNode } from "primevue/treenode";
 
 export function useFavorites(
   dataSource: Ref<{ keyword: string; excludeIds: string[] }>,
+  callback: () => void = () => {},
+  onRemoved: (id: string) => void = () => {},
 ) {
   const query = useQuery({
     queryKey: [dataSource],
@@ -12,6 +14,29 @@ export function useFavorites(
         ? await browser.bookmarks.search(keyword)
         : ((await browser.bookmarks.getTree()).at(0)?.children ?? []);
     },
+  });
+
+  const events = [
+    browser.bookmarks.onChanged,
+    browser.bookmarks.onChildrenReordered,
+    browser.bookmarks.onCreated,
+    browser.bookmarks.onImportEnded,
+    browser.bookmarks.onMoved,
+    browser.bookmarks.onRemoved,
+  ];
+  onMounted(() => {
+    events.forEach((event) => {
+      event.addListener(callback);
+      event.addListener(query.refetch);
+    });
+    browser.bookmarks.onRemoved.addListener(onRemoved);
+  });
+  onUnmounted(() => {
+    events.forEach((event) => {
+      event.removeListener(callback);
+      event.removeListener(query.refetch);
+    });
+    browser.bookmarks.onRemoved.removeListener(onRemoved);
   });
 
   const tree = computed(() => showFavorites(query.data.value ?? []));

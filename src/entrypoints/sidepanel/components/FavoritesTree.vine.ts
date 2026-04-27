@@ -8,7 +8,6 @@ import {
   Tree,
   TreeSelect,
 } from "primevue";
-import { useFavoritesDataSync } from "@/composables/useFavoritesDataSync";
 import { useRouter } from "vue-router";
 import { useSelectionStore } from "@/entrypoints/sidepanel/stores/selections";
 import { useQuery } from "@tanstack/vue-query";
@@ -23,9 +22,8 @@ export default function FavoritesTree() {
     () =>
       `width:100%; height:${container.value.offsetHeight - searchBox.value.height}px`,
   );
-  const { data, refetch, tree } = useFavorites(searchBox);
   const selectedKeys = useSelectionStore().value;
-  useFavoritesDataSync(refetch, () => {
+  const { tree } = useFavorites(searchBox, () => {
     selectedKeys.value = undefined;
   });
 
