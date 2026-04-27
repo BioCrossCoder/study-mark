@@ -10,8 +10,7 @@ export default function Page() {
   function enterFavoritesPage() {
     router.push("/sidepanel/favorites");
   }
-  const { history } = useChatStore();
-  const isHistoryEmpty = computed(() => history.value.length === 0);
+  const { history, isHistoryEmpty } = useChatStore();
   const connection = useConnectionStore();
   function handleClear() {
     // TODO add confirm

@@ -4,33 +4,28 @@ import {
   IconField,
   InputIcon,
   InputText,
+  Panel,
   ScrollPanel,
   ScrollTop,
 } from "primevue";
-import ChatBubble from "./ChatBubble.vine";
 import { ChatMessageSender } from "@/common/enums";
 import { useChatStore } from "../stores/chat";
 import { MessagesSquare } from "@lucide/vue";
 import {
+  ChatMessage,
   signalMessageSchema,
   TextMessage,
   textMessageSchema,
 } from "@/common/types";
+import { marked } from "marked";
+import { useScroll } from "@/composables/useScroll";
+import { defineVibe } from "vue-vine";
 
 export default function ChatWindow() {
-  const question = ref("");
-  const isQuestionEmpty = computed(() => question.value.length === 0);
+  const { history, isHistoryEmpty, loading } = useChatStore();
+  const bottomAnchor = ref(document.createElement("div"));
   const connection = useConnectionStore();
-  const { history } = useChatStore();
-  const isContextEmpty = computed(() => history.value.length === 0);
-  const bottomAnchor = ref<HTMLDivElement>();
-  function scrollToBottom(behavior: ScrollBehavior) {
-    bottomAnchor.value?.scrollIntoView({
-      behavior,
-      block: "end",
-    });
-  }
-  const loading = ref(false);
+
   connection.listen((message) => {
     // [HandleSignal]
     const signalMessage = signalMessageSchema.safeParse(message);
@@ -51,16 +46,68 @@ export default function ChatWindow() {
           timestamp: new Date(),
         });
       }
-      scrollToBottom("smooth");
+      useScroll(bottomAnchor, "smooth", "end");
       return;
     } // [/]
   });
-  const buttonIcon = computed(() =>
-    loading.value ? "pi pi-spinner pi-spin" : "pi pi-send",
-  );
+
+  const messagePosition = {
+    [ChatMessageSender.Robot]: "justify-self-start",
+    [ChatMessageSender.User]: "justify-self-end",
+  };
+
+  // TODO quote selection
+  return vine`
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <EmptyPlaceholder v-if="isHistoryEmpty"/>
+      <ScrollPanel v-else style="width: 100%; height:100%;" class="overflow-hidden">
+        <ChatBubble
+          v-for="{sender,message,timestamp} in history"
+          :class="'w-3/4'+' '+messagePosition[sender]"
+          :sender="sender" :message="message" :timestamp="timestamp"
+        />
+        <div ref="bottomAnchor"/>
+        <ScrollTop target="parent" :threshold="0"/>
+      </ScrollPanel>
+      <InputBox :anchor="bottomAnchor"/>
+    </div>
+  `;
+}
+
+function ChatBubble(props: ChatMessage) {
+  return vine`
+    <Panel class="m-2">
+      <template #header>
+        <i :class="sender"/>
+      </template>
+      <p v-html="marked.parse(message)" class="whitespace-pre-wrap [&_code]:whitespace-pre-wrap"/>
+      <template #footer>
+        <div class="flex justify-end">
+          <span>{{timestamp.toLocaleString()}}</span>
+        </div>
+      </template>
+    </Panel>
+  `;
+}
+
+function EmptyPlaceholder() {
+  return vine`
+    <div class="h-full flex justify-center items-center">
+      <MessagesSquare class="w-[50vw] h-[50vw]" stroke-width="1.2"/>
+    </div>
+  `;
+}
+
+function InputBox(props: { anchor: HTMLElement }) {
+  const question = ref("");
+  const isQuestionEmpty = computed(() => question.value.length === 0);
+  const { loading } = useChatStore();
   const isSubmitDisabled = computed(
     () => isQuestionEmpty.value || loading.value,
   );
+  const { history } = useChatStore();
+  const connection = useConnectionStore();
+
   function handleSubmit() {
     if (isSubmitDisabled.value) {
       return;
@@ -76,39 +123,26 @@ export default function ChatWindow() {
       content: question.value,
     });
     question.value = "";
-    scrollToBottom("instant");
+    useScroll(props.anchor, "instant", "end");
   }
-  const messagePosition = {
-    [ChatMessageSender.Robot]: "justify-self-start",
-    [ChatMessageSender.User]: "justify-self-end",
-  };
+
   function handleClear() {
     question.value = "";
   }
-  // TODO quote selection
+
+  const buttonIcon = computed(() =>
+    loading.value ? "pi pi-spinner pi-spin" : "pi pi-send",
+  );
+
   return vine`
-    <div class="flex-1 flex flex-col overflow-hidden">
-      <div v-if="isContextEmpty" class="h-full flex justify-center items-center">
-        <MessagesSquare class="w-[50vw] h-[50vw]" stroke-width="1.2"/>
-      </div>
-      <ScrollPanel v-else style="width: 100%; height:100%;" class="overflow-hidden">
-        <ChatBubble
-          v-for="{sender,message,timestamp} in history"
-          :class="'w-3/4'+' '+messagePosition[sender]"
-          :sender="sender" :message="message" :timestamp="timestamp"
-        />
-        <div ref="bottomAnchor"/>
-        <ScrollTop target="parent" :threshold="0"/>
-      </ScrollPanel>
-      <div class="w-full flex my-2">
-        <IconField class="w-full ml-2">
-          <InputText type="text" v-model="question" @keydown.enter="handleSubmit" class="w-full"/>
-          <InputIcon v-if="!isQuestionEmpty">
-            <i class="pi pi-times-circle hover:cursor-pointer hover:text-red-300" @click="handleClear"/>
-          </InputIcon>
-        </IconField>
-        <Button :icon="buttonIcon" class="flex-none mr-2" @click="handleSubmit" :disabled="isSubmitDisabled"/>
-      </div>
+    <div class="w-full flex my-2">
+      <IconField class="w-full ml-2">
+        <InputText type="text" v-model="question" @keydown.enter="handleSubmit" class="w-full"/>
+        <InputIcon v-if="!isQuestionEmpty">
+          <i class="pi pi-times-circle hover:cursor-pointer hover:text-red-300" @click="handleClear"/>
+        </InputIcon>
+      </IconField>
+      <Button :icon="buttonIcon" class="flex-none mr-2" @click="handleSubmit" :disabled="isSubmitDisabled"/>
     </div>
   `;
 }
