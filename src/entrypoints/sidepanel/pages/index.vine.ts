@@ -6,10 +6,20 @@ import { SignalMessage } from "@/common/types";
 import { useConnectionStore } from "../stores/connection";
 
 export default function Page() {
+  return vine`
+    <div class="h-screen flex flex-col">
+      <TopBar/>
+      <ChatWindow/>
+    </div>
+  `;
+}
+
+function TopBar() {
   const router = useRouter();
   function enterFavoritesPage() {
     router.push("/sidepanel/favorites");
   }
+
   const { history, isHistoryEmpty } = useChatStore();
   const connection = useConnectionStore();
   function handleClear() {
@@ -20,24 +30,22 @@ export default function Page() {
       content: "clear",
     });
   }
+
   return vine`
-    <div class="h-screen flex flex-col">
-      <Toolbar>
-        <template #start>
-          <i
-            class="pi pi-star hover:cursor-pointer hover:text-primary-300"
-            @click="enterFavoritesPage"
-          />
-        </template>
-        <template #end>
-          <i
-            v-if="!isHistoryEmpty"
-            class="pi pi-trash hover:cursor-pointer hover:text-red-400"
-            @click="handleClear"
-          />
-        </template>
-      </Toolbar>
-      <ChatWindow/>
-    </div>
+    <Toolbar>
+      <template #start>
+        <i
+          class="pi pi-star hover:cursor-pointer hover:text-primary-300"
+          @click="enterFavoritesPage"
+        />
+      </template>
+      <template #end>
+        <i
+          v-if="!isHistoryEmpty"
+          class="pi pi-trash hover:cursor-pointer hover:text-red-400"
+          @click="handleClear"
+        />
+      </template>
+    </Toolbar>
   `;
 }
