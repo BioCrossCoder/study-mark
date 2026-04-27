@@ -1,81 +1,46 @@
 import {
+  Dialog,
   IconField,
   InputIcon,
   InputText,
   ScrollPanel,
-  Toolbar,
   Tree,
-  TreeSelectionKeys,
+  TreeSelect,
 } from "primevue";
 import { TreeNode } from "primevue/treenode";
 import { useFavoritesDataSync } from "@/composables/useFavoritesDataSync";
 import { useRouter } from "vue-router";
 import { useSelectionStore } from "@/entrypoints/sidepanel/stores/selections";
+import { useQuery } from "@tanstack/vue-query";
+import { useFavorites } from "../stores/favorites";
 
 export default function FavoritesTree() {
-  const keyword = ref("");
-  const isKeywordEmpty = computed(() => keyword.value.length === 0);
-  const data = ref(new Array<globalThis.Browser.bookmarks.BookmarkTreeNode>());
-  const refresh = async (value: string) => {
-    data.value = await loadFavorites(value);
-  };
-  onMounted(async () => {
-    await refresh(keyword.value);
-  });
-  watch(keyword, async (value) => {
-    await refresh(value);
-  });
-  useFavoritesDataSync(
-    () => refresh(keyword.value),
-    () => {
-      selectedKeys.value = undefined;
-    },
+  const container = ref(document.createElement("div"));
+  const searchBox = ref({ keyword: "", height: 0 });
+  const scrollPanelStyle = computed(
+    () =>
+      `width:100%; height:${container.value.offsetHeight - searchBox.value.height}px`,
   );
-  const nodes = computed(() => showFavorites(data.value));
+  const { data, refetch, tree } = useFavorites(searchBox);
   const selectedKeys = useSelectionStore().value;
-  const router = useRouter();
-  function enterChatPage() {
-    router.push("/sidepanel");
+  useFavoritesDataSync(refetch, () => {
+    selectedKeys.value = undefined;
+  });
+
+  const dialog = ref({ open: () => {} });
+  function handleEdit(event: PointerEvent) {
+    event.stopPropagation();
+    dialog.value.open();
   }
-  function handleClear() {
-    keyword.value = "";
-  }
+
   return vine`
-    <div class="h-screen flex flex-col overflow-hidden">
-      <Toolbar>
-        <template #start>
-          <i 
-            class="pi pi-comments hover:cursor-pointer hover:text-primary-300"
-            @click="enterChatPage"
-          />
-        </template>
-        <template #center>
-          <i
-            class="pi pi-external-link mx-2 hover:cursor-pointer hover:text-primary-300 "
-            @click="()=>handleOpen(data,selectedKeys)"
-          />
-          <i
-            class="pi pi-folder-plus mx-2 hover:cursor-pointer hover:text-primary-300 "
-            @click="handleAddFolder"
-          />
-          <i
-            class="pi pi-trash mx-2 hover:cursor-pointer hover:text-red-400 "
-            @click="()=>handleDelete(data,selectedKeys)"
-          />
-        </template>
-      </Toolbar>
-      <IconField class="m-2">
-        <InputIcon class="pi pi-search"/>
-        <InputText v-model="keyword" placeholder="Search" class="w-full"/>
-        <InputIcon v-if="!isKeywordEmpty">
-          <i class="pi pi-times-circle hover:cursor-pointer hover:text-red-300" @click="handleClear"/>
-        </InputIcon>
-      </IconField>
-      <ScrollPanel style="width: 100%; height: 100%">
+    <div class="flex flex-col overflow-hidden" ref="container">
+      <SearchBox ref="searchBox"/>
+      <ScrollPanel :style="scrollPanelStyle">
         <Tree
           v-model:selectionKeys="selectedKeys"
-          class="w-full h-full"
-          :value="nodes"
+          class="w-full h-full bg-transparent!"
+          :value="tree"
           selectionMode="checkbox"
         >
           <template #default="{node}">
@@ -83,8 +48,9 @@ export default function FavoritesTree() {
               <div>{{node.label}}</div>
               <i
                 class="pi pi-pen-to-square mx-2 hover:text-primary-300"
-                @click="(event:PointerEvent)=>handleEdit(event,node)"
+                @click="handleEdit"
               />
+              <EditDialog ref="dialog" :id="node.key"/>
             </div>
           </template>
         </Tree>
@@ -93,83 +59,61 @@ export default function FavoritesTree() {
   `;
 }
 
-function handleOpen(
-  value: globalThis.Browser.bookmarks.BookmarkTreeNode[],
-  selectionKeys?: TreeSelectionKeys,
-) {
-  function dfs(nodes: globalThis.Browser.bookmarks.BookmarkTreeNode[]) {
-    if (!selectionKeys) {
-      return;
-    }
-    nodes.forEach((node) => {
-      if (!selectionKeys[node.id]) {
-        return;
-      }
-      if (node.url) {
-        browser.tabs.create({ url: node.url });
-      }
-      dfs(node.children ?? []);
-    });
+function SearchBox() {
+  const keyword = ref("");
+  const isKeywordEmpty = computed(() => keyword.value.length === 0);
+  function handleClear() {
+    keyword.value = "";
   }
-  dfs(value);
+
+  const container = ref(document.createElement("div"));
+  const height = computed(() => container.value.offsetHeight);
+
+  vineExpose({
+    keyword,
+    height,
+  });
+
+  return vine`
+    <div ref="container">
+      <IconField class="m-2">
+        <InputIcon class="pi pi-search"/>
+        <InputText v-model="keyword" placeholder="Search" class="w-full"/>
+        <InputIcon v-if="!isKeywordEmpty">
+          <i class="pi pi-times-circle hover:cursor-pointer hover:text-red-300" @click="handleClear"/>
+        </InputIcon>
+      </IconField>
+    </div>
+  `;
 }
 
-function handleAddFolder() {
-  // TODO open creating folder dialog
-}
+function EditDialog(props: { id: string }) {
+  const edit = ref(false);
+  const position = ref();
+  const { tree } = useFavorites(ref({ keyword: "" }));
 
-type TreeSelection = {
-  checked: boolean;
-  partialChecked: boolean;
-};
-
-function handleDelete(
-  value: globalThis.Browser.bookmarks.BookmarkTreeNode[],
-  selectionKeys?: TreeSelectionKeys,
-) {
-  // TODO add confirm
-  function dfs(nodes: globalThis.Browser.bookmarks.BookmarkTreeNode[]) {
-    if (!selectionKeys) {
-      return;
-    }
-    nodes.forEach((node) => {
-      const item: TreeSelection | undefined = selectionKeys[node.id];
-      if (!item) {
-        return;
-      }
-      if (item.checked) {
-        if (node.url) {
-          browser.bookmarks.remove(node.id);
-        } else {
-          browser.bookmarks.removeTree(node.id);
-        }
-        return;
-      }
-      if (item.partialChecked) {
-        dfs(node.children!);
-      }
-    });
+  function open() {
+    edit.value = true;
   }
-  dfs(value);
-}
+  vineExpose({
+    open,
+  });
 
-function handleEdit(event: PointerEvent, node: TreeNode) {
-  event.stopPropagation();
-  // TODO open editing bookmark dialog
-}
-
-async function loadFavorites(keyword: string) {
-  return keyword
-    ? await browser.bookmarks.search(keyword)
-    : ((await browser.bookmarks.getTree()).at(0)?.children ?? []);
-}
-
-function showFavorites(
-  data: globalThis.Browser.bookmarks.BookmarkTreeNode[],
-): TreeNode[] {
-  return data.map((node) => ({
-    key: node.id,
-    label: node.title,
-    children: showFavorites(node.children ?? []),
-  }));
+  return vine`
+    <Dialog v-model:visible="edit" modal header="Edit Bookmark">
+      <div class="flex items-center gap-4 mb-2">
+        <label for="name" class="font-semibold w-8">Name</label>
+        <InputText id="name" autocomplete="off" class="flex-auto h-10"/>
+      </div>
+      <div class="flex items-center gap-4 mb-4">
+        <label for="folder" class="font-semibold w-8">Folder</label>
+        <TreeSelect
+          v-model="position"
+          :options="tree"
+          placeholder="Select a folder"
+          class="flex-auto h-10"
+        />
+      </div>
+    </Dialog>
+  `;
 }
