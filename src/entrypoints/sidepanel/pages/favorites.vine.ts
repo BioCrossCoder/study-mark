@@ -19,7 +19,7 @@ function TopBar() {
     router.push("/sidepanel");
   }
 
-  const { data } = useFavorites(ref({ keyword: "" }));
+  const { data } = useFavorites(ref({ keyword: "", excludeIds: [] }));
   const selectedKeys = useSelectionStore().value;
 
   return vine`

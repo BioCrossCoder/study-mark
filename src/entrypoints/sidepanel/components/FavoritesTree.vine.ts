@@ -1,4 +1,5 @@
 import {
+  Button,
   Dialog,
   IconField,
   InputIcon,
@@ -7,16 +8,17 @@ import {
   Tree,
   TreeSelect,
 } from "primevue";
-import { TreeNode } from "primevue/treenode";
 import { useFavoritesDataSync } from "@/composables/useFavoritesDataSync";
 import { useRouter } from "vue-router";
 import { useSelectionStore } from "@/entrypoints/sidepanel/stores/selections";
 import { useQuery } from "@tanstack/vue-query";
 import { useFavorites } from "../stores/favorites";
+import { TreeNode } from "primevue/treenode";
+import { useBookmark } from "../stores/bookmark";
 
 export default function FavoritesTree() {
   const container = ref(document.createElement("div"));
-  const searchBox = ref({ keyword: "", height: 0 });
+  const searchBox = ref({ keyword: "", height: 0, excludeIds: [] });
   const scrollPanelStyle = computed(
     () =>
       `width:100%; height:${container.value.offsetHeight - searchBox.value.height}px`,
@@ -27,10 +29,15 @@ export default function FavoritesTree() {
     selectedKeys.value = undefined;
   });
 
-  const dialog = ref({ open: () => {} });
-  function handleEdit(event: PointerEvent) {
+  function canEdit(node: TreeNode) {
+    const { parentId } =
+      node.data as globalThis.Browser.bookmarks.BookmarkTreeNode;
+    return parentId != "0";
+  }
+  const dialog = ref({ open: (_: TreeNode) => {} });
+  function handleEdit(event: PointerEvent, node: TreeNode) {
     event.stopPropagation();
-    dialog.value.open();
+    dialog.value.open(node);
   }
 
   return vine`
@@ -47,13 +54,14 @@ export default function FavoritesTree() {
             <div class="flex justify-between">
               <div>{{node.label}}</div>
               <i
+                v-if="canEdit(node)"
                 class="pi pi-pen-to-square mx-2 hover:text-primary-300"
-                @click="handleEdit"
+                @click="(event:PointerEvent)=>handleEdit(event,node)"
               />
-              <EditDialog ref="dialog" :id="node.key"/>
             </div>
           </template>
         </Tree>
+        <EditDialog ref="dialog"/>
       </ScrollPanel>
     </div>
   `;
@@ -87,32 +95,72 @@ function SearchBox() {
   `;
 }
 
-function EditDialog(props: { id: string }) {
-  const edit = ref(false);
-  const position = ref();
-  const { tree } = useFavorites(ref({ keyword: "" }));
-
-  function open() {
-    edit.value = true;
+function EditDialog() {
+  const show = ref(false);
+  const target = ref({} as TreeNode);
+  function open(node: TreeNode) {
+    show.value = true;
+    target.value = node;
+  }
+  function close() {
+    show.value = false;
   }
   vineExpose({
     open,
   });
 
+  const { data } = useBookmark(target);
+  const name = ref("");
+  const position = ref({} as Record<string, true>);
+  const parentId = computed(() => Object.keys(position.value)[0]);
+  watch([data], ([value]) => {
+    name.value = value?.title ?? "";
+    position.value = value ? { [value.parentId as string]: true } : {};
+  });
+  const dataSource = computed(() => ({
+    keyword: "",
+    excludeIds: data.value ? [data.value.id] : [],
+  }));
+  const { folders } = useFavorites(dataSource);
+
+  function handleSubmit() {
+    browser.bookmarks.update(target.value.key, {
+      title: name.value,
+    });
+    browser.bookmarks.move(target.value.key, {
+      parentId: parentId.value,
+    });
+    close();
+  }
+
   return vine`
-    <Dialog v-model:visible="edit" modal header="Edit Bookmark">
-      <div class="flex items-center gap-4 mb-2">
-        <label for="name" class="font-semibold w-8">Name</label>
-        <InputText id="name" autocomplete="off" class="flex-auto h-10"/>
+    <Dialog v-model:visible="show" modal header="Edit Bookmark" class=" w-6/7">
+      <div class="flex flex-col mb-4">
+        <label for="name" class="text-lg">Name</label>
+        <InputText
+          id="name"
+          v-model="name"
+          autocomplete="off"
+          class="flex-auto h-10 text-base!"
+        />
       </div>
-      <div class="flex items-center gap-4 mb-4">
-        <label for="folder" class="font-semibold w-8">Folder</label>
+      <div class="flex flex-col mb-4">
+        <label for="folder" class="text-lg">Folder</label>
         <TreeSelect
+          inputId="folder"
           v-model="position"
-          :options="tree"
+          :options="folders"
           placeholder="Select a folder"
           class="flex-auto h-10"
-        />
+        >
+          <template #value="{value}">
+            <p class="text-base">{{value[0].label}}</p>
+          </template>
+        </TreeSelect>
+      </div>
+      <div class="flex justify-end gap-2">
+        <Button label="Cancel" severity="secondary" @click="close"/>
+        <Button label="Save" @click="handleSubmit"/>
       </div>
     </Dialog>
   `;
