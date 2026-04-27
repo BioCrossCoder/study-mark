@@ -20,6 +20,7 @@
     "@tailwindcss/vite": "^4.2.4",
     "@tanstack/ai": "^0.13.0",
     "@tanstack/ai-anthropic": "^0.8.1",
+    "@tanstack/vue-query": "^5.100.5",
     "marked": "^18.0.2",
     "primeicons": "^7.0.0",
     "primevue": "^4.5.5",

@@ -23,6 +23,9 @@ importers:
       '@tanstack/ai-anthropic':
         specifier: ^0.8.1
         version: 0.8.1(@tanstack/ai@0.13.0)(zod@4.3.6)
+      '@tanstack/vue-query':
+        specifier: ^5.100.5
+        version: 5.100.5(vue@3.5.32(typescript@5.9.3))
       marked:
         specifier: ^18.0.2
         version: 18.0.2
@@ -853,6 +856,22 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
+  '@tanstack/match-sorter-utils@8.19.4':
+    resolution: {integrity: sha512-Wo1iKt2b9OT7d+YGhvEPD3DXvPv2etTusIMhMUoG7fbhmxcXCtIjJDEygy91Y2JFlwGyjqiBPRozme7UD8hoqg==}
+    engines: {node: '>=12'}
+
+  '@tanstack/query-core@5.100.5':
+    resolution: {integrity: sha512-t20KrhKkf0HXzqQkPbJ5erhFesup68BAbwFgYmTrS7bxMF7O5MdmL8jUkik4thsG7Hg00fblz30h6yF1d5TxGg==}
+
+  '@tanstack/vue-query@5.100.5':
+    resolution: {integrity: sha512-+V7R5JhyavCzUE8BCs9fhtir7QgIL6FAeu1kpqUSpmH2Z9Vo9CLtVougVdqUp+Xx7cAC0NBQ7nGzlsYdHTUUdQ==}
+    peerDependencies:
+      '@vue/composition-api': ^1.1.2
+      vue: ^2.6.0 || ^3.3.0
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+
   '@ts-morph/common@0.27.0':
     resolution: {integrity: sha512-Wf29UqxWDpc+i61k3oIOzcUfQt79PIT9y/MWfAGlrkjg6lBC1hwDECLXPVJAhWjiGbfBCxZd65F/LIZF3+jeJQ==}
 
@@ -880,50 +899,50 @@ packages:
   '@types/node@25.6.0':
     resolution: {integrity: sha512-+qIYRKdNYJwY3vRCZMdJbPLJAtGjQBudzZzdzwQYkEPQd+PJGixUL5QfvCLDaULoLv+RhT3LDkwEfKaAkgSmNQ==}
 
-  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260424.2':
-    resolution: {integrity: sha512-Fk0pY4FaPpmYfmLG0xowocG3Q+Bo78WkTg33+OjctzkM1w8hp/d6jo3m4ROCFYBiH2EwY5RZ7cECX6el5FVPtA==}
+  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260426.1':
+    resolution: {integrity: sha512-HzGvERpIFO7p6pMljPN1fIOHqAv2oMeVIqYLSt27TKILkTRpe7fANW3R2OAM+/A+pLtYNNXGDbKl/wR+DHz9KA==}
     engines: {node: '>=16.20.0'}
     cpu: [arm64]
     os: [darwin]
 
-  '@typescript/native-preview-darwin-x64@7.0.0-dev.20260424.2':
-    resolution: {integrity: sha512-/37FW1CUcUT51oGIrWyC92+pstzW+v4l9alSyLSxY62crJt+GiOff7wIau34xrfEx7VE2gRpUGs9ld25Pr9VHw==}
+  '@typescript/native-preview-darwin-x64@7.0.0-dev.20260426.1':
+    resolution: {integrity: sha512-aE17wCPNQ09K4jV7TQYYRYF/Q/6nFS9jLpbyTYHtS+i+0yV1Rrs4VsqboisS1R/iSWsq3m1Yhh3uS4x3/9KUkg==}
     engines: {node: '>=16.20.0'}
     cpu: [x64]
     os: [darwin]
 
-  '@typescript/native-preview-linux-arm64@7.0.0-dev.20260424.2':
-    resolution: {integrity: sha512-/XoSdXZEkz5TGimjAXhC7SwbqceOgaGsFP6ChmcDPsdsSZUtFP+7jh+WnDWyACcGu289VTNmfKDoG9szFiZ9TQ==}
+  '@typescript/native-preview-linux-arm64@7.0.0-dev.20260426.1':
+    resolution: {integrity: sha512-6OfhODChD1N6FX+ITzA1lny3WX6uew/Nw9kN7uWhymXlM3/vE0qtaAfsMpgdHdCbTPgcdpGaNFhbcMieju9Vdg==}
     engines: {node: '>=16.20.0'}
     cpu: [arm64]
     os: [linux]
 
-  '@typescript/native-preview-linux-arm@7.0.0-dev.20260424.2':
-    resolution: {integrity: sha512-xNBtutVYBKeA1iJan2La98hEt5e8HxSlLMicIaq7XwWb6lok7a3qppnk7gFrTMx3JBgFXlN/7cafV4Nxwq8DJQ==}
+  '@typescript/native-preview-linux-arm@7.0.0-dev.20260426.1':
+    resolution: {integrity: sha512-/XJRC8B6JeOOb2/iek/BrzW4r5Nut+fkucG7ntEOQn63IRTsfP+AfJdJodG1VIwXOleNlFgG4RtYTUsvcbDJhg==}
     engines: {node: '>=16.20.0'}
     cpu: [arm]
     os: [linux]
 
-  '@typescript/native-preview-linux-x64@7.0.0-dev.20260424.2':
-    resolution: {integrity: sha512-pJzvZ6uaKCBNphipzAgxvNAbmj++EIAO1CpUZsUoL9GVpGZ0whyvFXIDqdlUnKcOdQMiDYB+HlKc6ahiH0OKkg==}
+  '@typescript/native-preview-linux-x64@7.0.0-dev.20260426.1':
+    resolution: {integrity: sha512-KPDpjmLo/4xY8ugfMGFm7Ona/1igPzZveLt/C0rb6/jNPYuShumRfKYnItGDRXBlmecJY/04lrqkWqQjhtSSPg==}
     engines: {node: '>=16.20.0'}
     cpu: [x64]
     os: [linux]
 
-  '@typescript/native-preview-win32-arm64@7.0.0-dev.20260424.2':
-    resolution: {integrity: sha512-4aHRCE1w77xQOn013E5/gkYkNQwNYvZfE8YR5cTeHimFZ5MB2kmoB0iLABaKXYbsMNPXixN5xeu8HdabrAuhag==}
+  '@typescript/native-preview-win32-arm64@7.0.0-dev.20260426.1':
+    resolution: {integrity: sha512-I7ThiopxuNKX/iAcwgMwsm6L32GOwmwLOyPwQmXjh5c3VD2acq3FYyZRDJVk0aUUy1w6bTbODlo5ZHoPnlZtvw==}
     engines: {node: '>=16.20.0'}
     cpu: [arm64]
     os: [win32]
 
-  '@typescript/native-preview-win32-x64@7.0.0-dev.20260424.2':
-    resolution: {integrity: sha512-mVQXT6/F8d51zKOBmaWdUcT0z3WZ6kAlv/tGLTixM6HKlc8lIqzVnTuTqv7ixKcle18M+r0dn951uL6Bhb3Fjg==}
+  '@typescript/native-preview-win32-x64@7.0.0-dev.20260426.1':
+    resolution: {integrity: sha512-4624MJq72vN4H1msiWVBqAIyerJRi5Ni/U6eeE1A1Opqg4c4QoalYQQ+5h5RIuaZ6rY+9kvUn+SjsvbZwyLbjQ==}
     engines: {node: '>=16.20.0'}
     cpu: [x64]
     os: [win32]
 
-  '@typescript/native-preview@7.0.0-dev.20260424.2':
-    resolution: {integrity: sha512-NhxfO8WQHrv7SAqOVaY1NBKkWO5dKFoakvqBKiUDBiY27atZfoDkMQpOXyoPfuW3COVxHZKzm0vAZuiA7kF73g==}
+  '@typescript/native-preview@7.0.0-dev.20260426.1':
+    resolution: {integrity: sha512-zE7B6TIG4XDYr4Your5E2Bxm1vD2YiPyD8OFG4nD5Odt/uN6gO0Y+T4TIbtGUBmOftMRqEV2Jw1ZC4ka0my1yw==}
     engines: {node: '>=16.20.0'}
     hasBin: true
 
@@ -1005,6 +1024,9 @@ packages:
 
   '@vue/compiler-vue2@2.7.16':
     resolution: {integrity: sha512-qYC3Psj9S/mfu9uVi5WvNZIzq+xnXMhOwbTFKKDD7b1lhpnn71jXSFdTQ+WsIEk0ONCd7VV2IMm7ONl6tbQ86A==}
+
+  '@vue/devtools-api@6.6.4':
+    resolution: {integrity: sha512-sGhTPMuXqZ1rVOk32RylztWkfXTRhuS7vgAKv0zjqk8gbsHkJ7xfFf+jbySxt7tWObEJwyKaHMikV/WGDiQm8g==}
 
   '@vue/devtools-api@7.7.9':
     resolution: {integrity: sha512-kIE8wvwlcZ6TJTbNeU2HQNtaxLx3a84aotTITUuL/4bzfPxzajGBOoqjMhwZJ8L9qFYDU/lAYMEEm11dnZOD6g==}
@@ -2356,6 +2378,9 @@ packages:
     resolution: {integrity: sha512-+crtS5QjFRqFCoQmvGduwYWEBng99ZvmFvF+cUJkGYF1L1BfU8C6Zp9T7f5vPAwyLkUExpvK+ANVZmGU49qi4Q==}
     engines: {node: '>=12'}
 
+  remove-accents@0.5.0:
+    resolution: {integrity: sha512-8g3/Otx1eJaVD12e31UbJj1YzdtVvzH85HV7t+9MJYk/u3XmkOUJ5Ys9wQrf9PCPK8+xn4ymzqYCiZl6QWKn+A==}
+
   request-light@0.7.0:
     resolution: {integrity: sha512-lMbBMrDoxgsyO+yB3sDcrDuX85yYt7sS8BfQd11jtbW/z5ZWgLZRcEGLsLoYw7I0WSUGQBs8CC8ScIxkTX1+6Q==}
 
@@ -2848,6 +2873,17 @@ packages:
 
   vscode-uri@3.1.0:
     resolution: {integrity: sha512-/BpdSx+yCQGnCvecbyXdxHDkuk55/G3xwnC0GqY4gmQ3j+A+g8kzzgB4Nk/SINjqn6+waqw3EgbVF2QKExkRxQ==}
+
+  vue-demi@0.14.10:
+    resolution: {integrity: sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg==}
+    engines: {node: '>=12'}
+    hasBin: true
+    peerDependencies:
+      '@vue/composition-api': ^1.0.0-rc.1
+      vue: ^3.0.0-0 || ^2.6.0
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
 
   vue-router@5.0.4:
     resolution: {integrity: sha512-lCqDLCI2+fKVRl2OzXuzdSWmxXFLQRxQbmHugnRpTMyYiT+hNaycV0faqG5FBHDXoYrZ6MQcX87BvbY8mQ20Bg==}
@@ -3631,6 +3667,20 @@ snapshots:
 
   '@tanstack/devtools-event-client@0.4.3': {}
 
+  '@tanstack/match-sorter-utils@8.19.4':
+    dependencies:
+      remove-accents: 0.5.0
+
+  '@tanstack/query-core@5.100.5': {}
+
+  '@tanstack/vue-query@5.100.5(vue@3.5.32(typescript@5.9.3))':
+    dependencies:
+      '@tanstack/match-sorter-utils': 8.19.4
+      '@tanstack/query-core': 5.100.5
+      '@vue/devtools-api': 6.6.4
+      vue: 3.5.32(typescript@5.9.3)
+      vue-demi: 0.14.10(vue@3.5.32(typescript@5.9.3))
+
   '@ts-morph/common@0.27.0':
     dependencies:
       fast-glob: 3.3.3
@@ -3661,36 +3711,36 @@ snapshots:
     dependencies:
       undici-types: 7.19.2
 
-  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260424.2':
+  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260426.1':
     optional: true
 
-  '@typescript/native-preview-darwin-x64@7.0.0-dev.20260424.2':
+  '@typescript/native-preview-darwin-x64@7.0.0-dev.20260426.1':
     optional: true
 
-  '@typescript/native-preview-linux-arm64@7.0.0-dev.20260424.2':
+  '@typescript/native-preview-linux-arm64@7.0.0-dev.20260426.1':
     optional: true
 
-  '@typescript/native-preview-linux-arm@7.0.0-dev.20260424.2':
+  '@typescript/native-preview-linux-arm@7.0.0-dev.20260426.1':
     optional: true
 
-  '@typescript/native-preview-linux-x64@7.0.0-dev.20260424.2':
+  '@typescript/native-preview-linux-x64@7.0.0-dev.20260426.1':
     optional: true
 
-  '@typescript/native-preview-win32-arm64@7.0.0-dev.20260424.2':
+  '@typescript/native-preview-win32-arm64@7.0.0-dev.20260426.1':
     optional: true
 
-  '@typescript/native-preview-win32-x64@7.0.0-dev.20260424.2':
+  '@typescript/native-preview-win32-x64@7.0.0-dev.20260426.1':
     optional: true
 
-  '@typescript/native-preview@7.0.0-dev.20260424.2':
+  '@typescript/native-preview@7.0.0-dev.20260426.1':
     optionalDependencies:
-      '@typescript/native-preview-darwin-arm64': 7.0.0-dev.20260424.2
-      '@typescript/native-preview-darwin-x64': 7.0.0-dev.20260424.2
-      '@typescript/native-preview-linux-arm': 7.0.0-dev.20260424.2
-      '@typescript/native-preview-linux-arm64': 7.0.0-dev.20260424.2
-      '@typescript/native-preview-linux-x64': 7.0.0-dev.20260424.2
-      '@typescript/native-preview-win32-arm64': 7.0.0-dev.20260424.2
-      '@typescript/native-preview-win32-x64': 7.0.0-dev.20260424.2
+      '@typescript/native-preview-darwin-arm64': 7.0.0-dev.20260426.1
+      '@typescript/native-preview-darwin-x64': 7.0.0-dev.20260426.1
+      '@typescript/native-preview-linux-arm': 7.0.0-dev.20260426.1
+      '@typescript/native-preview-linux-arm64': 7.0.0-dev.20260426.1
+      '@typescript/native-preview-linux-x64': 7.0.0-dev.20260426.1
+      '@typescript/native-preview-win32-arm64': 7.0.0-dev.20260426.1
+      '@typescript/native-preview-win32-x64': 7.0.0-dev.20260426.1
 
   '@umami/node@0.4.0': {}
 
@@ -3835,6 +3885,8 @@ snapshots:
     dependencies:
       de-indent: 1.0.2
       he: 1.2.0
+
+  '@vue/devtools-api@6.6.4': {}
 
   '@vue/devtools-api@7.7.9':
     dependencies:
@@ -5218,6 +5270,8 @@ snapshots:
     dependencies:
       rc: 1.2.8
 
+  remove-accents@0.5.0: {}
+
   request-light@0.7.0: {}
 
   require-directory@2.1.1: {}
@@ -5673,6 +5727,10 @@ snapshots:
 
   vscode-uri@3.1.0: {}
 
+  vue-demi@0.14.10(vue@3.5.32(typescript@5.9.3)):
+    dependencies:
+      vue: 3.5.32(typescript@5.9.3)
+
   vue-router@5.0.4(@vue/compiler-sfc@3.5.32)(pinia@3.0.4(typescript@5.9.3)(vue@3.5.32(typescript@5.9.3)))(vue@3.5.32(typescript@5.9.3)):
     dependencies:
       '@babel/generator': 7.29.1
@@ -5705,7 +5763,7 @@ snapshots:
 
   vue-vine-tsc@1.7.27(typescript@5.9.3):
     dependencies:
-      '@typescript/native-preview': 7.0.0-dev.20260424.2
+      '@typescript/native-preview': 7.0.0-dev.20260426.1
       '@volar/language-core': 2.4.20
       '@volar/typescript': 2.4.20
       '@vue-vine/language-service': 1.7.27(typescript@5.9.3)
