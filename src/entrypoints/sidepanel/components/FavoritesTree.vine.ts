@@ -61,8 +61,8 @@ export default function FavoritesTree() {
             </div>
           </template>
         </Tree>
-        <EditDialog ref="dialog"/>
       </ScrollPanel>
+      <EditDialog ref="dialog"/>
     </div>
   `;
 }
@@ -134,7 +134,7 @@ function EditDialog() {
   }
 
   return vine`
-    <Dialog v-model:visible="show" modal header="Edit Bookmark" class=" w-6/7">
+    <Dialog v-model:visible="show" modal header="Edit Bookmark" class=" w-6/7" append-to="self">
       <div class="flex flex-col mb-4">
         <label for="name" class="text-lg">Name</label>
         <InputText
@@ -151,12 +151,8 @@ function EditDialog() {
           v-model="position"
           :options="folders"
           placeholder="Select a folder"
-          class="flex-auto h-10"
-        >
-          <template #value="{value}">
-            <p class="text-base">{{value[0].label}}</p>
-          </template>
-        </TreeSelect>
+          class="flex-auto h-10 text-base!"
+        />
       </div>
       <div class="flex justify-end gap-2">
         <Button label="Cancel" severity="secondary" @click="close"/>
