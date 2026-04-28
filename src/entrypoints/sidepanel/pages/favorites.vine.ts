@@ -3,6 +3,7 @@ import { Toolbar, TreeSelectionKeys } from "primevue";
 import { useSelectionStore } from "../stores/selections";
 import { useRouter } from "vue-router";
 import { useFavorites } from "../stores/favorites";
+import CreateFolderDialog from "../components/CreateFolderDialog.vine";
 
 export default function Page() {
   return vine`
@@ -22,6 +23,11 @@ function TopBar() {
   const { data } = useFavorites(ref({ keyword: "", excludeIds: [] }));
   const selectedKeys = useSelectionStore().value;
 
+  const dialog = ref({ open: () => {} });
+  function handleCreateFolder() {
+    dialog.value.open();
+  }
+
   return vine`
     <Toolbar>
       <template #start>
@@ -37,8 +43,9 @@ function TopBar() {
         />
         <i
           class="pi pi-folder-plus mx-2 hover:cursor-pointer hover:text-primary-300 "
-          @click="handleAddFolder"
+          @click="handleCreateFolder"
         />
+        <CreateFolderDialog ref="dialog"/>
         <i
           class="pi pi-trash mx-2 hover:cursor-pointer hover:text-red-400 "
           @click="()=>handleDelete(data??[],selectedKeys)"
@@ -67,10 +74,6 @@ function handleOpen(
     });
   }
   dfs(value);
-}
-
-function handleAddFolder() {
-  // TODO open creating folder dialog
 }
 
 type TreeSelection = {

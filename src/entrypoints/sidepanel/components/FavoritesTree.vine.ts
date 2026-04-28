@@ -132,7 +132,7 @@ function EditDialog() {
   }
 
   return vine`
-    <Dialog v-model:visible="show" modal header="Edit Bookmark" class=" w-6/7" append-to="self">
+    <Dialog v-model:visible="show" modal header="Edit Bookmark" class="w-6/7" append-to="self">
       <div class="flex flex-col mb-4">
         <label for="name" class="text-lg">Name</label>
         <InputText
