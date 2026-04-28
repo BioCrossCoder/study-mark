@@ -1,0 +1,74 @@
+<root>
+  <name>Study Mark</name>
+  <item>
+    <title>component</title>
+    <prefix>component</prefix>
+    <description>Vine component</description>
+    <body scope="typescript"><![CDATA[
+      export default function /*${TM_FILENAME_BASE/\.vine//}*/(){
+        /*$1*/
+        return vine`/*$2*/`
+      }
+    ]]></body>
+    <include>**/*.vine.ts</include>
+  </item>
+  <item>
+    <title>view-state</title>
+    <prefix>store-view</prefix>
+    <description>State shared cross components</description>
+    <body scope="typescript"><![CDATA[
+      import {defineVibe} from 'vue-vine'
+
+      export const [use/*${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/}*/Store,init/*${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/}*/Store]=defineVibe('/*$TM_FILENAME_BASE*/',()=>{
+        /*$1*/
+        return {
+          /*$2*/
+        }
+      })
+    ]]></body>
+    <include>**/stores/*.ts</include>
+  </item>
+  <item>
+    <title>query-state</title>
+    <prefix>store-query</prefix>
+    <description>State from external system</description>
+    <body scope="typescript"><![CDATA[
+      import {useQuery} from '@tanstack/vue-query'
+
+      export function use/*${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/}*/Query(){
+        const query = useQuery({
+          queryKey: [/*$1*/],
+          queryFn: async()=>{
+            /*$2*/
+          }
+        })
+        /*$3*/
+        return /*$4*/
+      }
+    ]]></body>
+    <include>**/stores/*.ts</include>
+  </item>
+  <item>
+    <title>config-state</title>
+    <prefix>store-config</prefix>
+    <description>State using browser extension storage</description>
+    <body scope="typescript"><![CDATA[
+      export const /*${1:// Name}*/ = storage.defineItem</*${2:// Type}*/>('/*${4:// Storage}*/:/*${5:// Key}*/',{
+        fallback: /*${3:// Default Value}*/
+      });
+    ]]></body>
+    <include>src/stores/*.ts</include>
+  </item>
+  <item>
+    <title>page</title>
+    <prefix>page</prefix>
+    <description>Vine page component</description>
+    <body scope="typescript"><![CDATA[
+      export default function Page(){
+        /*$1*/
+        return vine`/*$2*/`
+      }
+    ]]></body>
+    <include>**/pages/**/*.vine.ts</include>
+  </item>
+</root>
