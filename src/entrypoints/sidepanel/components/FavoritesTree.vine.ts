@@ -55,7 +55,7 @@ export default function FavoritesTree() {
           v-model:selectionKeys="selectedKeys"
           class="w-full h-full bg-transparent!"
           :value="tree"
-          selectionMode="multiple"
+          selectionMode="checkbox"
         >
           <template #default="{node}">
             <div class="flex justify-between">
