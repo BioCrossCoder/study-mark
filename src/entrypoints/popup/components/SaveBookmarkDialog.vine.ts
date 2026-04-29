@@ -57,6 +57,7 @@ export default function SaveBookmarkDialog() {
           v-model="name"
           autocomplete="off"
           class="flex-auto text-base!"
+          autofocus
         />
       </div>
       <div class="flex items-center mb-4">

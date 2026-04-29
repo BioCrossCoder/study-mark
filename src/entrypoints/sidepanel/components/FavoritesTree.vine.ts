@@ -161,6 +161,7 @@ function EditDialog() {
           v-model="name"
           autocomplete="off"
           class="flex-auto h-10 text-base!"
+          autofocus
         />
       </div>
       <div class="flex flex-col mb-4">
