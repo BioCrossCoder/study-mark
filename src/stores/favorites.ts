@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/vue-query";
 import { TreeNode } from "primevue/treenode";
 
-export function useFavorites(
+export function useFavoritesQuery(
   dataSource: Ref<{ keyword: string; excludeIds: string[] }>,
   callback: () => void = () => {},
   onRemoved: (id: string) => void = () => {},

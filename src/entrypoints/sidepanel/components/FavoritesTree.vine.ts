@@ -10,10 +10,9 @@ import {
 } from "primevue";
 import { useRouter } from "vue-router";
 import { useSelectionStore } from "@/entrypoints/sidepanel/stores/selections";
-import { useQuery } from "@tanstack/vue-query";
-import { useFavorites } from "../stores/favorites";
 import { TreeNode } from "primevue/treenode";
-import { useBookmark } from "../stores/bookmark";
+import { useBookmarkQuery } from "../stores/bookmark";
+import { useFavoritesQuery } from "@/stores/favorites";
 
 export default function FavoritesTree() {
   const container = ref(document.createElement("div"));
@@ -23,7 +22,7 @@ export default function FavoritesTree() {
       `width:100%; height:${container.value.offsetHeight - searchBox.value.height}px`,
   );
   const selectedKeys = useSelectionStore().value;
-  const { tree } = useFavorites(searchBox, () => {
+  const { tree } = useFavoritesQuery(searchBox, () => {
     selectedKeys.value = undefined;
   });
 
@@ -122,7 +121,7 @@ function EditDialog() {
     open,
   });
 
-  const { data } = useBookmark(target);
+  const { data } = useBookmarkQuery(target);
   const name = ref("");
   const position = ref({} as Record<string, true>);
   const parentId = computed(() => Object.keys(position.value)[0]);
@@ -134,7 +133,7 @@ function EditDialog() {
     keyword: "",
     excludeIds: data.value ? [data.value.id] : [],
   }));
-  const { folders } = useFavorites(dataSource);
+  const { folders } = useFavoritesQuery(dataSource);
 
   function handleSubmit() {
     browser.bookmarks.update(target.value.key, {
@@ -147,7 +146,14 @@ function EditDialog() {
   }
 
   return vine`
-    <Dialog v-model:visible="show" modal header="Edit Bookmark" class="w-6/7" append-to="self">
+    <Dialog
+      v-model:visible="show"
+      modal
+      header="Edit Bookmark"
+      class="w-6/7"
+      append-to="self"
+      :draggable="false"
+    >
       <div class="flex flex-col mb-4">
         <label for="name" class="text-lg">Name</label>
         <InputText
@@ -160,7 +166,7 @@ function EditDialog() {
       <div class="flex flex-col mb-4">
         <label for="folder" class="text-lg">Folder</label>
         <TreeSelect
-          inputId="folder"
+          input-id="folder"
           v-model="position"
           :options="folders"
           placeholder="Select a folder"

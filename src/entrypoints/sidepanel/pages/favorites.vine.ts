@@ -2,8 +2,8 @@ import FavoritesTree from "@/entrypoints/sidepanel/components/FavoritesTree.vine
 import { Toolbar, TreeSelectionKeys } from "primevue";
 import { useSelectionStore } from "../stores/selections";
 import { useRouter } from "vue-router";
-import { useFavorites } from "../stores/favorites";
 import CreateFolderDialog from "../components/CreateFolderDialog.vine";
+import { useFavoritesQuery } from '@/stores/favorites';
 
 export default function Page() {
   return vine`
@@ -20,7 +20,7 @@ function TopBar() {
     router.push("/sidepanel");
   }
 
-  const { data } = useFavorites(ref({ keyword: "", excludeIds: [] }));
+  const { data } = useFavoritesQuery(ref({ keyword: "", excludeIds: [] }));
   const selectedKeys = useSelectionStore().value;
 
   const dialog = ref({ open: () => {} });
