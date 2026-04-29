@@ -10,6 +10,8 @@ export default function CreateFolderDialog() {
   }
   function close() {
     show.value = false;
+    name.value = "";
+    position.value = {};
   }
   vineExpose({
     open,
