@@ -38,6 +38,16 @@ export default function FavoritesTree() {
     dialog.value.open(node);
   }
 
+  function handleDelete(event: PointerEvent, node: TreeNode) {
+    // TODO add confirm
+    event.stopPropagation();
+    function dfs(node: globalThis.Browser.bookmarks.BookmarkTreeNode) {
+      node.children?.forEach(dfs);
+      browser.bookmarks.remove(node.id);
+    }
+    dfs(node.data as globalThis.Browser.bookmarks.BookmarkTreeNode);
+  }
+
   return vine`
     <div class="flex flex-col overflow-hidden" ref="container">
       <SearchBox ref="searchBox"/>
@@ -46,15 +56,20 @@ export default function FavoritesTree() {
           v-model:selectionKeys="selectedKeys"
           class="w-full h-full bg-transparent!"
           :value="tree"
-          selectionMode="checkbox"
+          selectionMode="multiple"
         >
           <template #default="{node}">
             <div class="flex justify-between">
-              <div>{{node.label}}</div>
               <i
                 v-if="canEdit(node)"
                 class="pi pi-pen-to-square mx-2 hover:text-primary-300"
                 @click="(event:PointerEvent)=>handleEdit(event,node)"
+              />
+              <div>{{node.label}}</div>
+              <i
+                v-if="canEdit(node)"
+                class="pi pi-trash mx-2 hover:text-red-400"
+                @click="(event:PointerEvent)=>handleDelete(event,node)"
               />
             </div>
           </template>
