@@ -93,7 +93,7 @@ function ChatBubble(props: ChatMessage) {
 function EmptyPlaceholder() {
   return vine`
     <div class="h-full flex justify-center items-center">
-      <MessagesSquare class="w-[50vw] h-[50vw]" stroke-width="1.2"/>
+      <MessagesSquare class="w-[min(50vw,50vh)] h-[min(50vw,50vh)]" stroke-width="1.2"/>
     </div>
   `;
 }
