@@ -26,6 +26,7 @@ export default function CreateFolderDialog() {
   });
   const { folders } = useFavoritesQuery(dataSource);
 
+  const disabled = computed(() => name.value.length === 0 || !parentId.value);
   function handleSubmit() {
     browser.bookmarks.create({
       title: name.value,
@@ -64,7 +65,7 @@ export default function CreateFolderDialog() {
       </div>
       <div class="flex justify-end gap-2">
         <Button label="Cancel" severity="secondary" @click="close"/>
-        <Button label="Save" @click="handleSubmit"/>
+        <Button label="Save" @click="handleSubmit" :disabled="disabled"/>
       </div>
     </Dialog>
   `;
