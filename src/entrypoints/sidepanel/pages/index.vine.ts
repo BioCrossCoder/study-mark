@@ -32,7 +32,7 @@ function TopBar() {
   }
 
   return vine`
-    <Toolbar>
+    <Toolbar class="border-0!">
       <template #start>
         <i
           class="pi pi-star hover:cursor-pointer hover:text-primary-300"

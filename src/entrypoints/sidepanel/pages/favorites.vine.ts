@@ -3,7 +3,7 @@ import { Toolbar, TreeSelectionKeys } from "primevue";
 import { useSelectionStore } from "../stores/selections";
 import { useRouter } from "vue-router";
 import CreateFolderDialog from "../components/CreateFolderDialog.vine";
-import { useFavoritesQuery } from '@/stores/favorites';
+import { useFavoritesQuery } from "@/stores/favorites";
 
 export default function Page() {
   return vine`
@@ -29,7 +29,7 @@ function TopBar() {
   }
 
   return vine`
-    <Toolbar>
+    <Toolbar class="border-0!">
       <template #start>
         <i
           class="pi pi-comments hover:cursor-pointer hover:text-primary-300"
