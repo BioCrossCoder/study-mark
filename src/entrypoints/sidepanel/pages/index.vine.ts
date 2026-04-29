@@ -4,6 +4,7 @@ import ChatWindow from "../components/ChatWindow.vine";
 import { useChatStore } from "../stores/chat";
 import { SignalMessage } from "@/common/types";
 import { useConnectionStore } from "../stores/connection";
+import NavigationGroup from "../components/NavigationGroup.vine";
 
 export default function Page() {
   return vine`
@@ -15,11 +16,6 @@ export default function Page() {
 }
 
 function TopBar() {
-  const router = useRouter();
-  function enterFavoritesPage() {
-    router.push("/sidepanel/favorites");
-  }
-
   const { history, isHistoryEmpty } = useChatStore();
   const connection = useConnectionStore();
   function handleClear() {
@@ -34,10 +30,7 @@ function TopBar() {
   return vine`
     <Toolbar class="border-0!">
       <template #start>
-        <i
-          class="pi pi-star hover:cursor-pointer hover:text-primary-300"
-          @click="enterFavoritesPage"
-        />
+        <NavigationGroup/>
       </template>
       <template #end>
         <i

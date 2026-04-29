@@ -4,6 +4,7 @@ import { useSelectionStore } from "../stores/selections";
 import { useRouter } from "vue-router";
 import CreateFolderDialog from "../components/CreateFolderDialog.vine";
 import { useFavoritesQuery } from "@/stores/favorites";
+import NavigationGroup from "../components/NavigationGroup.vine";
 
 export default function Page() {
   return vine`
@@ -15,11 +16,6 @@ export default function Page() {
 }
 
 function TopBar() {
-  const router = useRouter();
-  function enterChatPage() {
-    router.push("/sidepanel");
-  }
-
   const { data } = useFavoritesQuery(ref({ keyword: "", excludeIds: [] }));
   const selectedKeys = useSelectionStore().value;
 
@@ -31,12 +27,9 @@ function TopBar() {
   return vine`
     <Toolbar class="border-0!">
       <template #start>
-        <i
-          class="pi pi-comments hover:cursor-pointer hover:text-primary-300"
-          @click="enterChatPage"
-        />
+        <NavigationGroup/>
       </template>
-      <template #center>
+      <template #end>
         <i
           class="pi pi-external-link mx-2 hover:cursor-pointer hover:text-primary-300 "
           @click="()=>handleOpen(data??[],selectedKeys)"

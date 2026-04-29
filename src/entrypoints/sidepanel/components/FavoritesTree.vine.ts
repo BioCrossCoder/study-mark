@@ -125,7 +125,7 @@ function EditDialog() {
   const name = ref("");
   const position = ref({} as Record<string, true>);
   const parentId = computed(() => Object.keys(position.value)[0]);
-  watch([data], ([value]) => {
+  watch(data, (value) => {
     name.value = value?.title ?? "";
     position.value = value ? { [value.parentId as string]: true } : {};
   });
