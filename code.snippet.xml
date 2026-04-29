@@ -35,15 +35,15 @@
     <body scope="typescript"><![CDATA[
       import {useQuery} from '@tanstack/vue-query'
 
-      export function use/*${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/}*/Query(){
+      export function use/*${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/}*/Query(/*$1*/){
         const query = useQuery({
-          queryKey: [/*$1*/],
+          queryKey: [/*$2*/],
           queryFn: async()=>{
-            /*$2*/
+            /*$3*/
           }
         })
-        /*$3*/
-        return /*$4*/
+        /*$4*/
+        return /*$5*/
       }
     ]]></body>
     <include>**/stores/*.ts</include>
