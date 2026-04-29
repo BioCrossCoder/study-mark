@@ -6,8 +6,9 @@ export default function SaveBookmarkDialog() {
     window.close();
   }
 
-  const name = ref("");
   const url = ref("");
+  const bookmark = ref<globalThis.Browser.bookmarks.BookmarkTreeNode>();
+  const name = ref("");
   const position = ref({} as Record<string, true>);
   const parentId = computed(() => Object.keys(position.value)[0]);
   const dataSource = ref({
@@ -22,17 +23,40 @@ export default function SaveBookmarkDialog() {
         currentWindow: true,
       })
     )[0];
-    name.value = tab.title ?? "";
     url.value = tab.url ?? "";
-    position.value = { [folders.value[0].key]: true };
+    bookmark.value = (
+      await browser.bookmarks.search({
+        url: url.value,
+      })
+    ).at(0);
+    name.value = bookmark?.value?.title ?? tab.title ?? "";
+    position.value = {
+      [bookmark?.value?.parentId ?? folders.value[0].key]: true,
+    };
   });
 
+  const title = computed(
+    () => `${bookmark.value ? "Edit" : "Create"} Bookmark`,
+  );
+  function handleDelete() {
+    browser.bookmarks.remove(bookmark.value?.id!);
+    close();
+  }
   function handleSubmit() {
-    browser.bookmarks.create({
-      title: name.value,
-      url: url.value,
-      parentId: parentId.value,
-    });
+    if (bookmark.value) {
+      browser.bookmarks.update(bookmark.value.id, {
+        title: name.value,
+      });
+      browser.bookmarks.move(bookmark.value.id, {
+        parentId: parentId.value,
+      });
+    } else {
+      browser.bookmarks.create({
+        title: name.value,
+        url: url.value,
+        parentId: parentId.value,
+      });
+    }
     close();
   }
 
@@ -40,7 +64,7 @@ export default function SaveBookmarkDialog() {
     <Panel class="w-100">
       <template #header>
         <div class="w-full flex justify-between items-center">
-          <p class="font-semibold text-xl">Create Bookmark</p>
+          <p class="font-semibold text-xl">{{title}}</p>
           <Button
             icon="pi pi-times"
             severity="secondary"
@@ -70,7 +94,7 @@ export default function SaveBookmarkDialog() {
         />
       </div>
       <div class="flex justify-end gap-2">
-        <Button label="Cancel" severity="secondary" @click="close"/>
+        <Button v-if="bookmark" label="Delete" severity="secondary" @click="handleDelete"/>
         <Button label="Save" @click="handleSubmit"/>
       </div>
     </Panel>
