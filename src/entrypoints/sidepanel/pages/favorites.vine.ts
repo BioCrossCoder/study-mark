@@ -46,10 +46,6 @@ function TopBar() {
           @click="handleCreateFolder"
         />
         <CreateFolderDialog ref="dialog"/>
-        <i
-          class="pi pi-trash mx-2 hover:cursor-pointer hover:text-red-400 "
-          @click="()=>handleDelete(data??[],selectedKeys)"
-        />
       </template>
     </Toolbar>
   `;
@@ -71,41 +67,6 @@ function handleOpen(
         browser.tabs.create({ url: node.url });
       }
       dfs(node.children ?? []);
-    });
-  }
-  dfs(value);
-}
-
-type TreeSelection = {
-  checked: boolean;
-  partialChecked: boolean;
-};
-
-function handleDelete(
-  value: globalThis.Browser.bookmarks.BookmarkTreeNode[],
-  selectionKeys?: TreeSelectionKeys,
-) {
-  // TODO add confirm
-  function dfs(nodes: globalThis.Browser.bookmarks.BookmarkTreeNode[]) {
-    if (!selectionKeys) {
-      return;
-    }
-    nodes.forEach((node) => {
-      const item: TreeSelection | undefined = selectionKeys[node.id];
-      if (!item) {
-        return;
-      }
-      if (item.checked) {
-        if (node.url) {
-          browser.bookmarks.remove(node.id);
-        } else {
-          browser.bookmarks.removeTree(node.id);
-        }
-        return;
-      }
-      if (item.partialChecked) {
-        dfs(node.children!);
-      }
     });
   }
   dfs(value);
