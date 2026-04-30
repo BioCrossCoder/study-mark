@@ -10,7 +10,7 @@ import {
 } from "primevue";
 import { useTasksMutation, useTasksQuery } from "@/stores/tasks";
 import { isTask, Target, Task } from "@/common/types";
-import { PlanType } from "@/common/enums";
+import { PlanType, statusIcon } from "@/common/enums";
 
 export default function TaskData() {
   const tab = ref(PlanType.Task);
@@ -78,14 +78,16 @@ function TaskList(props: { data: Task[] }) {
       <Card v-for="task in data" :key="task.id" class="border mb-5 mx-3">
         <template #title>
           <div class="flex justify-between items-center">
-            <p>{{task.title}}</p>
+            <div class="flex items-center justify-between">
+              <p>{{task.title}}</p>
+              <i :class="statusIcon[task.state]+' px-2'"/>
+            </div>
             <i
               class="pi pi-trash hover:cursor-pointer hover:text-red-400"
               @click="()=>handleDelete(task.id)"
             />
           </div>
         </template>
-        <template #subtitle>{{task.state}}</template>
         <template #content>
           {{task.description}}
         </template>
@@ -109,14 +111,16 @@ function TargetList(props: { data: Target[] }) {
       <Card v-for="target in data" :key="target.id" class="border mb-5 mx-3">
         <template #title>
           <div class="flex justify-between items-center">
-            <p>{{target.title}}</p>
+            <div class="flex items-center justify-between">
+              <p>{{target.title}}</p>
+              <i :class="statusIcon[target.state]+' px-2'"/>
+            </div>
             <i
               class="pi pi-trash hover:cursor-pointer hover:text-red-400"
               @click="()=>handleDelete(target.id)"
             />
           </div>
         </template>
-        <template #subtitle>{{target.state}}</template>
         <template #content>{{target.description}}</template>
       </Card>
     </ScrollPanel>
