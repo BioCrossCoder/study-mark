@@ -73,6 +73,10 @@ function TaskList(props: { data: Task[] }) {
     remove(id);
   }
 
+  function handleOpenLink(url: string) {
+    browser.tabs.create({ url });
+  }
+
   return vine`
     <ScrollPanel style="width:100%; height:100%">
       <Card v-for="task in data" :key="task.id" class="border mb-5 mx-3">
@@ -92,8 +96,22 @@ function TaskList(props: { data: Task[] }) {
           {{task.description}}
         </template>
         <template #footer>
-          <InputText :model-value="task.source" disabled/>
-          <InputText :model-value="task.position" disabled/>
+          <div class="flex justify-between">
+            <div
+              class="flex items-center hover:cursor-pointer hover:text-primary-300"
+              @click="()=>handleOpenLink(task.source)"
+            >
+              <i class="pi pi-link"/>
+              <p class="p-2">Source</p>
+            </div>
+            <div
+              class="flex items-center hover:cursor-pointer hover:text-primary-300"
+              @click="()=>handleOpenLink(task.position)"
+            >
+              <i class="pi pi-link"/>
+              <p class="p-2">Position</p>
+            </div>
+          </div>
         </template>
       </Card>
     </ScrollPanel>
