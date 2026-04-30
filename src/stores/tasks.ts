@@ -39,7 +39,7 @@ export function useTasksMutation() {
   async function newId(): Promise<Result<string, Error>> {
     const data = await taskData.getValue();
     const id = crypto.randomUUID();
-    return id in data ? err(new Error("Duplicated ID")) : ok("id");
+    return id in data ? err(new Error("Duplicated ID")) : ok(id);
   }
   return { ...mutation, save, remove, newId };
 }

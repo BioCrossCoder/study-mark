@@ -27,7 +27,7 @@ export type Task = {
   state: ExecStatus;
   description: string;
   source: string;
-  bookmark: string;
+  position: string;
 };
 
 export type Target = {

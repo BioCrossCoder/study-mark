@@ -12,3 +12,8 @@ export const enum ExecStatus {
   Doing,
   Done,
 }
+
+export const enum PlanType {
+  Task,
+  Target,
+}

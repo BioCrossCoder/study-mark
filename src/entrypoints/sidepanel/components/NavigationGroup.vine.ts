@@ -14,6 +14,9 @@ export default function NavigationGroup() {
   const option = computed({
     get: () => route.name,
     set: (value) => {
+      if (!value) {
+        return;
+      }
       if (route.name !== value) {
         router.push(value);
       }
