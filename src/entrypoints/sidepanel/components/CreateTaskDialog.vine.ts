@@ -17,13 +17,11 @@ export default function CreateTaskDialog() {
     title.value = "";
     description.value = "";
     source.value = "";
-    position.value = "";
   }
 
   const title = ref("");
   const description = ref("");
   const source = ref("");
-  const position = ref("");
 
   const { newId, save } = useTasksMutation();
   const { showError } = useNotice();
@@ -39,7 +37,7 @@ export default function CreateTaskDialog() {
       state: ExecStatus.Todo,
       description: description.value,
       source: source.value,
-      position: position.value,
+      position: source.value,
     };
     const { success, data, error } = taskSchema.safeParse(form);
     if (success) {
@@ -83,15 +81,6 @@ export default function CreateTaskDialog() {
         <InputText
           id="source"
           v-model="source"
-          autocomplete="off"
-          class="flex-auto h-10 text-base!"
-        />
-      </div>
-      <div class="flex flex-col mb-4">
-        <label for="position" class="text-lg">Position</label>
-        <InputText
-          id="position"
-          v-model="position"
           autocomplete="off"
           class="flex-auto h-10 text-base!"
         />
