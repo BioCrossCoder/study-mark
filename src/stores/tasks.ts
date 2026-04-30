@@ -29,12 +29,12 @@ export function useTasksMutation() {
   async function save(item: Task | Target) {
     const data = await taskData.getValue();
     data[item.id] = item;
-    await taskData.setValue(data);
+    mutation.mutate(data);
   }
   async function remove(item: Task | Target) {
     const data = await taskData.getValue();
     delete data[item.id];
-    await taskData.setValue(data);
+    mutation.mutate(data);
   }
   async function newId(): Promise<Result<string, Error>> {
     const data = await taskData.getValue();
