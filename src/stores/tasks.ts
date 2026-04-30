@@ -31,9 +31,9 @@ export function useTasksMutation() {
     data[item.id] = item;
     mutation.mutate(data);
   }
-  async function remove(item: Task | Target) {
+  async function remove(id: string) {
     const data = await taskData.getValue();
-    delete data[item.id];
+    delete data[id];
     mutation.mutate(data);
   }
   async function newId(): Promise<Result<string, Error>> {

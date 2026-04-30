@@ -8,7 +8,7 @@ import {
   TabPanels,
   Tabs,
 } from "primevue";
-import { useTasksQuery } from "@/stores/tasks";
+import { useTasksMutation, useTasksQuery } from "@/stores/tasks";
 import { isTask, Target, Task } from "@/common/types";
 import { PlanType } from "@/common/enums";
 
@@ -68,10 +68,23 @@ export default function TaskData() {
 }
 
 function TaskList(props: { data: Task[] }) {
+  const { remove } = useTasksMutation();
+  function handleDelete(id: string) {
+    remove(id);
+  }
+
   return vine`
     <ScrollPanel style="width:100%; height:100%">
-      <Card v-for="task in data" :key="task.id">
-        <template #title>{{task.title}}</template>
+      <Card v-for="task in data" :key="task.id" class="border mb-5 mx-3">
+        <template #title>
+          <div class="flex justify-between items-center">
+            <p>{{task.title}}</p>
+            <i
+              class="pi pi-trash hover:cursor-pointer hover:text-red-400"
+              @click="()=>handleDelete(task.id)"
+            />
+          </div>
+        </template>
         <template #subtitle>{{task.state}}</template>
         <template #content>
           {{task.description}}
@@ -86,10 +99,23 @@ function TaskList(props: { data: Task[] }) {
 }
 
 function TargetList(props: { data: Target[] }) {
+  const { remove } = useTasksMutation();
+  function handleDelete(id: string) {
+    remove(id);
+  }
+
   return vine`
     <ScrollPanel style="width:100%; height:100%">
-      <Card v-for="target in data" :key="target.id">
-        <template #title>{{target.title}}</template>
+      <Card v-for="target in data" :key="target.id" class="border mb-5 mx-3">
+        <template #title>
+          <div class="flex justify-between items-center">
+            <p>{{target.title}}</p>
+            <i
+              class="pi pi-trash hover:cursor-pointer hover:text-red-400"
+              @click="()=>handleDelete(target.id)"
+            />
+          </div>
+        </template>
         <template #subtitle>{{target.state}}</template>
         <template #content>{{target.description}}</template>
       </Card>
