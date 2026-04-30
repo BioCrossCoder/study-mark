@@ -1,7 +1,7 @@
 import { useTasksMutation } from "@/stores/tasks";
-import { ExecStatus } from "@/common/enums";
+import { ExecStatus, PlanType } from "@/common/enums";
 import { Button, Dialog, InputText } from "primevue";
-import { taskSchema } from "@/common/types";
+import { Task, taskSchema } from "@/common/types";
 import { useNotice } from "@/composables/useNotice";
 
 export default function CreateTaskDialog() {
@@ -28,11 +28,12 @@ export default function CreateTaskDialog() {
   async function handleSubmit() {
     const id = await newId();
     if (id.isErr()) {
-      // TODO
+      showError("Generate Target ID Failed", id.error);
       return;
     }
-    const form = {
+    const form: Task = {
       id: id.value,
+      type: PlanType.Task,
       title: title.value,
       state: ExecStatus.Todo,
       description: description.value,

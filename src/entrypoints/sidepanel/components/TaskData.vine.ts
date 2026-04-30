@@ -9,8 +9,10 @@ import {
   Tabs,
 } from "primevue";
 import { useTasksMutation, useTasksQuery } from "@/stores/tasks";
-import { isTask, Target, Task } from "@/common/types";
+import { Target, Task } from "@/common/types";
 import { PlanType, statusIcon } from "@/common/enums";
+import UpdateTaskDialog from "./UpdateTaskDialog.vine";
+import UpdateTargetDialog from "./UpdateTargetDialog.vine";
 
 export default function TaskData() {
   const tab = ref(PlanType.Task);
@@ -23,7 +25,14 @@ export default function TaskData() {
     const tasks = new Array<Task>();
     const targets = new Array<Target>();
     Object.values(data.value ?? {}).forEach((item) => {
-      (isTask(item) ? tasks : targets).push(item);
+      switch (item.type) {
+        case PlanType.Task:
+          tasks.push(item);
+          break;
+        case PlanType.Target:
+          targets.push(item);
+          break;
+      }
     });
     return { tasks, targets };
   });
@@ -73,40 +82,51 @@ function TaskList(props: { data: Task[] }) {
     remove(id);
   }
 
+  const dialog = ref({ open: (_: string) => {} });
+  function handleUpdate(id: string) {
+    dialog.value.open(id);
+  }
+
   function handleOpenLink(url: string) {
     browser.tabs.create({ url });
   }
 
   return vine`
     <ScrollPanel style="width:100%; height:100%">
-      <Card v-for="task in data" :key="task.id" class="border mb-5 mx-3">
+      <Card v-for="item in data" :key="item.id" class="border mb-5 mx-3">
         <template #title>
           <div class="flex justify-between items-center">
             <div class="flex items-center justify-between">
-              <p>{{task.title}}</p>
-              <i :class="statusIcon[task.state]+' px-2'"/>
+              <p>{{item.title}}</p>
+              <i :class="statusIcon[item.state]+' mx-2 text-primary-300'"/>
             </div>
-            <i
-              class="pi pi-trash hover:cursor-pointer hover:text-red-400"
-              @click="()=>handleDelete(task.id)"
-            />
+            <div class="flex justify-between items-center">
+              <i
+                class="pi pi-pen-to-square hover:cursor-pointer hover:text-primary-300 mr-4"
+                @click="()=>handleUpdate(item.id)"
+              />
+              <i
+                class="pi pi-trash hover:cursor-pointer hover:text-red-400"
+                @click="()=>handleDelete(item.id)"
+              />
+            </div>
           </div>
         </template>
         <template #content>
-          {{task.description}}
+          {{item.description}}
         </template>
         <template #footer>
           <div class="flex justify-between">
             <div
               class="flex items-center hover:cursor-pointer hover:text-primary-300"
-              @click="()=>handleOpenLink(task.source)"
+              @click="()=>handleOpenLink(item.source)"
             >
               <i class="pi pi-link"/>
               <p class="p-2">Source</p>
             </div>
             <div
               class="flex items-center hover:cursor-pointer hover:text-primary-300"
-              @click="()=>handleOpenLink(task.position)"
+              @click="()=>handleOpenLink(item.position)"
             >
               <i class="pi pi-link"/>
               <p class="p-2">Position</p>
@@ -115,6 +135,7 @@ function TaskList(props: { data: Task[] }) {
         </template>
       </Card>
     </ScrollPanel>
+    <UpdateTaskDialog ref="dialog"/>
   `;
 }
 
@@ -124,23 +145,35 @@ function TargetList(props: { data: Target[] }) {
     remove(id);
   }
 
+  const dialog = ref({ open: (_: string) => {} });
+  function handleUpdate(id: string) {
+    dialog.value.open(id);
+  }
+
   return vine`
     <ScrollPanel style="width:100%; height:100%">
-      <Card v-for="target in data" :key="target.id" class="border mb-5 mx-3">
+      <Card v-for="item in data" :key="item.id" class="border mb-5 mx-3">
         <template #title>
           <div class="flex justify-between items-center">
             <div class="flex items-center justify-between">
-              <p>{{target.title}}</p>
-              <i :class="statusIcon[target.state]+' px-2'"/>
+              <p>{{item.title}}</p>
+              <i :class="statusIcon[item.state]+' mx-2 text-primary-300'"/>
             </div>
-            <i
-              class="pi pi-trash hover:cursor-pointer hover:text-red-400"
-              @click="()=>handleDelete(target.id)"
-            />
+            <div class="flex justify-between items-center">
+              <i
+                class="pi pi-pen-to-square hover:cursor-pointer hover:text-primary-300 mr-4"
+                @click="()=>handleUpdate(item.id)"
+              />
+              <i
+                class="pi pi-trash hover:cursor-pointer hover:text-red-400"
+                @click="()=>handleDelete(item.id)"
+              />
+            </div>
           </div>
         </template>
-        <template #content>{{target.description}}</template>
+        <template #content>{{item.description}}</template>
       </Card>
     </ScrollPanel>
+    <UpdateTargetDialog ref="dialog"/>
   `;
 }

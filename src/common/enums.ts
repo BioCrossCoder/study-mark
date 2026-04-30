@@ -16,7 +16,7 @@ export enum ExecStatus {
 export const statusIcon = {
   [ExecStatus.Todo]: "pi pi-clock",
   [ExecStatus.Doing]: "pi pi-spinner",
-  [ExecStatus.Done]: "pi-check-circle",
+  [ExecStatus.Done]: "pi pi-check-circle",
 };
 
 export const enum PlanType {

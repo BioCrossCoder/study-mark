@@ -1,5 +1,5 @@
 import z from "zod";
-import { ChatMessageSender, ExecStatus } from "./enums";
+import { ChatMessageSender, ExecStatus, PlanType } from "./enums";
 
 export type ChatMessage = {
   sender: ChatMessageSender;
@@ -23,6 +23,7 @@ export type TextMessage = z.infer<typeof textMessageSchema>;
 
 export const taskSchema = z.object({
   id: z.string(),
+  type: z.literal(PlanType.Task),
   title: z.string().min(1),
   state: z.enum(ExecStatus),
   description: z.string(),
@@ -34,13 +35,10 @@ export type Task = z.infer<typeof taskSchema>;
 
 export const targetSchema = z.object({
   id: z.string(),
+  type: z.literal(PlanType.Target),
   title: z.string().min(1),
   state: z.enum(ExecStatus),
   description: z.string(),
 });
 
 export type Target = z.infer<typeof targetSchema>;
-
-export function isTask(item: Task | Target): item is Task {
-  return Object.hasOwn(item, "source");
-}
