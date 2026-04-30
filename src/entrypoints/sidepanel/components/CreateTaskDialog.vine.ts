@@ -1,6 +1,8 @@
 import { useTasksMutation } from "@/stores/tasks";
 import { ExecStatus } from "@/common/enums";
 import { Button, Dialog, InputText } from "primevue";
+import { taskSchema } from "@/common/types";
+import { useNotice } from "@/composables/useNotice";
 
 export default function CreateTaskDialog() {
   const show = ref(false);
@@ -24,20 +26,27 @@ export default function CreateTaskDialog() {
   const position = ref("");
 
   const { newId, save } = useTasksMutation();
+  const { showError } = useNotice();
   async function handleSubmit() {
     const id = await newId();
     if (id.isErr()) {
       // TODO
       return;
     }
-    save({
+    const form = {
       id: id.value,
       title: title.value,
       state: ExecStatus.Todo,
       description: description.value,
       source: source.value,
       position: position.value,
-    });
+    };
+    const { success, data, error } = taskSchema.safeParse(form);
+    if (success) {
+      save(data);
+    } else {
+      showError("Create Task Failed", error);
+    }
     close();
   }
 
