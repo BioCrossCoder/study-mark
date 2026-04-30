@@ -1,4 +1,4 @@
-import TaskList from "../components/TaskList.vine";
+import TaskData from "../components/TaskData.vine";
 import { ToggleSwitch, Toolbar } from "primevue";
 import NavigationGroup from "../components/NavigationGroup.vine";
 import CreateTaskDialog from "../components/CreateTaskDialog.vine";
@@ -11,7 +11,7 @@ export default function Page() {
   return vine`
     <div class="h-screen flex flex-col overflow-hidden">
       <TopBar :tab="list.tab"/>
-      <TaskList ref="list"/>
+      <TaskData ref="list"/>
     </div>
   `;
 }

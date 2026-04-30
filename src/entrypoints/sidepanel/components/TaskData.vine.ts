@@ -12,7 +12,7 @@ import { useTasksQuery } from "@/stores/tasks";
 import { isTask, Target, Task } from "@/common/types";
 import { PlanType } from "@/common/enums";
 
-export default function TaskList() {
+export default function TaskData() {
   const tab = ref(PlanType.Task);
   vineExpose({
     tab,
@@ -56,31 +56,43 @@ export default function TaskList() {
         </div>
         <TabPanels :style="panelStyle">
           <TabPanel :value="PlanType.Task">
-            <ScrollPanel style="width:100%; height:100%">
-              <Card v-for="task in records.tasks" :key="task.id">
-                <template #title>{{task.title}}</template>
-                <template #subtitle>{{task.state}}</template>
-                <template #content>
-                  {{task.description}}
-                </template>
-                <template #footer>
-                  <InputText :model-value="task.source" disabled/>
-                  <InputText :model-value="task.position" disabled/>
-                </template>
-              </Card>
-            </ScrollPanel>
+            <TaskList :data="records.tasks"/>
           </TabPanel>
           <TabPanel :value="PlanType.Target">
-            <ScrollPanel style="width:100%; height:100%">
-              <Card v-for="target in records.targets" :key="target.id">
-                <template #title>{{target.title}}</template>
-                <template #subtitle>{{target.state}}</template>
-                <template #content>{{target.description}}</template>
-              </Card>
-            </ScrollPanel>
+            <TargetList :data="records.targets"/>
           </TabPanel>
         </TabPanels>
       </Tabs>
     </div>
+  `;
+}
+
+function TaskList(props: { data: Task[] }) {
+  return vine`
+    <ScrollPanel style="width:100%; height:100%">
+      <Card v-for="task in data" :key="task.id">
+        <template #title>{{task.title}}</template>
+        <template #subtitle>{{task.state}}</template>
+        <template #content>
+          {{task.description}}
+        </template>
+        <template #footer>
+          <InputText :model-value="task.source" disabled/>
+          <InputText :model-value="task.position" disabled/>
+        </template>
+      </Card>
+    </ScrollPanel>
+  `;
+}
+
+function TargetList(props: { data: Target[] }) {
+  return vine`
+    <ScrollPanel style="width:100%; height:100%">
+      <Card v-for="target in data" :key="target.id">
+        <template #title>{{target.title}}</template>
+        <template #subtitle>{{target.state}}</template>
+        <template #content>{{target.description}}</template>
+      </Card>
+    </ScrollPanel>
   `;
 }
