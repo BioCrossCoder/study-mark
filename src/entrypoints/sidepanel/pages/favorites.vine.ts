@@ -35,7 +35,7 @@ function TopBar() {
           @click="()=>handleOpen(data??[],selectedKeys)"
         />
         <i
-          class="pi pi-folder-plus mx-2 hover:cursor-pointer hover:text-primary-300 "
+          class="pi pi-folder-plus ml-2 hover:cursor-pointer hover:text-primary-300 "
           @click="handleCreateFolder"
         />
         <CreateFolderDialog ref="dialog"/>

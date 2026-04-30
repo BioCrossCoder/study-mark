@@ -1,5 +1,5 @@
 import z from "zod";
-import { ChatMessageSender } from "./enums";
+import { ChatMessageSender, ExecStatus } from "./enums";
 
 export type ChatMessage = {
   sender: ChatMessageSender;
@@ -20,3 +20,23 @@ export const textMessageSchema = z.object({
 });
 
 export type TextMessage = z.infer<typeof textMessageSchema>;
+
+export type Task = {
+  id: string;
+  title: string;
+  state: ExecStatus;
+  description: string;
+  source: string;
+  bookmark: string;
+};
+
+export type Target = {
+  id: string;
+  title: string;
+  state: ExecStatus;
+  description: string;
+};
+
+export function isTask(item: Task | Target): item is Task {
+  return Object.hasOwn(item, "source");
+}

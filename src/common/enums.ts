@@ -6,3 +6,9 @@ export const enum ChatMessageSender {
   User = "pi pi-user",
   Robot = "pi pi-microchip-ai",
 }
+
+export const enum ExecStatus {
+  Todo,
+  Doing,
+  Done,
+}
