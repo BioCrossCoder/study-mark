@@ -2,7 +2,7 @@ import { Channel } from "@/common/enums";
 import { chat, StreamChunk } from "@tanstack/ai";
 import { createAnthropicChat } from "@tanstack/ai-anthropic";
 import { model, apiKey, baseURL } from "@/../env.json";
-import { chatContext } from "@/stores/chat";
+import { chatContext } from "@/entrypoints/background/stores/chat";
 import {
   textMessageSchema,
   signalMessageSchema,
