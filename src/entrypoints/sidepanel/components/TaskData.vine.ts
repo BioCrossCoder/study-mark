@@ -55,10 +55,10 @@ export default function TaskData() {
           </TabList>
         </div>
         <TabPanels :style="panelStyle">
-          <TabPanel :value="PlanType.Task">
+          <TabPanel :value="PlanType.Task" class="h-full">
             <TaskList :data="records.tasks"/>
           </TabPanel>
-          <TabPanel :value="PlanType.Target">
+          <TabPanel :value="PlanType.Target" class="h-full">
             <TargetList :data="records.targets"/>
           </TabPanel>
         </TabPanels>
