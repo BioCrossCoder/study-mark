@@ -34,6 +34,8 @@ export default function TaskData() {
           break;
       }
     });
+    tasks.sort((a, b) => b.createAt - a.createAt);
+    targets.sort((a, b) => b.createAt - a.createAt);
     return { tasks, targets };
   });
 

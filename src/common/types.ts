@@ -29,6 +29,7 @@ export const taskSchema = z.object({
   description: z.string(),
   source: z.url(),
   position: z.url(),
+  createAt: z.number(),
 });
 
 export type Task = z.infer<typeof taskSchema>;
@@ -39,6 +40,7 @@ export const targetSchema = z.object({
   title: z.string().min(1),
   state: z.enum(ExecStatus),
   description: z.string(),
+  createAt: z.number(),
 });
 
 export type Target = z.infer<typeof targetSchema>;

@@ -39,6 +39,7 @@ export default function CreateTaskDialog() {
       description: description.value,
       source: source.value,
       position: source.value,
+      createAt: Date.now(),
     };
     const { success, data, error } = taskSchema.safeParse(form);
     if (success) {

@@ -35,6 +35,7 @@ export default function CreateTargetDialog() {
       title: title.value,
       state: ExecStatus.Todo,
       description: description.value,
+      createAt: Date.now(),
     };
     const { success, data, error } = targetSchema.safeParse(form);
     if (success) {
