@@ -34,7 +34,7 @@ export function useTasksMutation() {
       .map((item) => ({
         [item.title]: item.id,
       }))
-      .reduce((a, b) => ({ ...a, ...b }));
+      .reduce((a, b) => ({ ...a, ...b }), {});
     return ![item.id, undefined].includes(titles[item.title]);
   }
 
