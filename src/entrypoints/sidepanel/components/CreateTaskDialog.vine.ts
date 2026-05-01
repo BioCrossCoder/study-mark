@@ -42,10 +42,14 @@ export default function CreateTaskDialog() {
       createAt: Date.now(),
     };
     const { success, data, error } = taskSchema.safeParse(form);
-    if (success) {
-      save(data);
-    } else {
+    if (!success) {
       showError("Create Task Failed", error);
+      return;
+    }
+    const result = await save(data);
+    if (result.isErr()) {
+      showError("Create Task Failed", result.error);
+      return;
     }
     close();
   }

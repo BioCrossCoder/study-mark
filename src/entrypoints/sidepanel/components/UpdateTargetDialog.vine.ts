@@ -32,7 +32,7 @@ export default function UpdateTargetDialog() {
 
   const { save } = useTasksMutation();
   const { showError } = useNotice();
-  function handleSubmit() {
+  async function handleSubmit() {
     const form = {
       ...data.value,
       title: title.value,
@@ -40,10 +40,14 @@ export default function UpdateTargetDialog() {
       description: description.value,
     };
     const { success, data: newData, error } = targetSchema.safeParse(form);
-    if (success) {
-      save(newData);
-    } else {
+    if (!success) {
       showError("Update Target Failed", error);
+      return;
+    }
+    const result = await save(newData);
+    if (result.isErr()) {
+      showError("Update Target Failed", result.error);
+      return;
     }
     close();
   }

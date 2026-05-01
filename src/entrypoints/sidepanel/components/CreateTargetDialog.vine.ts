@@ -38,10 +38,14 @@ export default function CreateTargetDialog() {
       createAt: Date.now(),
     };
     const { success, data, error } = targetSchema.safeParse(form);
-    if (success) {
-      save(data);
-    } else {
+    if (!success) {
       showError("Create Target Failed", error);
+      return;
+    }
+    const result = await save(data);
+    if (result.isErr()) {
+      showError("Create Target Failed", result.error);
+      return;
     }
     close();
   }

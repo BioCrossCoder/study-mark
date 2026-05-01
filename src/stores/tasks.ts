@@ -26,10 +26,26 @@ export function useTasksMutation() {
       queryClient.invalidateQueries({ queryKey: [cacheKey] });
     },
   });
-  async function save(item: Task | Target) {
+  function isNameConflict(
+    item: Task | Target,
+    data: Record<string, Task | Target>,
+  ) {
+    const titles = Object.values(data)
+      .map((item) => ({
+        [item.title]: item.id,
+      }))
+      .reduce((a, b) => ({ ...a, ...b }));
+    return ![item.id, undefined].includes(titles[item.title]);
+  }
+
+  async function save(item: Task | Target): Promise<Result<void, Error>> {
     const data = await taskData.getValue();
+    if (isNameConflict(item, data)) {
+      return err(new Error("Duplicated Title"));
+    }
     data[item.id] = item;
     mutation.mutate(data);
+    return ok();
   }
   async function remove(id: string) {
     const data = await taskData.getValue();

@@ -44,7 +44,7 @@ export default function UpdateTaskDialog() {
 
   const { save } = useTasksMutation();
   const { showError } = useNotice();
-  function handleSubmit() {
+  async function handleSubmit() {
     const form = {
       ...data.value,
       title: title.value,
@@ -53,10 +53,14 @@ export default function UpdateTaskDialog() {
       position: position.value,
     };
     const { success, data: newData, error } = taskSchema.safeParse(form);
-    if (success) {
-      save(newData);
-    } else {
-      showError("Create Task Failed", error);
+    if (!success) {
+      showError("Update Task Failed", error);
+      return;
+    }
+    const result = await save(newData);
+    if (result.isErr()) {
+      showError("Update Task Failed", result.error);
+      return;
     }
     close();
   }
