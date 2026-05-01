@@ -29,8 +29,18 @@ export default function UpdateTaskDialog() {
     title.value = value?.title ?? "";
     state.value = value?.state ?? ExecStatus.Todo;
     description.value = value?.description ?? "";
-    position.value = value?.position ?? "";
+    position.value = (value?.position ?? "").trim();
   });
+
+  async function handleSetPosition() {
+    const tab = (
+      await browser.tabs.query({
+        active: true,
+        currentWindow: true,
+      })
+    )[0];
+    position.value = tab.url ?? position.value;
+  }
 
   const { save } = useTasksMutation();
   const { showError } = useNotice();
@@ -104,7 +114,13 @@ export default function UpdateTaskDialog() {
         />
       </div>
       <div class="flex flex-col mb-4">
-        <label for="position" class="text-lg">Position</label>
+        <label for="position" class="text-lg flex items-center">
+          <p>Position</p>
+          <i
+            class="pi pi-bookmark hover:cursor-pointer hover:text-primary-300 mx-2"
+            @click="handleSetPosition"
+          />
+        </label>
         <InputText
           id="position"
           v-model="position"
