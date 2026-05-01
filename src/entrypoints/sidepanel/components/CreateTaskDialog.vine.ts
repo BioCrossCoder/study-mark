@@ -23,6 +23,16 @@ export default function CreateTaskDialog() {
   const description = ref("");
   const source = ref("");
 
+  async function handleSetPosition() {
+    const tab = (
+      await browser.tabs.query({
+        active: true,
+        currentWindow: true,
+      })
+    )[0];
+    source.value = tab.url ?? source.value;
+  }
+
   const { newId, save } = useTasksMutation();
   const { showError } = useNotice();
   async function handleSubmit() {
@@ -84,7 +94,13 @@ export default function CreateTaskDialog() {
         />
       </div>
       <div class="flex flex-col mb-4">
-        <label for="source" class="text-lg">Source</label>
+        <label for="source" class="text-lg flex items-center">
+          <p>Source</p>
+          <i
+            class="pi pi-bookmark hover:cursor-pointer hover:text-primary-300 mx-2"
+            @click="handleSetPosition"
+          />
+        </label>
         <InputText
           id="source"
           v-model="source"
