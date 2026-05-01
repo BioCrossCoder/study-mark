@@ -3,7 +3,7 @@ import { targetSchema } from "@/common/types";
 import { useTargetQuery } from "../stores/target";
 import { ExecStatus, statusIcon } from "@/common/enums";
 import { useNotice } from "@/composables/useNotice";
-import { Button, Dialog, InputText, RadioButton } from "primevue";
+import { Button, Dialog, InputText, RadioButton, Textarea } from "primevue";
 
 export default function UpdateTargetDialog() {
   const show = ref(false);
@@ -82,11 +82,12 @@ export default function UpdateTargetDialog() {
       </div>
       <div class="flex flex-col mb-4">
         <label for="description" class="text-lg">Description</label>
-        <InputText
+        <Textarea
           id="description"
           v-model="description"
           autocomplete="off"
-          class="flex-auto h-10 text-base!"
+          rows="3"
+          class="flex-auto text-base!"
         />
       </div>
       <div class="flex justify-end gap-2">

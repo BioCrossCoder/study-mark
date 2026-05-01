@@ -1,6 +1,6 @@
 import { useTasksMutation } from "@/stores/tasks";
 import { ExecStatus, PlanType } from "@/common/enums";
-import { Button, Dialog, InputText } from "primevue";
+import { Button, Dialog, InputText, Textarea } from "primevue";
 import { Task, taskSchema } from "@/common/types";
 import { useNotice } from "@/composables/useNotice";
 
@@ -70,11 +70,12 @@ export default function CreateTaskDialog() {
       </div>
       <div class="flex flex-col mb-4">
         <label for="description" class="text-lg">Description</label>
-        <InputText
+        <Textarea
           id="description"
           v-model="description"
           autocomplete="off"
-          class="flex-auto h-10 text-base!"
+          rows="3"
+          class="flex-auto text-base!"
         />
       </div>
       <div class="flex flex-col mb-4">
