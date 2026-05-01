@@ -77,6 +77,7 @@ export default function UpdateTaskDialog() {
             <div class="flex items-center gap-1">
               <RadioButton v-model="state" :value="Number(item)"/>
               <label class="flex items-center">
+                <p class="px-1">{{ExecStatus[Number(item)]}}</p>
                 <i :class="statusIcon[Number(item) as ExecStatus]"/>
               </label>
             </div>
