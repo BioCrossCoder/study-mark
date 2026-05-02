@@ -1,5 +1,5 @@
 import { Target, Task } from "@/common/types";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
+import { useMutation, useQuery } from "@tanstack/vue-query";
 import { ok, err, Result } from "neverthrow";
 
 const taskData = storage.defineItem<Record<string, Task | Target>>(
@@ -9,23 +9,22 @@ const taskData = storage.defineItem<Record<string, Task | Target>>(
   },
 );
 
-const cacheKey = "tasks";
-
 export function useTasksQuery() {
   return useQuery({
-    queryKey: [cacheKey],
+    queryKey: ["tasks"],
     queryFn: taskData.getValue,
   });
 }
 
 export function useTasksMutation() {
-  const queryClient = useQueryClient();
+  const { refetch } = useTasksQuery();
   const mutation = useMutation({
     mutationFn: taskData.setValue,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [cacheKey] });
+    onSuccess() {
+      refetch();
     },
   });
+
   function isNameConflict(
     item: Task | Target,
     data: Record<string, Task | Target>,
@@ -47,15 +46,18 @@ export function useTasksMutation() {
     mutation.mutate(data);
     return ok();
   }
+
   async function remove(id: string) {
     const data = await taskData.getValue();
     delete data[id];
     mutation.mutate(data);
   }
+
   async function newId(): Promise<Result<string, Error>> {
     const data = await taskData.getValue();
     const id = crypto.randomUUID();
     return id in data ? err(new Error("Duplicated ID")) : ok(id);
   }
+
   return { ...mutation, save, remove, newId };
 }

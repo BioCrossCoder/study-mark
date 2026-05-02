@@ -1,5 +1,6 @@
 import {
   Card,
+  Chip,
   InputText,
   ScrollPanel,
   Tab,
@@ -13,6 +14,7 @@ import { Target, Task } from "@/common/types";
 import { PlanType, statusIcon } from "@/common/enums";
 import UpdateTaskDialog from "./UpdateTaskDialog.vine";
 import UpdateTargetDialog from "./UpdateTargetDialog.vine";
+import { useRelationsQuery } from "@/stores/relations";
 
 export default function TaskData() {
   const tab = ref(PlanType.Task);
@@ -93,6 +95,10 @@ function TaskList(props: { data: Task[] }) {
     browser.tabs.create({ url });
   }
 
+  const { mapping } = useRelationsQuery();
+  const { data: d } = useTasksQuery();
+  const relatedItems = computed(() => d.value ?? {});
+
   return vine`
     <ScrollPanel style="width:100%; height:100%">
       <Card v-for="item in data" :key="item.id" class="border mb-5 mx-3">
@@ -112,6 +118,11 @@ function TaskList(props: { data: Task[] }) {
                 @click="()=>handleDelete(item.id)"
               />
             </div>
+          </div>
+        </template>
+        <template #subtitle>
+          <div class="flex gap-2">
+            <Chip v-for="id in mapping[item.id]" :label="relatedItems[id].title"/>
           </div>
         </template>
         <template #content>
@@ -152,6 +163,10 @@ function TargetList(props: { data: Target[] }) {
     dialog.value.open(id);
   }
 
+  const { mapping } = useRelationsQuery();
+  const { data: d } = useTasksQuery();
+  const relatedItems = computed(() => d.value ?? {});
+
   return vine`
     <ScrollPanel style="width:100%; height:100%">
       <Card v-for="item in data" :key="item.id" class="border mb-5 mx-3">
@@ -171,6 +186,11 @@ function TargetList(props: { data: Target[] }) {
                 @click="()=>handleDelete(item.id)"
               />
             </div>
+          </div>
+        </template>
+        <template #subtitle>
+          <div class="flex gap-2">
+            <Chip v-for="id in mapping[item.id]" :label="relatedItems[id].title"/>
           </div>
         </template>
         <template #content>{{item.description}}</template>

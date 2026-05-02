@@ -1,8 +1,10 @@
 import { useTasksMutation } from "@/stores/tasks";
 import { ExecStatus, PlanType } from "@/common/enums";
-import { Button, Dialog, InputText, Textarea } from "primevue";
+import { Button, Dialog, InputText, MultiSelect, Textarea } from "primevue";
 import { Target, targetSchema } from "@/common/types";
 import { useNotice } from "@/composables/useNotice";
+import { useTaskOptionsQuery } from "../stores/task";
+import { useRelationsMutation } from "@/stores/relations";
 
 export default function CreateTargetDialog() {
   const show = ref(false);
@@ -21,7 +23,12 @@ export default function CreateTargetDialog() {
   const title = ref("");
   const description = ref("");
 
+  const tasks = ref(new Array<string>());
+  const { data } = useTaskOptionsQuery();
+  const options = computed(() => data.value ?? []);
+
   const { newId, save } = useTasksMutation();
+  const { add } = useRelationsMutation();
   const { showError } = useNotice();
   async function handleSubmit() {
     const id = await newId();
@@ -47,6 +54,7 @@ export default function CreateTargetDialog() {
       showError("Create Target Failed", result.error);
       return;
     }
+    add(tasks.value.map((taskId) => [id.value, taskId]));
     close();
   }
 
@@ -77,6 +85,21 @@ export default function CreateTargetDialog() {
           autocomplete="off"
           rows="3"
           class="flex-auto text-base!"
+        />
+      </div>
+      <div class="flex flex-col mb-8">
+        <label for="tasks" class="text-lg flex items-center">Tasks</label>
+        <MultiSelect
+          input-id="tasks"
+          v-model="tasks"
+          :options="options"
+          option-label="name"
+          option-value="code"
+          display="chip"
+          filter
+          placeholder="Select Tasks"
+          :max-selected-labels="3"
+          class="flex-auto h-10 text-base!"
         />
       </div>
       <div class="flex justify-end gap-2">

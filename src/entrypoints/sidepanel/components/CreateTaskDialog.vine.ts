@@ -1,8 +1,10 @@
 import { useTasksMutation } from "@/stores/tasks";
 import { ExecStatus, PlanType } from "@/common/enums";
-import { Button, Dialog, InputText, Textarea } from "primevue";
+import { Button, Dialog, InputText, MultiSelect, Textarea } from "primevue";
 import { Task, taskSchema } from "@/common/types";
 import { useNotice } from "@/composables/useNotice";
+import { useTargetOptionsQuery } from "../stores/target";
+import { useRelationsMutation } from "@/stores/relations";
 
 export default function CreateTaskDialog() {
   const show = ref(false);
@@ -21,9 +23,9 @@ export default function CreateTaskDialog() {
 
   const title = ref("");
   const description = ref("");
-  const source = ref("");
 
-  async function handleSetPosition() {
+  const source = ref("");
+  async function handleSetSource() {
     const tab = (
       await browser.tabs.query({
         active: true,
@@ -33,7 +35,12 @@ export default function CreateTaskDialog() {
     source.value = tab.url ?? source.value;
   }
 
+  const targets = ref(new Array<string>());
+  const { data } = useTargetOptionsQuery();
+  const options = computed(() => data.value ?? []);
+
   const { newId, save } = useTasksMutation();
+  const { add } = useRelationsMutation();
   const { showError } = useNotice();
   async function handleSubmit() {
     const id = await newId();
@@ -61,6 +68,7 @@ export default function CreateTaskDialog() {
       showError("Create Task Failed", result.error);
       return;
     }
+    add(targets.value.map((targetId) => [id.value, targetId]));
     close();
   }
 
@@ -98,13 +106,28 @@ export default function CreateTaskDialog() {
           <p>Source</p>
           <i
             class="pi pi-bookmark hover:cursor-pointer hover:text-primary-300 mx-2"
-            @click="handleSetPosition"
+            @click="handleSetSource"
           />
         </label>
         <InputText
           id="source"
           v-model="source"
           autocomplete="off"
+          class="flex-auto h-10 text-base!"
+        />
+      </div>
+      <div class="flex flex-col mb-8">
+        <label for="targets" class="text-lg flex items-center">Targets</label>
+        <MultiSelect
+          input-id="targets"
+          v-model="targets"
+          :options="options"
+          option-label="name"
+          option-value="code"
+          display="chip"
+          filter
+          placeholder="Select Targets"
+          :max-selected-labels="3"
           class="flex-auto h-10 text-base!"
         />
       </div>
