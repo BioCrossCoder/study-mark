@@ -3,11 +3,22 @@ import { taskSchema } from "@/common/types";
 import { useTaskQuery } from "../stores/task";
 import { ExecStatus, statusIcon } from "@/common/enums";
 import { useNotice } from "@/composables/useNotice";
-import { Button, Dialog, InputText, RadioButton, Textarea } from "primevue";
+import {
+  Button,
+  Dialog,
+  InputText,
+  MultiSelect,
+  RadioButton,
+  Textarea,
+} from "primevue";
+import { useTargetOptionsQuery } from "../stores/target";
+import { useRelatedItemsQuery } from "../stores/relatedItems";
+import { useRelationsMutation } from "@/stores/relations";
 
 export default function UpdateTaskDialog() {
   const show = ref(false);
   const target = ref("");
+
   function open(id: string) {
     show.value = true;
     target.value = id;
@@ -32,6 +43,14 @@ export default function UpdateTaskDialog() {
     position.value = (value?.position ?? "").trim();
   });
 
+  const targets = ref(new Array<string>());
+  const { data: optionsData } = useTargetOptionsQuery();
+  const options = computed(() => optionsData.value ?? []);
+  const { data: relationData } = useRelatedItemsQuery(target);
+  watch(relationData, (value) => {
+    targets.value = (value ?? []).map((item) => item.id);
+  });
+
   async function handleSetPosition() {
     const tab = (
       await browser.tabs.query({
@@ -43,6 +62,7 @@ export default function UpdateTaskDialog() {
   }
 
   const { save } = useTasksMutation();
+  const { add, remove } = useRelationsMutation();
   const { showError } = useNotice();
   async function handleSubmit() {
     const form = {
@@ -62,6 +82,10 @@ export default function UpdateTaskDialog() {
       showError("Update Task Failed", result.error);
       return;
     }
+    await remove(
+      (relationData.value ?? []).map((item) => [target.value, item.id]),
+    );
+    await add(targets.value.map((targetId) => [target.value, targetId]));
     close();
   }
 
@@ -69,7 +93,7 @@ export default function UpdateTaskDialog() {
   <Dialog
       v-model:visible="show"
       modal
-      header="Create Task"
+      header="Update Task"
       class="w-6/7"
       append-to="self"
       :draggable="false"
@@ -130,6 +154,21 @@ export default function UpdateTaskDialog() {
           id="position"
           v-model="position"
           autocomplete="off"
+          class="flex-auto h-10 text-base!"
+        />
+      </div>
+      <div class="flex flex-col mb-8">
+        <label for="targets" class="text-lg">Targets</label>
+        <MultiSelect
+          input-id="targets"
+          v-model="targets"
+          :options="options"
+          option-label="name"
+          option-value="code"
+          display="chip"
+          filter
+          placeholder="Select Targets"
+          :max-selected-labels="3"
           class="flex-auto h-10 text-base!"
         />
       </div>

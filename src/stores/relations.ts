@@ -1,20 +1,17 @@
 import { useMutation, useQuery } from "@tanstack/vue-query";
 
-const relationData = storage.defineItem<[string, string][]>(
-  "local:relationData",
-  {
-    fallback: [],
-  },
-);
+const key = "local:relationData";
+const relationData = storage.defineItem<[string, string][]>(key, {
+  fallback: [],
+});
 
 export function useRelationsQuery() {
   const query = useQuery({
-    queryKey: ["relations"],
+    queryKey: [key],
     queryFn: relationData.getValue,
   });
   const mapping = computed(() => {
     const records = {} as Record<string, string[]>;
-    console.log(query.data.value);
     (query.data.value ?? []).forEach(([id1, id2]) => {
       records[id1] = [...(records[id1] ?? []), id2];
       records[id2] = [...(records[id2] ?? []), id1];

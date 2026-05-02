@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/vue-query";
 export function useTaskQuery(id: Ref<string>) {
   const { data } = useTasksQuery();
   return useQuery({
-    queryKey: [id, data],
+    queryKey: [id, data, "task"],
     queryFn: async () => {
       const record = (data.value ?? {})[id.value] ?? {};
       return record.type === PlanType.Task ? record : null;
@@ -16,7 +16,7 @@ export function useTaskQuery(id: Ref<string>) {
 export function useTaskOptionsQuery() {
   const { data } = useTasksQuery();
   return useQuery({
-    queryKey: [data],
+    queryKey: [data, "taskOptions"],
     queryFn: async () =>
       Object.values(data.value ?? {})
         .filter((item) => item.type === PlanType.Task)

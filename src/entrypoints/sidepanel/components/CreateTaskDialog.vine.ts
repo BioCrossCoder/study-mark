@@ -117,7 +117,7 @@ export default function CreateTaskDialog() {
         />
       </div>
       <div class="flex flex-col mb-8">
-        <label for="targets" class="text-lg flex items-center">Targets</label>
+        <label for="targets" class="text-lg">Targets</label>
         <MultiSelect
           input-id="targets"
           v-model="targets"

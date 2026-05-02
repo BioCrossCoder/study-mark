@@ -1,9 +1,19 @@
 import { useTasksMutation } from "@/stores/tasks";
-import { targetSchema } from "@/common/types";
+import { targetSchema, Task } from "@/common/types";
 import { useTargetQuery } from "../stores/target";
 import { ExecStatus, statusIcon } from "@/common/enums";
 import { useNotice } from "@/composables/useNotice";
-import { Button, Dialog, InputText, RadioButton, Textarea } from "primevue";
+import {
+  Button,
+  Dialog,
+  InputText,
+  MultiSelect,
+  RadioButton,
+  Textarea,
+} from "primevue";
+import { useRelationsMutation } from "@/stores/relations";
+import { useRelatedItemsQuery } from "../stores/relatedItems";
+import { useTaskOptionsQuery } from "../stores/task";
 
 export default function UpdateTargetDialog() {
   const show = ref(false);
@@ -30,7 +40,16 @@ export default function UpdateTargetDialog() {
     description.value = value?.description ?? "";
   });
 
+  const tasks = ref(new Array<string>());
+  const { data: optionsData } = useTaskOptionsQuery();
+  const options = computed(() => optionsData.value ?? []);
+  const { data: relationData } = useRelatedItemsQuery(target);
+  watch(relationData, (value) => {
+    tasks.value = (value ?? []).map((item) => item.id);
+  });
+
   const { save } = useTasksMutation();
+  const { add, remove } = useRelationsMutation();
   const { showError } = useNotice();
   async function handleSubmit() {
     const form = {
@@ -49,6 +68,10 @@ export default function UpdateTargetDialog() {
       showError("Update Target Failed", result.error);
       return;
     }
+    await remove(
+      (relationData.value ?? []).map((item) => [target.value, item.id]),
+    );
+    await add(tasks.value.map((taskId) => [target.value, taskId]));
     close();
   }
 
@@ -93,6 +116,21 @@ export default function UpdateTargetDialog() {
           autocomplete="off"
           rows="3"
           class="flex-auto text-base!"
+        />
+      </div>
+      <div class="flex flex-col mb-8">
+        <label for="tasks" class="text-lg">Tasks</label>
+        <MultiSelect
+          input-id="tasks"
+          v-model="tasks"
+          :options="options"
+          option-label="name"
+          option-value="code"
+          display="chip"
+          filter
+          placeholder="Select Tasks"
+          :max-selected-labels="3"
+          class="flex-auto h-10 text-base!"
         />
       </div>
       <div class="flex justify-end gap-2">

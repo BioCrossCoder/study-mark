@@ -2,16 +2,14 @@ import { Target, Task } from "@/common/types";
 import { useMutation, useQuery } from "@tanstack/vue-query";
 import { ok, err, Result } from "neverthrow";
 
-const taskData = storage.defineItem<Record<string, Task | Target>>(
-  "local:taskData",
-  {
-    fallback: {},
-  },
-);
+const key = "local:taskData";
+const taskData = storage.defineItem<Record<string, Task | Target>>(key, {
+  fallback: {},
+});
 
 export function useTasksQuery() {
   return useQuery({
-    queryKey: ["tasks"],
+    queryKey: [key],
     queryFn: taskData.getValue,
   });
 }

@@ -7,7 +7,7 @@ export function useFavoritesQuery(
   onRemoved: (id: string) => void = () => {},
 ) {
   const query = useQuery({
-    queryKey: [dataSource],
+    queryKey: [dataSource, "favorites"],
     queryFn: async () => {
       const { keyword } = dataSource.value;
       return keyword
