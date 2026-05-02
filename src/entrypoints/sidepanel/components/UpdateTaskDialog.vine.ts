@@ -133,16 +133,6 @@ export default function UpdateTaskDialog() {
         />
       </div>
       <div class="flex flex-col mb-4">
-        <label for="source" class="text-lg">Source</label>
-        <InputText
-          id="source"
-          :model-value="data?.source"
-          autocomplete="off"
-          class="flex-auto h-10 text-base!"
-          disabled
-        />
-      </div>
-      <div class="flex flex-col mb-4">
         <label for="position" class="text-lg flex items-center">
           <p>Position</p>
           <i
