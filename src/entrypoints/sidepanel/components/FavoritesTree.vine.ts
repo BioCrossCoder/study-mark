@@ -31,6 +31,11 @@ export default function FavoritesTree() {
       node.data as globalThis.Browser.bookmarks.BookmarkTreeNode;
     return parentId != "0";
   }
+  function editNodeIcon(node: TreeNode) {
+    return (node.data as globalThis.Browser.bookmarks.BookmarkTreeNode).url
+      ? "pi pi-file-edit"
+      : "pi pi-pen-to-square";
+  }
   const dialog = ref({ open: (_: TreeNode) => {} });
   function handleEdit(event: PointerEvent, node: TreeNode) {
     event.stopPropagation();
@@ -57,14 +62,16 @@ export default function FavoritesTree() {
           :value="tree"
           selectionMode="checkbox"
         >
+          <template #nodeicon="{node}">
+            <i
+              v-if="canEdit(node)"
+              :class="editNodeIcon(node)+' mx-2 hover:text-primary-300'"
+              @click="(event:PointerEvent)=>handleEdit(event,node)"
+            />
+          </template>
           <template #default="{node}">
-            <div class="flex justify-between">
-              <i
-                v-if="canEdit(node)"
-                class="pi pi-pen-to-square mx-2 hover:text-primary-300"
-                @click="(event:PointerEvent)=>handleEdit(event,node)"
-              />
-              <div>{{node.label}}</div>
+            <div class="flex items-center">
+              <p>{{node.label}}</p>
               <i
                 v-if="canEdit(node)"
                 class="pi pi-trash mx-2 hover:text-red-400"
