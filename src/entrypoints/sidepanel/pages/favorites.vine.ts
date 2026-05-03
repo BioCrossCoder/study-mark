@@ -1,10 +1,11 @@
 import FavoritesTree from "@/entrypoints/sidepanel/components/FavoritesTree.vine";
-import { Toolbar, TreeSelectionKeys } from "primevue";
+import { Button, Menu, Toolbar, TreeSelectionKeys } from "primevue";
 import { useSelectionStore } from "../stores/selections";
 import { useRouter } from "vue-router";
 import CreateFolderDialog from "../components/CreateFolderDialog.vine";
 import { useFavoritesQuery } from "@/stores/favorites";
 import NavigationGroup from "../components/NavigationGroup.vine";
+import { MenuItem } from "primevue/menuitem";
 
 export default function Page() {
   return vine`
@@ -24,9 +25,32 @@ function TopBar() {
     pages.value.forEach((url) => browser.tabs.create({ url }));
   }
 
-  const dialog = ref({ open: () => {} });
-  function handleCreateFolder() {
-    dialog.value.open();
+  const createFolderDialog = ref({ open: () => {} });
+  const menu = ref({ toggle: (_: Event) => {} });
+  const items: MenuItem[] = [
+    {
+      label: "Favorites",
+      items: [
+        {
+          label: "Create Bookmark",
+          icon: "pi pi-file-plus",
+          command: () => {}, // TODO
+        },
+        {
+          label: "Create Folder",
+          icon: "pi pi-folder-plus",
+          command: () => createFolderDialog.value.open(),
+        },
+        {
+          label: "Delete Bookmarks",
+          icon: "pi pi-trash",
+          command: () => {}, // TODO
+        },
+      ],
+    },
+  ];
+  function toggle(event: Event) {
+    menu.value.toggle(event);
   }
 
   return vine`
@@ -35,16 +59,19 @@ function TopBar() {
         <NavigationGroup/>
       </template>
       <template #end>
-        <i
-          v-if="canOpen"
-          class="pi pi-external-link mx-2 hover:cursor-pointer hover:text-primary-300 "
-          @click="handleOpen"
-        />
-        <i
-          class="pi pi-folder-plus ml-2 hover:cursor-pointer hover:text-primary-300 "
-          @click="handleCreateFolder"
-        />
-        <CreateFolderDialog ref="dialog"/>
+        <div class="flex gap-4">
+          <i
+            v-if="canOpen"
+            class="pi pi-external-link hover:cursor-pointer hover:text-primary-300 "
+            @click="handleOpen"
+          />
+          <i
+            class="pi pi-ellipsis-h hover:cursor-pointer hover:text-primary-300"
+            @click="toggle"
+          />
+          <Menu ref="menu" :popup="true" :model="items"/>
+        </div>
+        <CreateFolderDialog ref="createFolderDialog"/>
       </template>
     </Toolbar>
   `;
