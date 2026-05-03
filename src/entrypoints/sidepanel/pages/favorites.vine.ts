@@ -6,6 +6,7 @@ import CreateFolderDialog from "../components/CreateFolderDialog.vine";
 import { useFavoritesQuery } from "@/stores/favorites";
 import NavigationGroup from "../components/NavigationGroup.vine";
 import { MenuItem } from "primevue/menuitem";
+import CreateBookmarkDialog from "../components/CreateBookmarkDialog.vine";
 
 export default function Page() {
   return vine`
@@ -25,6 +26,7 @@ function TopBar() {
     pages.value.forEach((url) => browser.tabs.create({ url }));
   }
 
+  const createBookmarkDialog = ref({ open: () => {} });
   const createFolderDialog = ref({ open: () => {} });
   const menu = ref({ toggle: (_: Event) => {} });
   const items: MenuItem[] = [
@@ -34,7 +36,7 @@ function TopBar() {
         {
           label: "Create Bookmark",
           icon: "pi pi-file-plus",
-          command: () => {}, // TODO
+          command: () => createBookmarkDialog.value.open(),
         },
         {
           label: "Create Folder",
@@ -71,6 +73,7 @@ function TopBar() {
           />
           <Menu ref="menu" :popup="true" :model="items"/>
         </div>
+        <CreateBookmarkDialog ref="createBookmarkDialog"/>
         <CreateFolderDialog ref="createFolderDialog"/>
       </template>
     </Toolbar>

@@ -1,7 +1,7 @@
 import { Button, Dialog, InputText, TreeSelect } from "primevue";
 import { useFavoritesQuery } from "@/stores/favorites";
 
-export default function CreateFolderDialog() {
+export default function CreateBookmarkDialog() {
   const show = ref(false);
   function open() {
     show.value = true;
@@ -9,6 +9,7 @@ export default function CreateFolderDialog() {
   function close() {
     show.value = false;
     name.value = "";
+    url.value = "";
     position.value = {};
   }
   vineExpose({
@@ -16,6 +17,18 @@ export default function CreateFolderDialog() {
   });
 
   const name = ref("");
+
+  const url = ref("");
+  async function handleSetUrl() {
+    const tab = (
+      await browser.tabs.query({
+        active: true,
+        currentWindow: true,
+      })
+    )[0];
+    url.value = tab.url ?? url.value;
+  }
+
   const position = ref({} as Record<string, true>);
   const parentId = computed(() => Object.keys(position.value)[0]);
 
@@ -25,10 +38,13 @@ export default function CreateFolderDialog() {
   });
   const { folders } = useFavoritesQuery(dataSource);
 
-  const disabled = computed(() => name.value.length === 0 || !parentId.value);
+  const disabled = computed(
+    () => name.value.length * url.value.length === 0 || !parentId.value,
+  );
   function handleSubmit() {
     browser.bookmarks.create({
       title: name.value,
+      url: url.value,
       parentId: parentId.value,
     });
     close();
@@ -38,7 +54,7 @@ export default function CreateFolderDialog() {
     <Dialog
       v-model:visible="show"
       modal
-      header="Create Folder"
+      header="Create Bookmark"
       class="w-6/7"
       append-to="self"
       :draggable="false"
@@ -48,6 +64,21 @@ export default function CreateFolderDialog() {
         <InputText
           id="name"
           v-model="name"
+          autocomplete="off"
+          class="flex-auto h-10 text-base!"
+        />
+      </div>
+      <div class="flex flex-col mb-4">
+        <label for="url" class="text-lg flex items-center">
+          <p>URL</p>
+          <i
+            class="pi pi-star hover:cursor-pointer hover:text-primary-300 mx-2"
+            @click="handleSetUrl"
+          />
+        </label>
+        <InputText
+          id="url"
+          v-model="url"
           autocomplete="off"
           class="flex-auto h-10 text-base!"
           autofocus
