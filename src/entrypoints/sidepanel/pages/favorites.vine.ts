@@ -7,6 +7,7 @@ import { useFavoritesQuery } from "@/stores/favorites";
 import NavigationGroup from "../components/NavigationGroup.vine";
 import { MenuItem } from "primevue/menuitem";
 import CreateBookmarkDialog from "../components/CreateBookmarkDialog.vine";
+import DeleteBookmarksDialog from "../components/DeleteBookmarksDialog.vine";
 
 export default function Page() {
   return vine`
@@ -28,6 +29,7 @@ function TopBar() {
 
   const createBookmarkDialog = ref({ open: () => {} });
   const createFolderDialog = ref({ open: () => {} });
+  const deleteBookmarksDialog = ref({ open: () => {} });
   const menu = ref({ toggle: (_: Event) => {} });
   const items: MenuItem[] = [
     {
@@ -46,7 +48,7 @@ function TopBar() {
         {
           label: "Delete Bookmarks",
           icon: "pi pi-trash",
-          command: () => {}, // TODO
+          command: () => deleteBookmarksDialog.value.open(),
         },
       ],
     },
@@ -75,6 +77,7 @@ function TopBar() {
         </div>
         <CreateBookmarkDialog ref="createBookmarkDialog"/>
         <CreateFolderDialog ref="createFolderDialog"/>
+        <DeleteBookmarksDialog ref="deleteBookmarksDialog"/>
       </template>
     </Toolbar>
   `;
