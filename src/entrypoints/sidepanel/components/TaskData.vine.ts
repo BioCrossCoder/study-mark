@@ -1,6 +1,6 @@
 import {
+  Badge,
   Card,
-  Chip,
   InputText,
   ScrollPanel,
   Tab,
@@ -122,7 +122,7 @@ function TaskList(props: { data: Task[] }) {
         </template>
         <template #subtitle>
           <div class="flex gap-2">
-            <Chip v-for="id in mapping[item.id]" :label="relatedItems[id].title"/>
+            <Badge v-for="id in mapping[item.id]" :value="relatedItems[id].title"/>
           </div>
         </template>
         <template #content>
@@ -190,7 +190,7 @@ function TargetList(props: { data: Target[] }) {
         </template>
         <template #subtitle>
           <div class="flex gap-2">
-            <Chip v-for="id in mapping[item.id]" :label="relatedItems[id].title"/>
+            <Badge v-for="id in mapping[item.id]" :value="relatedItems[id].title"/>
           </div>
         </template>
         <template #content>{{item.description}}</template>
