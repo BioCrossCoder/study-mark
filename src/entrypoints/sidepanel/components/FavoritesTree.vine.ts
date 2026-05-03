@@ -64,7 +64,7 @@ export default function FavoritesTree() {
         ? "Create task from this bookmark?"
         : "Create target from this folder and tasks from its direct child node bookmarks?",
       header: "Confirmation",
-      icon: "pi pi-exclamation-triangle",
+      icon: "pi pi-calendar-plus",
       rejectProps: {
         label: "Cancel",
         severity: "secondary",

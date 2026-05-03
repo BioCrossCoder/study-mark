@@ -1,5 +1,7 @@
 import {
+  Button,
   Card,
+  ConfirmDialog,
   InputText,
   ScrollPanel,
   Tab,
@@ -8,6 +10,7 @@ import {
   TabPanels,
   Tabs,
   Tag,
+  useConfirm,
 } from "primevue";
 import { useTasksMutation, useTasksQuery } from "@/stores/tasks";
 import { Target, Task } from "@/common/types";
@@ -15,6 +18,7 @@ import { PlanType, statusIcon } from "@/common/enums";
 import UpdateTaskDialog from "./UpdateTaskDialog.vine";
 import UpdateTargetDialog from "./UpdateTargetDialog.vine";
 import { useRelationsQuery } from "@/stores/relations";
+import { useNotice } from "@/composables/useNotice";
 
 export default function TaskData() {
   const tab = ref(PlanType.Task);
@@ -81,7 +85,7 @@ export default function TaskData() {
 }
 
 function TaskList(props: { data: Task[] }) {
-  const { remove } = useTasksMutation();
+  const { save, remove } = useTasksMutation();
   function handleDelete(id: string) {
     remove(id);
   }
@@ -93,6 +97,39 @@ function TaskList(props: { data: Task[] }) {
 
   function handleOpenLink(url: string) {
     browser.tabs.create({ url });
+  }
+
+  const confirm = useConfirm();
+  const { showError } = useNotice();
+  async function handleSave(item: Task) {
+    const tab = (
+      await browser.tabs.query({
+        active: true,
+        currentWindow: true,
+      })
+    )[0];
+    confirm.require({
+      message: "Save current page as position of this task?",
+      header: "Confirmation",
+      icon: "pi pi-check-circle",
+      rejectProps: {
+        label: "Cancel",
+        severity: "secondary",
+        outlined: true,
+      },
+      acceptProps: {
+        label: "Save",
+      },
+      accept: async () => {
+        const result = await save({
+          ...item,
+          position: tab.url ?? item.position,
+        });
+        if (result.isErr()) {
+          showError("Save Position Failed", result.error);
+        }
+      },
+    });
   }
 
   const { mapping } = useRelationsQuery();
@@ -130,6 +167,10 @@ function TaskList(props: { data: Task[] }) {
         </template>
         <template #footer>
           <div class="flex justify-between">
+            <div class="flex gap-2">
+            <Button label="Open" size="small" @click="handleOpenLink(item.position)"/>
+            <Button label="Save" size="small" @click="handleSave(item)"/>
+            </div>
             <div
               class="flex items-center hover:cursor-pointer hover:text-primary-300"
               @click="()=>handleOpenLink(item.source)"
@@ -137,18 +178,12 @@ function TaskList(props: { data: Task[] }) {
               <i class="pi pi-link"/>
               <p class="p-2">Source</p>
             </div>
-            <div
-              class="flex items-center hover:cursor-pointer hover:text-primary-300"
-              @click="()=>handleOpenLink(item.position)"
-            >
-              <i class="pi pi-link"/>
-              <p class="p-2">Position</p>
-            </div>
           </div>
         </template>
       </Card>
     </ScrollPanel>
     <UpdateTaskDialog ref="dialog"/>
+    <ConfirmDialog/>
   `;
 }
 
