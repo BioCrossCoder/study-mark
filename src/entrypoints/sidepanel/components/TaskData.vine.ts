@@ -82,10 +82,10 @@ export default function TaskData() {
         </div>
         <TabPanels :style="panelStyle">
           <TabPanel :value="PlanType.Task" class="h-full">
-            <TaskList :data="records.tasks"/>
+            <TaskList :data="records"/>
           </TabPanel>
           <TabPanel :value="PlanType.Target" class="h-full">
-            <TargetList :data="records.targets"/>
+            <TargetList :data="records"/>
           </TabPanel>
         </TabPanels>
       </Tabs>
@@ -93,7 +93,7 @@ export default function TaskData() {
   `;
 }
 
-function TaskList(props: { data: Task[] }) {
+function TaskList(props: { data: { tasks: Task[] } }) {
   const { save, remove } = useTasksMutation();
   function handleDelete(id: string) {
     remove(id);
@@ -147,7 +147,7 @@ function TaskList(props: { data: Task[] }) {
 
   return vine`
     <ScrollPanel style="width:100%; height:100%">
-      <Card v-for="item in data" :key="item.id" class="border mb-5 mx-3">
+      <Card v-for="item in data.tasks" :key="item.id" class="border mb-5 mx-3">
         <template #title>
           <div class="flex justify-between items-center">
             <div class="flex items-center justify-between">
@@ -196,7 +196,7 @@ function TaskList(props: { data: Task[] }) {
   `;
 }
 
-function TargetList(props: { data: Target[] }) {
+function TargetList(props: { data: { targets: Target[] } }) {
   const { remove } = useTasksMutation();
   function handleDelete(id: string) {
     remove(id);
@@ -213,7 +213,7 @@ function TargetList(props: { data: Target[] }) {
 
   return vine`
     <ScrollPanel style="width:100%; height:100%">
-      <Card v-for="item in data" :key="item.id" class="border mb-5 mx-3">
+      <Card v-for="item in data.targets" :key="item.id" class="border mb-5 mx-3">
         <template #title>
           <div class="flex justify-between items-center">
             <div class="flex items-center justify-between">
