@@ -18,6 +18,11 @@ export default function Page() {
 function TopBar() {
   const { data } = useFavoritesQuery(ref({ keyword: "", excludeIds: [] }));
   const selectedKeys = useSelectionStore().value;
+  const pages = usePages(data, selectedKeys);
+  const canOpen = computed(() => pages.value.length > 0);
+  function handleOpen() {
+    pages.value.forEach((url) => browser.tabs.create({ url }));
+  }
 
   const dialog = ref({ open: () => {} });
   function handleCreateFolder() {
@@ -31,8 +36,9 @@ function TopBar() {
       </template>
       <template #end>
         <i
+          v-if="canOpen"
           class="pi pi-external-link mx-2 hover:cursor-pointer hover:text-primary-300 "
-          @click="()=>handleOpen(data??[],selectedKeys)"
+          @click="handleOpen"
         />
         <i
           class="pi pi-folder-plus ml-2 hover:cursor-pointer hover:text-primary-300 "
@@ -44,23 +50,27 @@ function TopBar() {
   `;
 }
 
-function handleOpen(
-  value: globalThis.Browser.bookmarks.BookmarkTreeNode[],
-  selectionKeys?: TreeSelectionKeys,
+function usePages(
+  tree: Ref<globalThis.Browser.bookmarks.BookmarkTreeNode[] | undefined>,
+  selectionKeys: Ref<TreeSelectionKeys | undefined>,
 ) {
-  function dfs(nodes: globalThis.Browser.bookmarks.BookmarkTreeNode[]) {
-    if (!selectionKeys) {
-      return;
-    }
-    nodes.forEach((node) => {
-      if (!selectionKeys[node.id]) {
+  return computed(() => {
+    const urls = new Array<string>();
+    function dfs(nodes: globalThis.Browser.bookmarks.BookmarkTreeNode[]) {
+      if (!selectionKeys.value) {
         return;
       }
-      if (node.url) {
-        browser.tabs.create({ url: node.url });
-      }
-      dfs(node.children ?? []);
-    });
-  }
-  dfs(value);
+      nodes.forEach((node) => {
+        if (!selectionKeys.value![node.id]) {
+          return;
+        }
+        if (node.url) {
+          urls.push(node.url);
+        }
+        dfs(node.children ?? []);
+      });
+    }
+    dfs(tree.value ?? []);
+    return urls;
+  });
 }
