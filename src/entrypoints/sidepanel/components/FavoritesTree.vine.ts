@@ -134,7 +134,7 @@ export default function FavoritesTree() {
         </Tree>
       </ScrollPanel>
       <EditDialog ref="editDialog"/>
-      <ConfirmDialog/>
+      <ConfirmDialog class="w-6/7"/>
     </div>
   `;
 }

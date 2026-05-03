@@ -192,7 +192,7 @@ function TaskList(props: { data: { tasks: Task[] } }) {
       </Card>
     </ScrollPanel>
     <UpdateTaskDialog ref="dialog"/>
-    <ConfirmDialog/>
+    <ConfirmDialog class="w-6/7"/>
   `;
 }
 
