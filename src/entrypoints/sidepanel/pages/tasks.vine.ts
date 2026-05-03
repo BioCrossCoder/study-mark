@@ -29,7 +29,7 @@ function TopBar(props: { tab: PlanType }) {
       </template>
       <template #end>
         <i
-          class="pi pi-file-plus hover:cursor-pointer hover:text-primary-300"
+          class="pi pi-calendar-plus hover:cursor-pointer hover:text-primary-300"
           @click="handleCreate"
         />
         <CreateTaskDialog v-if="tab === PlanType.Task" ref="dialog"/>

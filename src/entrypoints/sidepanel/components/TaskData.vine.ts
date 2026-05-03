@@ -1,5 +1,4 @@
 import {
-  Badge,
   Card,
   InputText,
   ScrollPanel,
@@ -8,6 +7,7 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
+  Tag,
 } from "primevue";
 import { useTasksMutation, useTasksQuery } from "@/stores/tasks";
 import { Target, Task } from "@/common/types";
@@ -121,8 +121,8 @@ function TaskList(props: { data: Task[] }) {
           </div>
         </template>
         <template #subtitle>
-          <div class="flex gap-2">
-            <Badge v-for="id in mapping[item.id]" :value="relatedItems[id].title"/>
+          <div class="grid grid-cols-3 gap-4">
+            <Tag v-for="id in mapping[item.id]" :value="relatedItems[id].title"/>
           </div>
         </template>
         <template #content>
@@ -189,8 +189,8 @@ function TargetList(props: { data: Target[] }) {
           </div>
         </template>
         <template #subtitle>
-          <div class="flex gap-2">
-            <Badge v-for="id in mapping[item.id]" :value="relatedItems[id].title"/>
+          <div class=" grid grid-cols-2 gap-4">
+            <Tag v-for="id in mapping[item.id]" :value="relatedItems[id].title"/>
           </div>
         </template>
         <template #content>{{item.description}}</template>

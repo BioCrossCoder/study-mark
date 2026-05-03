@@ -45,7 +45,7 @@ export default function CreateTaskDialog() {
   async function handleSubmit() {
     const id = await newId();
     if (id.isErr()) {
-      showError("Generate Target ID Failed", id.error);
+      showError("Generate Task ID Failed", id.error);
       return;
     }
     const form: Task = {
