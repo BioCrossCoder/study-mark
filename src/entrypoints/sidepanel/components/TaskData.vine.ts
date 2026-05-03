@@ -14,11 +14,12 @@ import {
 } from "primevue";
 import { useTasksMutation, useTasksQuery } from "@/stores/tasks";
 import { Target, Task } from "@/common/types";
-import { PlanType, statusIcon } from "@/common/enums";
+import { PlanType, Signal, statusIcon } from "@/common/enums";
 import UpdateTaskDialog from "./UpdateTaskDialog.vine";
 import UpdateTargetDialog from "./UpdateTargetDialog.vine";
 import { useRelationsQuery } from "@/stores/relations";
 import { useNotice } from "@/composables/useNotice";
+import { useConnectionStore } from "../stores/connection";
 
 export default function TaskData() {
   const tab = ref(PlanType.Task);
@@ -26,7 +27,15 @@ export default function TaskData() {
     tab,
   });
 
-  const { data } = useTasksQuery();
+  const { data, refetch } = useTasksQuery();
+  const relationsQuery = useRelationsQuery();
+  const connection = useConnectionStore();
+  connection.listen((message) => {
+    if (message === Signal.UpdateTask) {
+      refetch();
+      relationsQuery.refetch();
+    }
+  });
   const records = computed(() => {
     const tasks = new Array<Task>();
     const targets = new Array<Target>();

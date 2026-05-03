@@ -5,6 +5,7 @@ import Aura from "@primeuix/themes/aura";
 import App from "./App.vine";
 import "@/index.css";
 import { VueQueryPlugin } from "@tanstack/vue-query";
+import { ToastService } from "primevue";
 
 createApp(App)
   .use(router)
@@ -14,4 +15,5 @@ createApp(App)
     },
   })
   .use(VueQueryPlugin)
+  .use(ToastService)
   .mount("#app");

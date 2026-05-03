@@ -1,6 +1,7 @@
-import SaveBookmarkDialog from "../components/SaveBookmarkDialog.vine";
+import CreateTaskDialog from "../components/CreateTaskDialog.vine";
+
 export default function Page() {
   return vine`
-    <SaveBookmarkDialog/>
+    <CreateTaskDialog/>
   `;
 }

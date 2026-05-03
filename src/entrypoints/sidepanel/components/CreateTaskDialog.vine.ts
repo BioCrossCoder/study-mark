@@ -3,8 +3,8 @@ import { ExecStatus, PlanType } from "@/common/enums";
 import { Button, Dialog, InputText, MultiSelect, Textarea } from "primevue";
 import { Task, taskSchema } from "@/common/types";
 import { useNotice } from "@/composables/useNotice";
-import { useTargetOptionsQuery } from "../stores/target";
 import { useRelationsMutation } from "@/stores/relations";
+import { useTargetOptionsQuery } from '@/stores/target';
 
 export default function CreateTaskDialog() {
   const show = ref(false);

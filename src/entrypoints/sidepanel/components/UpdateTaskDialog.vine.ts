@@ -11,9 +11,9 @@ import {
   RadioButton,
   Textarea,
 } from "primevue";
-import { useTargetOptionsQuery } from "../stores/target";
 import { useRelatedItemsQuery } from "../stores/relatedItems";
 import { useRelationsMutation } from "@/stores/relations";
+import { useTargetOptionsQuery } from "@/stores/target";
 
 export default function UpdateTaskDialog() {
   const show = ref(false);

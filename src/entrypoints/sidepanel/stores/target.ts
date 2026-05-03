@@ -12,14 +12,3 @@ export function useTargetQuery(id: Ref<string>) {
     },
   });
 }
-
-export function useTargetOptionsQuery() {
-  const { data } = useTasksQuery();
-  return useQuery({
-    queryKey: [data, "targetOptions"],
-    queryFn: async () =>
-      Object.values(data.value ?? {})
-        .filter((item) => item.type === PlanType.Target)
-        .map((item) => ({ name: item.title, code: item.id })),
-  });
-}
