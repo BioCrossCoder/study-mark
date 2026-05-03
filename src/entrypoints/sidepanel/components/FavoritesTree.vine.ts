@@ -42,15 +42,6 @@ export default function FavoritesTree() {
     dialog.value.open(node);
   }
 
-  function handleDelete(event: PointerEvent, node: TreeNode) {
-    // TODO add confirm
-    event.stopPropagation();
-    function dfs(node: globalThis.Browser.bookmarks.BookmarkTreeNode) {
-      node.children?.forEach(dfs);
-      browser.bookmarks.remove(node.id);
-    }
-    dfs(node.data as globalThis.Browser.bookmarks.BookmarkTreeNode);
-  }
 
   return vine`
     <div class="flex flex-col overflow-hidden" ref="container">
@@ -72,11 +63,6 @@ export default function FavoritesTree() {
           <template #default="{node}">
             <div class="flex items-center">
               <p>{{node.label}}</p>
-              <i
-                v-if="canEdit(node)"
-                class="pi pi-trash mx-2 hover:text-red-400"
-                @click="(event:PointerEvent)=>handleDelete(event,node)"
-              />
             </div>
           </template>
         </Tree>
