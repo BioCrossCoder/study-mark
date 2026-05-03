@@ -1,6 +1,7 @@
 import { Target, Task } from "@/common/types";
 import { useMutation, useQuery } from "@tanstack/vue-query";
 import { ok, err, Result } from "neverthrow";
+import { useRelationsMutation } from "./relations";
 
 const key = "local:taskData";
 const taskData = storage.defineItem<Record<string, Task | Target>>(key, {
@@ -45,7 +46,9 @@ export function useTasksMutation() {
     return ok();
   }
 
+  const relationsMutation = useRelationsMutation();
   async function remove(id: string) {
+    await relationsMutation.removeById(id);
     const data = await taskData.getValue();
     delete data[id];
     mutation.mutate(data);

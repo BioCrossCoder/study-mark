@@ -58,5 +58,11 @@ export function useRelationsMutation() {
     mutation.mutate(newData);
   }
 
-  return { ...mutation, add, remove };
+  async function removeById(id: string) {
+    const data = await relationData.getValue();
+    const newData = data.filter((pair) => !pair.includes(id));
+    mutation.mutate(newData);
+  }
+
+  return { ...mutation, add, remove, removeById };
 }
