@@ -5,6 +5,7 @@ import { useChatStore } from "../stores/chat";
 import { SignalMessage } from "@/common/types";
 import { useConnectionStore } from "../stores/connection";
 import NavigationGroup from "../components/NavigationGroup.vine";
+import { MessageType, Signal } from "@/common/enums";
 
 export default function Page() {
   return vine`
@@ -22,8 +23,8 @@ function TopBar() {
     // TODO add confirm
     history.value.length = 0;
     connection.send<SignalMessage>({
-      type: "signal",
-      content: "clear",
+      type: MessageType.Signal,
+      content: Signal.Clear,
     });
   }
 

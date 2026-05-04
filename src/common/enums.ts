@@ -2,8 +2,15 @@ export const enum Channel {
   SidePanel = "side-panel",
 }
 
-export const enum Signal {
-  UpdateTask = "update-task",
+export const enum MessageType {
+  Signal,
+  Text,
+}
+
+export enum Signal {
+  Clear,
+  Finish,
+  UpdateTask,
 }
 
 export const enum ChatMessageSender {

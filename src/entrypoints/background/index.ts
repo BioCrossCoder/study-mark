@@ -1,4 +1,4 @@
-import { Channel, Signal } from "@/common/enums";
+import { Channel, MessageType, Signal } from "@/common/enums";
 import { model, apiKey, baseURL } from "@/../env.json";
 import { chatContext } from "@/entrypoints/background/stores/chat";
 import {
@@ -20,9 +20,14 @@ export default defineBackground(() => {
     }
   });
   browser.runtime.onMessage.addListener((message) => {
-    if (message === Signal.UpdateTask) {
+    // [NoticeViewUpdate]
+    const signalMessage = signalMessageSchema.safeParse(message);
+    if (
+      signalMessage.success &&
+      signalMessage.data.content === Signal.UpdateTask
+    ) {
       connections.get(Channel.SidePanel)?.postMessage(message);
-    }
+    } // [/]
   });
 });
 
@@ -45,7 +50,7 @@ const callbacks: Record<
   [Channel.SidePanel]: async (message, port) => {
     // [HandleSignal]
     const signalMessage = signalMessageSchema.safeParse(message);
-    if (signalMessage.success && signalMessage.data.content === "clear") {
+    if (signalMessage.success && signalMessage.data.content === Signal.Clear) {
       chatContext.setValue([]);
       return;
     } // [/]
@@ -64,13 +69,13 @@ const callbacks: Record<
             : JSON.stringify(chunk.content);
         content += text;
         send<TextMessage>(port, {
-          type: "text",
+          type: MessageType.Text,
           content: text,
         });
       }
       send<SignalMessage>(port, {
-        type: "signal",
-        content: "finish",
+        type: MessageType.Signal,
+        content: Signal.Finish,
       });
       messages.push(new AIMessage(content));
       chatContext.setValue(messages);

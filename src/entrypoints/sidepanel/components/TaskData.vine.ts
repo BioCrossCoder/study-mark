@@ -13,7 +13,7 @@ import {
   useConfirm,
 } from "primevue";
 import { useTasksMutation, useTasksQuery } from "@/stores/tasks";
-import { Target, Task } from "@/common/types";
+import { signalMessageSchema, Target, Task } from "@/common/types";
 import { PlanType, Signal, statusIcon } from "@/common/enums";
 import UpdateTaskDialog from "./UpdateTaskDialog.vine";
 import UpdateTargetDialog from "./UpdateTargetDialog.vine";
@@ -31,7 +31,11 @@ export default function TaskData() {
   const relationsQuery = useRelationsQuery();
   const connection = useConnectionStore();
   connection.listen((message) => {
-    if (message === Signal.UpdateTask) {
+    const signalMessage = signalMessageSchema.safeParse(message);
+    if (
+      signalMessage.success &&
+      signalMessage.data.content === Signal.UpdateTask
+    ) {
       refetch();
       relationsQuery.refetch();
     }

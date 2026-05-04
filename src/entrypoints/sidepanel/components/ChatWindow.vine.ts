@@ -8,7 +8,7 @@ import {
   ScrollPanel,
   ScrollTop,
 } from "primevue";
-import { ChatMessageSender } from "@/common/enums";
+import { ChatMessageSender, MessageType, Signal } from "@/common/enums";
 import { useChatStore } from "../stores/chat";
 import { MessagesSquare } from "@lucide/vue";
 import {
@@ -29,7 +29,7 @@ export default function ChatWindow() {
   connection.listen((message) => {
     // [HandleSignal]
     const signalMessage = signalMessageSchema.safeParse(message);
-    if (signalMessage.success && signalMessage.data.content === "finish") {
+    if (signalMessage.success && signalMessage.data.content === Signal.Finish) {
       loading.value = false;
       return;
     } // [/]
@@ -119,7 +119,7 @@ function InputBox(props: { anchor: HTMLElement }) {
       timestamp: new Date(),
     });
     connection.send<TextMessage>({
-      type: "text",
+      type: MessageType.Text,
       content: question.value,
     });
     question.value = "";

@@ -1,8 +1,8 @@
 import { Button, InputText, MultiSelect, Panel, Textarea } from "primevue";
 import { useTasksMutation } from "@/stores/tasks";
 import { useRelationsMutation } from "@/stores/relations";
-import { Task, taskSchema } from "@/common/types";
-import { ExecStatus, PlanType, Signal } from "@/common/enums";
+import { SignalMessage, Task, taskSchema } from "@/common/types";
+import { ExecStatus, MessageType, PlanType, Signal } from "@/common/enums";
 import { useTargetOptionsQuery } from "@/stores/target";
 
 export default function CreateTaskDialog() {
@@ -58,7 +58,10 @@ export default function CreateTaskDialog() {
       return;
     }
     await add(targets.value.map((targetId) => [id.value, targetId]));
-    browser.runtime.sendMessage(Signal.UpdateTask);
+    browser.runtime.sendMessage({
+      type: MessageType.Signal,
+      content: Signal.UpdateTask,
+    } as SignalMessage);
     close();
   }
 

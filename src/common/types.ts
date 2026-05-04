@@ -1,5 +1,11 @@
 import z from "zod";
-import { ChatMessageSender, ExecStatus, PlanType } from "./enums";
+import {
+  ChatMessageSender,
+  ExecStatus,
+  MessageType,
+  PlanType,
+  Signal,
+} from "./enums";
 
 export type ChatMessage = {
   sender: ChatMessageSender;
@@ -8,14 +14,14 @@ export type ChatMessage = {
 };
 
 export const signalMessageSchema = z.object({
-  type: z.literal("signal"),
-  content: z.enum(["clear", "finish"]),
+  type: z.literal(MessageType.Signal),
+  content: z.enum(Signal),
 });
 
 export type SignalMessage = z.infer<typeof signalMessageSchema>;
 
 export const textMessageSchema = z.object({
-  type: z.literal("text"),
+  type: z.literal(MessageType.Text),
   content: z.string(),
 });
 
