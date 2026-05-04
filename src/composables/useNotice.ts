@@ -2,7 +2,7 @@ import { useToast } from "primevue";
 
 export function useNotice() {
   const toast = useToast();
-  function showError(summary: string, error: Error) {
+  function showError(summary: string, error: { message: string }) {
     toast.add({
       severity: "error",
       summary,

@@ -6,6 +6,7 @@ import { SignalMessage } from "@/common/types";
 import { useConnectionStore } from "../stores/connection";
 import NavigationGroup from "../components/NavigationGroup.vine";
 import { MessageType, Signal } from "@/common/enums";
+import ChatConfigDialog from "../components/ChatConfigDialog.vine";
 
 export default function Page() {
   return vine`
@@ -28,17 +29,29 @@ function TopBar() {
     });
   }
 
+  const dialog = ref({ open: () => {} });
+  function handleChangeConfig() {
+    dialog.value.open();
+  }
+
   return vine`
     <Toolbar class="border-0!">
       <template #start>
         <NavigationGroup/>
       </template>
       <template #end>
-        <i
-          v-if="!isHistoryEmpty"
-          class="pi pi-trash hover:cursor-pointer hover:text-red-400"
-          @click="handleClear"
-        />
+        <div class="flex gap-2">
+          <i
+            class="pi pi-cog hover:cursor-pointer hover:text-primary-300"
+            @click="handleChangeConfig"
+          />
+          <i
+            v-if="!isHistoryEmpty"
+            class="pi pi-trash hover:cursor-pointer hover:text-red-400"
+            @click="handleClear"
+          />
+          <ChatConfigDialog ref="dialog"/>
+        </div>
       </template>
     </Toolbar>
   `;

@@ -27,6 +27,13 @@ export const textMessageSchema = z.object({
 
 export type TextMessage = z.infer<typeof textMessageSchema>;
 
+export const errorMessageSchema = z.object({
+  type: z.literal(MessageType.Error),
+  content: z.string(),
+});
+
+export type ErrorMessage = z.infer<typeof errorMessageSchema>;
+
 export const taskSchema = z.object({
   id: z.string(),
   type: z.literal(PlanType.Task),
@@ -50,3 +57,11 @@ export const targetSchema = z.object({
 });
 
 export type Target = z.infer<typeof targetSchema>;
+
+export const modelConfigSchema = z.object({
+  baseURL: z.url(),
+  apiKey: z.string().min(1),
+  model: z.string().min(1),
+});
+
+export type ModelConfig = z.infer<typeof modelConfigSchema>;

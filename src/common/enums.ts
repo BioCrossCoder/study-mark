@@ -5,6 +5,7 @@ export const enum Channel {
 export const enum MessageType {
   Signal,
   Text,
+  Error,
 }
 
 export enum Signal {

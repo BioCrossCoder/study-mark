@@ -1,14 +1,16 @@
 import { Channel, MessageType, Signal } from "@/common/enums";
-import { model, apiKey, baseURL } from "@/../env.json";
 import { chatContext } from "@/entrypoints/background/stores/chat";
 import {
   textMessageSchema,
   signalMessageSchema,
   TextMessage,
   SignalMessage,
+  ErrorMessage,
 } from "@/common/types";
 import { ChatOpenAI } from "@langchain/openai";
 import { AIMessage, HumanMessage } from "@langchain/core/messages";
+import { modelConfig } from "@/stores/config";
+import { ResultAsync } from "neverthrow";
 
 export default defineBackground(() => {
   const connections = new Map<string, globalThis.Browser.runtime.Port>();
@@ -32,14 +34,6 @@ export default defineBackground(() => {
   });
 });
 
-const agent = new ChatOpenAI({
-  model,
-  configuration: {
-    baseURL,
-    apiKey,
-  },
-});
-
 function send<T>(port: globalThis.Browser.runtime.Port, message: T) {
   port.postMessage(message);
 }
@@ -58,11 +52,31 @@ const callbacks: Record<
     // [HandleText]
     const textMessage = textMessageSchema.safeParse(message);
     if (textMessage.success) {
+      // [LoadModelConfig]
+      const { model, baseURL, apiKey } = await modelConfig.getValue();
+      const agent = new ChatOpenAI({
+        model,
+        configuration: {
+          baseURL,
+          apiKey,
+        },
+      }); // [/]
       // [CallLLMWithHistoryAsContext]
       const messages = await chatContext.getValue();
       let { content } = textMessage.data;
       messages.push(new HumanMessage(content));
-      const stream = await agent.stream(messages); // [/]
+      agent;
+      const result = await ResultAsync.fromThrowable((message) =>
+        agent.stream(message),
+      )(messages);
+      if (result.isErr()) {
+        send<ErrorMessage>(port, {
+          type: MessageType.Error,
+          content: (result.error as Error).message,
+        });
+        return;
+      }
+      const stream = result.unwrapOr(null)!; // [/]
       // [TransmitStreamOutputAndRecordMessage]
       content = "";
       for await (const chunk of stream) {

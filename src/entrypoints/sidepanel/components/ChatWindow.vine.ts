@@ -13,6 +13,7 @@ import { useChatStore } from "../stores/chat";
 import { MessagesSquare } from "@lucide/vue";
 import {
   ChatMessage,
+  errorMessageSchema,
   signalMessageSchema,
   TextMessage,
   textMessageSchema,
@@ -25,8 +26,16 @@ export default function ChatWindow() {
   const { history, isHistoryEmpty, loading } = useChatStore();
   const bottomAnchor = ref(document.createElement("div"));
   const connection = useConnectionStore();
+  const { showError } = useNotice();
 
   connection.listen((message) => {
+    // [HandleError]
+    const errorMessage = errorMessageSchema.safeParse(message);
+    if (errorMessage.success) {
+      loading.value = false;
+      showError("Call AI Failed", { message: errorMessage.data.content });
+      return;
+    } // [/]
     // [HandleSignal]
     const signalMessage = signalMessageSchema.safeParse(message);
     if (signalMessage.success && signalMessage.data.content === Signal.Finish) {
