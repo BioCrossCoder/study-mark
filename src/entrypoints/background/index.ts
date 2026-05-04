@@ -1,6 +1,4 @@
 import { Channel, Signal } from "@/common/enums";
-import { chat, StreamChunk } from "@tanstack/ai";
-import { createAnthropicChat } from "@tanstack/ai-anthropic";
 import { model, apiKey, baseURL } from "@/../env.json";
 import { chatContext } from "@/entrypoints/background/stores/chat";
 import {
@@ -9,6 +7,8 @@ import {
   TextMessage,
   SignalMessage,
 } from "@/common/types";
+import { ChatOpenAI } from "@langchain/openai";
+import { AIMessage, HumanMessage } from "@langchain/core/messages";
 
 export default defineBackground(() => {
   const connections = new Map<string, globalThis.Browser.runtime.Port>();
@@ -26,8 +26,12 @@ export default defineBackground(() => {
   });
 });
 
-const adapter = createAnthropicChat(model as any, apiKey, {
-  baseURL,
+const agent = new ChatOpenAI({
+  model,
+  configuration: {
+    baseURL,
+    apiKey,
+  },
 });
 
 function send<T>(port: globalThis.Browser.runtime.Port, message: T) {
@@ -50,28 +54,25 @@ const callbacks: Record<
     if (textMessage.success) {
       const messages = await chatContext.getValue();
       let { content } = textMessage.data;
-      messages.push({ role: "user", content });
-      const stream = chat({
-        adapter,
-        messages,
-        stream: true,
-      });
+      messages.push(new HumanMessage(content));
+      const stream = await agent.stream(messages);
       content = "";
       for await (const chunk of stream) {
-        const text = ((chunk as StreamChunk).content ?? "") as string;
-        if (text.length > content.length) {
-          content = text;
-          send<TextMessage>(port, {
-            type: "text",
-            content,
-          });
-        }
+        const text =
+          typeof chunk.content === "string"
+            ? chunk.content
+            : JSON.stringify(chunk.content);
+        content += text;
+        send<TextMessage>(port, {
+          type: "text",
+          content: text,
+        });
       }
       send<SignalMessage>(port, {
         type: "signal",
         content: "finish",
       });
-      messages.push({ role: "assistant", content });
+      messages.push(new AIMessage(content));
       chatContext.setValue(messages);
       return;
     } // [/]

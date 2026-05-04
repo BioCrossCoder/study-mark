@@ -1,5 +1,8 @@
-export const chatContext = storage.defineItem<
-  { role: "user" | "assistant"; content: string }[]
->("session:chatContext", {
-  fallback: [],
-});
+import { AIMessage, HumanMessage } from "@langchain/core/messages";
+
+export const chatContext = storage.defineItem<(HumanMessage | AIMessage)[]>(
+  "session:chatContext",
+  {
+    fallback: [],
+  },
+);

@@ -15,12 +15,13 @@
     "postinstall": "wxt prepare"
   },
   "dependencies": {
+    "@langchain/core": "^1.1.44",
+    "@langchain/openai": "^1.4.5",
     "@lucide/vue": "^1.11.0",
     "@primeuix/themes": "^2.0.3",
     "@tailwindcss/vite": "^4.2.4",
-    "@tanstack/ai": "^0.13.0",
-    "@tanstack/ai-anthropic": "^0.8.1",
     "@tanstack/vue-query": "^5.100.5",
+    "langchain": "^1.3.5",
     "marked": "^18.0.2",
     "neverthrow": "^8.2.0",
     "primeicons": "^7.0.0",

@@ -38,7 +38,7 @@ export default function ChatWindow() {
     if (textMessage.success) {
       const lastMessage = history.value.at(-1);
       if (lastMessage?.sender === ChatMessageSender.Robot) {
-        lastMessage.message = textMessage.data.content;
+        lastMessage.message += textMessage.data.content;
       } else {
         history.value.push({
           sender: ChatMessageSender.Robot,
