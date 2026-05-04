@@ -33,6 +33,7 @@ export default function ChatWindow() {
     const errorMessage = errorMessageSchema.safeParse(message);
     if (errorMessage.success) {
       loading.value = false;
+      history.value.pop();
       showError("Call AI Failed", { message: errorMessage.data.content });
       return;
     } // [/]
@@ -102,7 +103,13 @@ function ChatBubble(props: ChatMessage) {
 function EmptyPlaceholder() {
   return vine`
     <div class="h-full flex justify-center items-center">
-      <MessagesSquare class="w-[min(50vw,50vh)] h-[min(50vw,50vh)]" stroke-width="1.2"/>
+      <div class="flex flex-col justify-between items-center">
+        <MessagesSquare class="w-[min(50vw,50vh)] h-[min(50vw,50vh)]" stroke-width="1.2"/>
+        <div class="flex items-center gap-2">
+          <p class="text-lg">Set your AI model through</p>
+          <i class="pi pi-cog"/>
+        </div>
+      </div>
     </div>
   `;
 }
