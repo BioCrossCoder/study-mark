@@ -35,3 +35,9 @@ export const enum PlanType {
   Task,
   Target,
 }
+
+export enum ModelProviderProtocol {
+  OpenAI = "openai",
+  Anthropic = "anthropic",
+  Google = "google",
+}

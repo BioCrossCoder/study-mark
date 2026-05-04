@@ -3,6 +3,7 @@ import {
   ChatMessageSender,
   ExecStatus,
   MessageType,
+  ModelProviderProtocol,
   PlanType,
   Signal,
 } from "./enums";
@@ -59,6 +60,7 @@ export const targetSchema = z.object({
 export type Target = z.infer<typeof targetSchema>;
 
 export const modelConfigSchema = z.object({
+  protocol: z.enum(ModelProviderProtocol),
   baseURL: z.url(),
   apiKey: z.string().min(1),
   model: z.string().min(1),
