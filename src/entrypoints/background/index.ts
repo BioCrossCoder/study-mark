@@ -13,11 +13,12 @@ import { AIMessage, HumanMessage } from "@langchain/core/messages";
 export default defineBackground(() => {
   const connections = new Map<string, globalThis.Browser.runtime.Port>();
   browser.runtime.onConnect.addListener((port) => {
+    // [BuildConnectionForAIChat]
     connections.set(port.name, port);
     const callback = callbacks[port.name];
     if (callback && !port.onMessage.hasListener(callback)) {
       port.onMessage.addListener(callback);
-    }
+    } // [/]
   });
   browser.runtime.onMessage.addListener((message) => {
     // [NoticeViewUpdate]
@@ -57,10 +58,12 @@ const callbacks: Record<
     // [HandleText]
     const textMessage = textMessageSchema.safeParse(message);
     if (textMessage.success) {
+      // [CallLLMWithHistoryAsContext]
       const messages = await chatContext.getValue();
       let { content } = textMessage.data;
       messages.push(new HumanMessage(content));
-      const stream = await agent.stream(messages);
+      const stream = await agent.stream(messages); // [/]
+      // [TransmitStreamOutputAndRecordMessage]
       content = "";
       for await (const chunk of stream) {
         const text =
@@ -72,13 +75,14 @@ const callbacks: Record<
           type: MessageType.Text,
           content: text,
         });
-      }
+      } // [/]
+      // [FinishMessageSendingAndUpdateHistory]
       send<SignalMessage>(port, {
         type: MessageType.Signal,
         content: Signal.Finish,
       });
       messages.push(new AIMessage(content));
-      chatContext.setValue(messages);
+      chatContext.setValue(messages); // [/]
       return;
     } // [/]
   },

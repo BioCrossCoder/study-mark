@@ -31,6 +31,7 @@ export default function TaskData() {
   const relationsQuery = useRelationsQuery();
   const connection = useConnectionStore();
   connection.listen((message) => {
+    // [UpdateViewOnDataUpdate]
     const signalMessage = signalMessageSchema.safeParse(message);
     if (
       signalMessage.success &&
@@ -38,7 +39,7 @@ export default function TaskData() {
     ) {
       refetch();
       relationsQuery.refetch();
-    }
+    } // [/]
   });
   const records = computed(() => {
     const tasks = new Array<Task>();

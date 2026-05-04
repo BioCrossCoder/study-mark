@@ -31,11 +31,12 @@ export default function CreateTargetDialog() {
   const { add } = useRelationsMutation();
   const { showError } = useNotice();
   async function handleSubmit() {
+    // [GenerateUniqueID]
     const id = await newId();
     if (id.isErr()) {
       showError("Generate Target ID Failed", id.error);
       return;
-    }
+    } // [/]
     const form: Target = {
       id: id.value,
       type: PlanType.Target,
@@ -44,16 +45,18 @@ export default function CreateTargetDialog() {
       description: description.value,
       createAt: Date.now(),
     };
+    // [ParseDataFormat]
     const { success, data, error } = targetSchema.safeParse(form);
     if (!success) {
       showError("Create Target Failed", error);
       return;
-    }
+    } // [/]
+    // [PersistDataChange]
     const result = await save(data);
     if (result.isErr()) {
       showError("Create Target Failed", result.error);
       return;
-    }
+    } // [/]
     add(tasks.value.map((taskId) => [id.value, taskId]));
     close();
   }

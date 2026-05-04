@@ -1,5 +1,5 @@
 import { useTasksMutation } from "@/stores/tasks";
-import { targetSchema, Task } from "@/common/types";
+import { targetSchema } from "@/common/types";
 import { useTargetQuery } from "../stores/target";
 import { ExecStatus, statusIcon } from "@/common/enums";
 import { useNotice } from "@/composables/useNotice";
@@ -58,20 +58,23 @@ export default function UpdateTargetDialog() {
       state: state.value,
       description: description.value,
     };
+    // [ParseDataFormat]
     const { success, data: newData, error } = targetSchema.safeParse(form);
     if (!success) {
       showError("Update Target Failed", error);
       return;
-    }
+    } // [/]
+    // [PersistDataChange]
     const result = await save(newData);
     if (result.isErr()) {
       showError("Update Target Failed", result.error);
       return;
-    }
+    } // [/]
+    // [UpdateRelations]
     await remove(
       (relationData.value ?? []).map((item) => [target.value, item.id]),
     );
-    await add(tasks.value.map((taskId) => [target.value, taskId]));
+    await add(tasks.value.map((taskId) => [target.value, taskId])); // [/]
     close();
   }
 

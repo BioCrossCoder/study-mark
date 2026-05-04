@@ -13,6 +13,7 @@ export default function CreateTaskDialog() {
   const title = ref("");
   const source = ref("");
   onMounted(async () => {
+    // [LoadCurrentTab]
     const tab = (
       await browser.tabs.query({
         active: true,
@@ -20,7 +21,7 @@ export default function CreateTaskDialog() {
       })
     )[0];
     title.value = tab.title ?? "";
-    source.value = tab.url ?? "";
+    source.value = tab.url ?? ""; // [/]
   });
 
   const description = ref("");
@@ -32,11 +33,12 @@ export default function CreateTaskDialog() {
   const { add } = useRelationsMutation();
   const { showError } = useNotice();
   async function handleSubmit() {
+    // [GenerateUniqueID]
     const id = await newId();
     if (id.isErr()) {
       showError("Generate Task ID Failed", id.error);
       return;
-    }
+    } // [/]
     const form: Task = {
       id: id.value,
       type: PlanType.Task,
@@ -47,16 +49,18 @@ export default function CreateTaskDialog() {
       position: source.value,
       createAt: Date.now(),
     };
+    // [ParseDataFormat]
     const { success, data, error } = taskSchema.safeParse(form);
     if (!success) {
       showError("Create Task Failed", error);
       return;
-    }
+    } // [/]
+    // [PersistDataChange]
     const result = await save(data);
     if (result.isErr()) {
       showError("Create Task Failed", result.error);
       return;
-    }
+    } // [/]
     await add(targets.value.map((targetId) => [id.value, targetId]));
     browser.runtime.sendMessage({
       type: MessageType.Signal,

@@ -43,11 +43,12 @@ export default function CreateTaskDialog() {
   const { add } = useRelationsMutation();
   const { showError } = useNotice();
   async function handleSubmit() {
+    // [GenerateUniqueID]
     const id = await newId();
     if (id.isErr()) {
       showError("Generate Task ID Failed", id.error);
       return;
-    }
+    } // [/]
     const form: Task = {
       id: id.value,
       type: PlanType.Task,
@@ -58,16 +59,18 @@ export default function CreateTaskDialog() {
       position: source.value,
       createAt: Date.now(),
     };
+    // [ParseDataFormat]
     const { success, data, error } = taskSchema.safeParse(form);
     if (!success) {
       showError("Create Task Failed", error);
       return;
-    }
+    } // [/]
+    // [PersistDataChange]
     const result = await save(data);
     if (result.isErr()) {
       showError("Create Task Failed", result.error);
       return;
-    }
+    } // [/]
     add(targets.value.map((targetId) => [id.value, targetId]));
     close();
   }

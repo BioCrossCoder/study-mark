@@ -72,20 +72,23 @@ export default function UpdateTaskDialog() {
       description: description.value,
       position: position.value,
     };
+    // [ParseDataFormat]
     const { success, data: newData, error } = taskSchema.safeParse(form);
     if (!success) {
       showError("Update Task Failed", error);
       return;
-    }
+    } // [/]
+    // [PersistDataChange]
     const result = await save(newData);
     if (result.isErr()) {
       showError("Update Task Failed", result.error);
       return;
-    }
+    } // [/]
+    // [UpdateRelations]
     await remove(
       (relationData.value ?? []).map((item) => [target.value, item.id]),
     );
-    await add(targets.value.map((targetId) => [target.value, targetId]));
+    await add(targets.value.map((targetId) => [target.value, targetId])); // [/]
     close();
   }
 
