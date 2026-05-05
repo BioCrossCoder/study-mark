@@ -4,6 +4,7 @@ import { useRelationsMutation } from "@/stores/relations";
 import { SignalMessage, Task, taskSchema } from "@/common/types";
 import { ExecStatus, MessageType, PlanType, Signal } from "@/common/enums";
 import { useTargetOptionsQuery } from "@/stores/target";
+import { sidePanelPath } from "@/stores/sidePanel";
 
 export default function CreateTaskDialog() {
   function close() {
@@ -69,6 +70,17 @@ export default function CreateTaskDialog() {
     close();
   }
 
+  async function handleClickMore() {
+    await sidePanelPath.setValue("/sidepanel/tasks");
+    browser.sidePanel.open({
+      windowId: browser.windows.WINDOW_ID_CURRENT,
+    });
+    browser.runtime.sendMessage({
+      type: MessageType.Signal,
+      content: Signal.ShowTasks,
+    } as SignalMessage);
+  }
+
   return vine`
     <Panel class="w-100">
       <template #header>
@@ -121,9 +133,12 @@ export default function CreateTaskDialog() {
         </div>
       </template>
       <template #footer>
-        <div class="flex justify-end gap-2">
-          <Button label="Cancel" severity="secondary" @click="close"/>
-          <Button label="Save" @click="handleSubmit"/>
+        <div class="flex justify-between">
+          <Button label="More" @click="handleClickMore"/>
+          <div class="flex justify-between gap-2">
+            <Button label="Cancel" severity="secondary" @click="close"/>
+            <Button label="Save" @click="handleSubmit"/>
+          </div>
         </div>
       </template>
     </Panel>

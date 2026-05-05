@@ -7,6 +7,7 @@ import {
   PlanType,
   Signal,
 } from "./enums";
+import { RouteLocationAsString } from "vue-router";
 
 export type ChatMessage = {
   sender: ChatMessageSender;
@@ -67,3 +68,5 @@ export const modelConfigSchema = z.object({
 });
 
 export type ModelConfig = z.infer<typeof modelConfigSchema>;
+
+export type SidePanelPagePath = RouteLocationAsString & `/sidepanel${string}`;

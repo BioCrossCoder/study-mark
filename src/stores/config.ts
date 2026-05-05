@@ -1,9 +1,11 @@
+import { ModelProviderProtocol } from "@/common/enums";
 import { ModelConfig } from "@/common/types";
 import { useMutation, useQuery } from "@tanstack/vue-query";
 
 const key = "sync:modelConfig";
 export const modelConfig = storage.defineItem<ModelConfig>(key, {
   fallback: {
+    protocol: ModelProviderProtocol.OpenAI,
     baseURL: "",
     apiKey: "",
     model: "",

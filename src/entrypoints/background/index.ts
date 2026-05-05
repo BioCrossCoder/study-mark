@@ -32,10 +32,7 @@ export default defineBackground(() => {
   browser.runtime.onMessage.addListener((message) => {
     // [NoticeViewUpdate]
     const signalMessage = signalMessageSchema.safeParse(message);
-    if (
-      signalMessage.success &&
-      signalMessage.data.content === Signal.UpdateTask
-    ) {
+    if (signalMessage.success) {
       connections.get(Channel.SidePanel)?.postMessage(message);
     } // [/]
   });

@@ -3,11 +3,19 @@ import { initSelectionStore } from "@/entrypoints/sidepanel/stores/selections";
 import { initConnectionStore, useConnectionStore } from "./stores/connection";
 import { initChatStore } from "./stores/chat";
 import { Toast } from "primevue";
+import {
+  useSidePanelPathMutation,
+  useSidePanelPathQuery,
+} from "@/stores/sidePanel";
+import { signalMessageSchema } from "@/common/types";
+import { Signal } from "@/common/enums";
+import { usePathStore } from "./composables/usePathStore";
+import { useShowTasks } from "./composables/useShowTasks";
 
 export default function App() {
-  const router = useRouter();
+  usePathStore();
+  useShowTasks();
   onMounted(() => {
-    router.replace("/sidepanel");
     initSelectionStore();
     initConnectionStore();
     initChatStore();
