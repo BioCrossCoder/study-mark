@@ -1,4 +1,3 @@
-import { RouteLocationAsString } from "vue-router";
 import { useMutation, useQuery } from "@tanstack/vue-query";
 import { SidePanelPagePath } from "@/common/types";
 

@@ -1,9 +1,4 @@
-import {
-  Channel,
-  MessageType,
-  ModelProviderProtocol,
-  Signal,
-} from "@/common/enums";
+import { Channel, MessageType, Signal } from "@/common/enums";
 import { chatContext } from "@/entrypoints/background/stores/chat";
 import {
   textMessageSchema,
@@ -12,12 +7,10 @@ import {
   SignalMessage,
   ErrorMessage,
 } from "@/common/types";
-import { ChatOpenAI } from "@langchain/openai";
-import { ChatAnthropic } from "@langchain/anthropic";
-import { ChatGoogle } from "@langchain/google";
 import { AIMessage, HumanMessage } from "@langchain/core/messages";
 import { modelConfig } from "@/stores/config";
 import { ResultAsync } from "neverthrow";
+import { createChatAgent } from "./infra/chatAgent";
 
 export default defineBackground(() => {
   const connections = new Map<string, globalThis.Browser.runtime.Port>();
@@ -42,42 +35,6 @@ function send<T>(port: globalThis.Browser.runtime.Port, message: T) {
   port.postMessage(message);
 }
 
-const modelAdapters = {
-  [ModelProviderProtocol.OpenAI]: (
-    baseURL: string,
-    model: string,
-    apiKey: string,
-  ) => {
-    return new ChatOpenAI({
-      model,
-      configuration: {
-        baseURL,
-        apiKey,
-      },
-    });
-  },
-  [ModelProviderProtocol.Anthropic]: (
-    baseURL: string,
-    model: string,
-    apiKey: string,
-  ) => {
-    return new ChatAnthropic({
-      model,
-      apiKey,
-      anthropicApiUrl: baseURL,
-    });
-  },
-  [ModelProviderProtocol.Google]: (
-    _: string,
-    model: string,
-    apiKey: string,
-  ) => {
-    return new ChatGoogle(model, {
-      apiKey,
-    });
-  },
-};
-
 const callbacks: Record<
   string,
   ((message: any, port: globalThis.Browser.runtime.Port) => void) | undefined
@@ -92,14 +49,11 @@ const callbacks: Record<
     // [HandleText]
     const textMessage = textMessageSchema.safeParse(message);
     if (textMessage.success) {
-      // [LoadModelConfig]
-      const { model, baseURL, apiKey, protocol } = await modelConfig.getValue();
-      const agent = modelAdapters[protocol](baseURL, model, apiKey); // [/]
+      const agent = createChatAgent(await modelConfig.getValue());
       // [CallLLMWithHistoryAsContext]
       const messages = await chatContext.getValue();
       let { content } = textMessage.data;
       messages.push(new HumanMessage(content));
-      agent;
       const result = await ResultAsync.fromThrowable((message) =>
         agent.stream(message),
       )(messages);
