@@ -1,7 +1,6 @@
 import { Channel, Signal } from "@/common/enums";
-import { chatContext } from "@/entrypoints/background/stores/chat";
 import { textMessageSchema, signalMessageSchema } from "@/common/types";
-import { runChatbotAgent } from "./agents/chatbot";
+import { chatbotAgent } from "./agents/chatbot";
 
 export default defineBackground(() => {
   const connections = new Map<string, globalThis.Browser.runtime.Port>();
@@ -30,13 +29,14 @@ const callbacks: Record<
     // [HandleSignal]
     const signalMessage = signalMessageSchema.safeParse(message);
     if (signalMessage.success && signalMessage.data.content === Signal.Clear) {
-      chatContext.setValue([]);
+      chatbotAgent.clearHistory();
       return;
     } // [/]
     // [HandleText]
     const textMessage = textMessageSchema.safeParse(message);
     if (textMessage.success) {
-      await runChatbotAgent(port, textMessage.data);
+      chatbotAgent.answerQuestion(port, textMessage.data);
+      return;
     } // [/]
   },
 };
