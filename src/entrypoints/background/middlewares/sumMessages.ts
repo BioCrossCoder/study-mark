@@ -1,14 +1,14 @@
 import { summarizationMiddleware } from "langchain";
 import { createModelAdapter } from "../infra/modelAdapter";
+import { maxTokens } from "@/common/constants";
 
 export function createSumMessagesMiddleware(
-  tokens: number,
   model: ReturnType<typeof createModelAdapter>,
 ) {
   return summarizationMiddleware({
     model,
     trigger: {
-      tokens,
+      tokens: maxTokens,
       messages: 20,
     },
     keep: {

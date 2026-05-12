@@ -69,15 +69,10 @@ async function answerQuestion(
   chatContext.setValue(messages); // [/]
 }
 
-const maxTokens = 32 * 1000 * 0.4;
-
 function createChatbotAgent(config: ModelConfig) {
   const model = createModelAdapter(config);
-  const sumMessages = createSumMessagesMiddleware(maxTokens, model);
-  const trimMessages = createTrimMessagesMiddleware(
-    maxTokens,
-    (content: string) => model.getNumTokens(content),
-  );
+  const sumMessages = createSumMessagesMiddleware(model);
+  const trimMessages = createTrimMessagesMiddleware(model);
   return createAgent({
     model,
     middleware: [sumMessages, trimMessages],

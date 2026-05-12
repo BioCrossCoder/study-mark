@@ -2,10 +2,11 @@ import { BaseMessage, createMiddleware, trimMessages } from "langchain";
 import { chatContext } from "../stores/chat";
 import { REMOVE_ALL_MESSAGES } from "@langchain/langgraph";
 import { RemoveMessage } from "@langchain/core/messages";
+import { maxTokens } from "@/common/constants";
+import { createModelAdapter } from "../infra/modelAdapter";
 
 export function createTrimMessagesMiddleware(
-  maxTokens: number,
-  estimate: (content: string) => Promise<number>,
+  model: ReturnType<typeof createModelAdapter>,
 ) {
   return createMiddleware({
     name: "TrimMessages",
@@ -15,7 +16,9 @@ export function createTrimMessagesMiddleware(
         strategy: "last",
         startOn: "human",
         endOn: ["ai", "human"],
-        tokenCounter: createTokenCounter(estimate),
+        tokenCounter: createTokenCounter((content: string) =>
+          model.getNumTokens(content),
+        ),
       });
       return {
         messages: [new RemoveMessage({ id: REMOVE_ALL_MESSAGES }), ...trimmed],
