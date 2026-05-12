@@ -3,16 +3,8 @@ import { ModelConfig } from "@/common/types";
 import { ChatAnthropic } from "@langchain/anthropic";
 import { ChatGoogle } from "@langchain/google";
 import { ChatOpenAI } from "@langchain/openai";
-import { createAgent } from "langchain";
 
-export function createGeneralAgent(config: ModelConfig) {
-  const model = createModelAdapter(config);
-  return createAgent({
-    model,
-  });
-}
-
-function createModelAdapter(config: ModelConfig) {
+export function createModelAdapter(config: ModelConfig) {
   const { model, baseURL, apiKey } = config;
   switch (config.protocol) {
     case ModelProviderProtocol.OpenAI:
