@@ -13,6 +13,7 @@ import { createModelAdapter } from "../infra/modelAdapter";
 import { createAgent } from "langchain";
 import { createTrimMessagesMiddleware } from "../middlewares/trimMessages";
 import { createSumMessagesMiddleware } from "../middlewares/sumMessages";
+import { createWebSearchTool } from "../tools/webSearch";
 
 export const chatbotAgent = {
   answerQuestion,
@@ -69,13 +70,35 @@ async function answerQuestion(
   chatContext.setValue(messages); // [/]
 }
 
+function buildSystemPrompt(searchApiKey: string) {
+  const extraPrompt = searchApiKey
+    ? `
+    You can use the web_search tool to supplement necessary information.
+    Only use it when you need latest information, specific facts or real-time data.
+    For each user question, the web_search tool can only be called once.
+  `
+    : "";
+  return (
+    `
+      You are an assistant for study guidance,
+      focusing on providing useful information and advice
+      for learners to plan their self-study.
+    ` + extraPrompt
+  );
+}
+
 function createChatbotAgent(config: ModelConfig) {
   const model = createModelAdapter(config);
   const sumMessages = createSumMessagesMiddleware(model);
   const trimMessages = createTrimMessagesMiddleware(model);
+  const { tavilyApiKey } = config;
+  const tools = tavilyApiKey ? [createWebSearchTool(tavilyApiKey)] : undefined;
+  const systemPrompt = buildSystemPrompt(tavilyApiKey);
   return createAgent({
     model,
     middleware: [sumMessages, trimMessages],
+    tools,
+    systemPrompt,
   });
 }
 

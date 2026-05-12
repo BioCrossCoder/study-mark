@@ -29,12 +29,14 @@ export default function ChatConfigDialog() {
 
   const model = ref("");
   const apiKey = ref("");
+  const tavilyApiKey = ref("");
   const { data } = useModelConfigQuery();
   watch(data, (value) => {
     protocol.value = value?.protocol ?? protocol.value;
     baseURL.value = value?.baseURL ?? baseURL.value;
     model.value = value?.model ?? model.value;
     apiKey.value = value?.apiKey ?? apiKey.value;
+    tavilyApiKey.value = value?.tavilyApiKey ?? tavilyApiKey.value;
   });
 
   const disabled = computed(
@@ -49,6 +51,7 @@ export default function ChatConfigDialog() {
       baseURL: baseURL.value,
       apiKey: apiKey.value,
       model: model.value,
+      tavilyApiKey: tavilyApiKey.value,
     };
     // [ParseDataFormat]
     const { success, data, error } = modelConfigSchema.safeParse(form);
@@ -92,11 +95,27 @@ export default function ChatConfigDialog() {
           autofocus
         />
       </div>
-      <div class="flex flex-col mb-8">
+      <div class="flex flex-col mb-4">
         <label for="key" class="text-lg">API Key</label>
         <InputText
           id="key"
           v-model="apiKey"
+          autocomplete="off"
+          class="flex-auto h-10 text-base!"
+        />
+      </div>
+      <div class="flex flex-col mb-8">
+        <label for="search" class="text-lg flex items-center">
+          <p>Search API Key</p>
+          <Button link class="py-0!">
+            <template #default>
+              <a href="https://app.tavily.com/" target="_blank">Apply on Tavily</a>
+            </template>
+          </Button>
+        </label>
+        <InputText
+          id="search"
+          v-model="tavilyApiKey"
           autocomplete="off"
           class="flex-auto h-10 text-base!"
         />

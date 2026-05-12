@@ -9,6 +9,7 @@ export const modelConfig = storage.defineItem<ModelConfig>(key, {
     baseURL: "",
     apiKey: "",
     model: "",
+    tavilyApiKey:''
   },
 });
 

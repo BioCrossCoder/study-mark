@@ -65,6 +65,7 @@ export const modelConfigSchema = z.object({
   baseURL: z.url(),
   apiKey: z.string().min(1),
   model: z.string().min(1),
+  tavilyApiKey: z.string(),
 });
 
 export type ModelConfig = z.infer<typeof modelConfigSchema>;
