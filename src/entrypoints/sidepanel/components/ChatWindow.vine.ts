@@ -90,7 +90,7 @@ function ChatBubble(props: ChatMessage) {
       <template #header>
         <i :class="sender"/>
       </template>
-      <p v-html="marked.parse(message)" class="whitespace-pre-wrap [&_code]:whitespace-pre-wrap"/>
+      <p v-html="marked.parse(message)" class="whitespace-pre-wrap [&_code]:whitespace-pre-wrap [&_code]:break-all"/>
       <template #footer>
         <div class="flex justify-end">
           <span>{{timestamp.toLocaleString()}}</span>
