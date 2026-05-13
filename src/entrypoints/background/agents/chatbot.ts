@@ -8,7 +8,7 @@ import {
 } from "@/common/types";
 import { AIMessageChunk, HumanMessage } from "@langchain/core/messages";
 import { ResultAsync } from "neverthrow";
-import { MessageType, Signal } from "@/common/enums";
+import { MessageType, Signal, ToolName } from "@/common/enums";
 import { createModelAdapter } from "../infra/modelAdapter";
 import { createAgent } from "langchain";
 import { createTrimMessagesMiddleware } from "../middlewares/trimMessages";
@@ -73,9 +73,9 @@ async function answerQuestion(
 function buildSystemPrompt(searchApiKey: string) {
   const extraPrompt = searchApiKey
     ? `
-    You can use the web_search tool to supplement necessary information.
+    You can use the ${ToolName.WebSearch} tool to supplement necessary information.
     Only use it when you need latest information, specific facts or real-time data.
-    For each user question, the web_search tool can only be called once.
+    For each user question, the ${ToolName.WebSearch} tool can only be called once.
   `
     : "";
   return (

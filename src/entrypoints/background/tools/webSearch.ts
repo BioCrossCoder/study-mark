@@ -1,3 +1,4 @@
+import { ToolName } from "@/common/enums";
 import { TavilySearchAPIRetriever } from "@langchain/community/retrievers/tavily_search_api";
 import { tool } from "langchain";
 import { ResultAsync } from "neverthrow";
@@ -15,7 +16,7 @@ export function createWebSearchTool(apiKey: string) {
       return result.isErr() ? "Query Failed" : JSON.stringify(result.value);
     },
     {
-      name: "web_search",
+      name: ToolName.WebSearch,
       description:
         "Search the web for current information. Use this when you need up-to-date information or facts.",
       schema: z.object({
