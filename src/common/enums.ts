@@ -35,6 +35,7 @@ export const statusIcon = {
 export const enum PlanType {
   Task,
   Target,
+  Resource,
 }
 
 export enum ModelProviderProtocol {

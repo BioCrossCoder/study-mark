@@ -4,6 +4,7 @@ import NavigationGroup from "../components/NavigationGroup.vine";
 import CreateTaskDialog from "../components/CreateTaskDialog.vine";
 import { PlanType } from "@/common/enums";
 import CreateTargetDialog from "../components/CreateTargetDialog.vine";
+import CreateResourceDialog from "../components/CreateResourceDialog.vine";
 
 export default function Page() {
   const list = ref({ tab: PlanType.Task });
@@ -34,6 +35,7 @@ function TopBar(props: { tab: PlanType }) {
         />
         <CreateTaskDialog v-if="tab === PlanType.Task" ref="dialog"/>
         <CreateTargetDialog v-if="tab === PlanType.Target" ref="dialog"/>
+        <CreateResourceDialog v-if="tab === PlanType.Resource" ref="dialog"/>
       </template>
     </Toolbar>
   `;

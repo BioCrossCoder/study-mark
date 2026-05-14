@@ -13,13 +13,14 @@ import {
   useConfirm,
 } from "primevue";
 import { useTasksMutation, useTasksQuery } from "@/stores/tasks";
-import { signalMessageSchema, Target, Task } from "@/common/types";
+import { Resource, signalMessageSchema, Target, Task } from "@/common/types";
 import { PlanType, Signal, statusIcon } from "@/common/enums";
 import UpdateTaskDialog from "./UpdateTaskDialog.vine";
 import UpdateTargetDialog from "./UpdateTargetDialog.vine";
 import { useRelationsQuery } from "@/stores/relations";
 import { useNotice } from "@/composables/useNotice";
 import { useConnectionStore } from "../stores/connection";
+import UpdateResourceDialog from "./UpdateResourceDialog.vine";
 
 export default function TaskData() {
   const tab = ref(PlanType.Task);
@@ -44,6 +45,7 @@ export default function TaskData() {
   const records = computed(() => {
     const tasks = new Array<Task>();
     const targets = new Array<Target>();
+    const resources = new Array<Resource>();
     Object.values(data.value ?? {}).forEach((item) => {
       switch (item.type) {
         case PlanType.Task:
@@ -52,11 +54,15 @@ export default function TaskData() {
         case PlanType.Target:
           targets.push(item);
           break;
+        case PlanType.Resource:
+          resources.push(item);
+          break;
       }
     });
     tasks.sort((a, b) => b.createAt - a.createAt);
     targets.sort((a, b) => b.createAt - a.createAt);
-    return { tasks, targets };
+    resources.sort((a, b) => b.createAt - a.createAt);
+    return { tasks, targets, resources };
   });
 
   const container = ref(document.createElement("div"));
@@ -83,6 +89,12 @@ export default function TaskData() {
                 <p class="text-base">Targets</p>
               </div>
             </Tab>
+            <Tab :value="PlanType.Resource">
+              <div class="flex items-center">
+                <i class="pi pi-globe mr-2"/>
+                <p class="text-base">Resources</p>
+              </div>
+            </Tab>
           </TabList>
         </div>
         <TabPanels :style="panelStyle">
@@ -91,6 +103,9 @@ export default function TaskData() {
           </TabPanel>
           <TabPanel :value="PlanType.Target" class="h-full">
             <TargetList :data="records"/>
+          </TabPanel>
+          <TabPanel :value="PlanType.Resource" class="h-full">
+            <ResourceList :data="records"/>
           </TabPanel>
         </TabPanels>
       </Tabs>
@@ -246,5 +261,43 @@ function TargetList(props: { data: { targets: Target[] } }) {
       </Card>
     </ScrollPanel>
     <UpdateTargetDialog ref="dialog"/>
+  `;
+}
+
+function ResourceList(props: { data: { resources: Resource[] } }) {
+  const { remove } = useTasksMutation();
+  function handleDelete(id: string) {
+    remove(id);
+  }
+
+  const dialog = ref({ open: (_: string) => {} });
+  function handleUpdate(id: string) {
+    dialog.value.open(id);
+  }
+
+  return vine`
+     <ScrollPanel style="width:100%; height:100%">
+      <Card v-for="item in data.resources" :key="item.id" class="border mb-5 mx-3">
+        <template #title>
+          <div class="flex justify-between items-center">
+            <div class="flex items-center justify-between">
+              <p>{{item.title}}</p>
+            </div>
+            <div class="flex justify-between items-center">
+              <i
+                class="pi pi-pen-to-square hover:cursor-pointer hover:text-primary-300 mr-4"
+                @click="()=>handleUpdate(item.id)"
+              />
+              <i
+                class="pi pi-trash hover:cursor-pointer hover:text-red-400"
+                @click="()=>handleDelete(item.id)"
+              />
+            </div>
+          </div>
+        </template>
+        <template #content>{{item.description}}</template>
+      </Card>
+    </ScrollPanel>
+    <UpdateResourceDialog ref="dialog"/>
   `;
 }

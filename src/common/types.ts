@@ -8,6 +8,7 @@ import {
   Signal,
 } from "./enums";
 import { RouteLocationAsString } from "vue-router";
+import type { LanguageCode } from "iso-639-1";
 
 export type ChatMessage = {
   sender: ChatMessageSender;
@@ -60,6 +61,17 @@ export const targetSchema = z.object({
 
 export type Target = z.infer<typeof targetSchema>;
 
+export const resourceSchema = z.object({
+  id: z.string(),
+  type: z.literal(PlanType.Resource),
+  title: z.string().min(1),
+  description: z.string(),
+  source: z.url(),
+  createAt: z.number(),
+});
+
+export type Resource = z.infer<typeof resourceSchema>;
+
 export const modelConfigSchema = z.object({
   protocol: z.enum(ModelProviderProtocol),
   baseURL: z.url(),
@@ -71,3 +83,22 @@ export const modelConfigSchema = z.object({
 export type ModelConfig = z.infer<typeof modelConfigSchema>;
 
 export type SidePanelPagePath = RouteLocationAsString & `/sidepanel${string}`;
+
+type MicroLinkApiSuccessResp = {
+  status: "success";
+  data: {
+    title: string;
+    description: string | null;
+    lang: LanguageCode;
+  };
+};
+
+type MicroLinkApiFailureResp = {
+  status: "fail" | "error";
+  message: string;
+};
+
+// https://microlink.io/docs/api/getting-started/data-fields
+export type MicroLinkApiResp =
+  | MicroLinkApiSuccessResp
+  | MicroLinkApiFailureResp;

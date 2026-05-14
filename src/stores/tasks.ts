@@ -1,10 +1,11 @@
-import { Target, Task } from "@/common/types";
+import { Resource, Target, Task } from "@/common/types";
 import { useMutation, useQuery } from "@tanstack/vue-query";
 import { ok, err, Result } from "neverthrow";
 import { useRelationsMutation } from "./relations";
 
+type Plan = Task | Target | Resource;
 const key = "local:taskData";
-const taskData = storage.defineItem<Record<string, Task | Target>>(key, {
+const taskData = storage.defineItem<Record<string, Plan>>(key, {
   fallback: {},
 });
 
@@ -24,10 +25,7 @@ export function useTasksMutation() {
     },
   });
 
-  function isNameConflict(
-    item: Task | Target,
-    data: Record<string, Task | Target>,
-  ) {
+  function isNameConflict(item: Plan, data: Record<string, Plan>) {
     const titles = Object.values(data)
       .map((item) => ({
         [item.title]: item.id,
@@ -36,7 +34,7 @@ export function useTasksMutation() {
     return ![item.id, undefined].includes(titles[item.title]);
   }
 
-  async function save(item: Task | Target): Promise<Result<void, Error>> {
+  async function save(item: Plan): Promise<Result<void, Error>> {
     const data = await taskData.getValue();
     if (isNameConflict(item, data)) {
       return err(new Error("Duplicated Title"));
