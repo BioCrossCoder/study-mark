@@ -43,3 +43,9 @@ export enum ModelProviderProtocol {
   Anthropic = "anthropic",
   Google = "google",
 }
+
+export const enum ToolName {
+  WebSearch = "web_search",
+  SearchFavorites = "search_favorites",
+  LoadResources = "load_resources",
+}

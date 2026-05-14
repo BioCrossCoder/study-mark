@@ -5,7 +5,7 @@ import { useRelationsMutation } from "./relations";
 
 type Plan = Task | Target | Resource;
 const key = "local:taskData";
-const taskData = storage.defineItem<Record<string, Plan>>(key, {
+export const taskData = storage.defineItem<Record<string, Plan>>(key, {
   fallback: {},
 });
 
