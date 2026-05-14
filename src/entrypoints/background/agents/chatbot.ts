@@ -8,12 +8,12 @@ import {
 } from "@/common/types";
 import { AIMessageChunk, HumanMessage } from "@langchain/core/messages";
 import { ResultAsync } from "neverthrow";
-import { MessageType, Signal, ToolName } from "@/common/enums";
+import { MessageType, Signal } from "@/common/enums";
 import { createModelAdapter } from "../infra/modelAdapter";
 import { createAgent } from "langchain";
 import { createTrimMessagesMiddleware } from "../middlewares/trimMessages";
 import { createSumMessagesMiddleware } from "../middlewares/sumMessages";
-import { createWebSearchTool } from "../tools/webSearch";
+import { createWebSearchTool, webSearchToolPrompt } from "../tools/webSearch";
 
 export const chatbotAgent = {
   answerQuestion,
@@ -70,21 +70,18 @@ async function answerQuestion(
   chatContext.setValue(messages); // [/]
 }
 
+const corePrompt = `
+  You are an assistant for study guidance,
+  focusing on providing useful information and advice
+  for learners to plan their self-study.
+`;
+
 function buildSystemPrompt(searchApiKey: string) {
-  const extraPrompt = searchApiKey
-    ? `
-    You can use the ${ToolName.WebSearch} tool to supplement necessary information.
-    Only use it when you need latest information, specific facts or real-time data.
-    For each user question, the ${ToolName.WebSearch} tool can only be called once.
-  `
-    : "";
-  return (
-    `
-      You are an assistant for study guidance,
-      focusing on providing useful information and advice
-      for learners to plan their self-study.
-    ` + extraPrompt
-  );
+  const prompts = [corePrompt];
+  if (searchApiKey) {
+    prompts.push(webSearchToolPrompt);
+  }
+  return prompts.join("\n");
 }
 
 function createChatbotAgent(config: ModelConfig) {

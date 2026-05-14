@@ -43,7 +43,3 @@ export enum ModelProviderProtocol {
   Anthropic = "anthropic",
   Google = "google",
 }
-
-export const enum ToolName {
-  WebSearch = "web_search",
-}
