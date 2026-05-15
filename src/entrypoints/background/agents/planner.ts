@@ -6,13 +6,7 @@ import {
 } from "@/common/types";
 import { createWebSearchTool, webSearchToolPrompt } from "../tools/webSearch";
 import { createModelAdapter } from "../infra/modelAdapter";
-import {
-  AIMessageChunk,
-  createAgent,
-  DynamicStructuredTool,
-  DynamicTool,
-  HumanMessage,
-} from "langchain";
+import { createAgent, DynamicStructuredTool, HumanMessage } from "langchain";
 import z from "zod";
 import {
   loadResourcesTool,
@@ -22,7 +16,6 @@ import { modelConfig } from "@/stores/config";
 import { ResultAsync } from "neverthrow";
 import { send } from "@/common/utils";
 import { MessageType, Signal } from "@/common/enums";
-import { chatContext } from "../stores/chat";
 
 export const plannerAgent = {
   outputPlan,
@@ -75,6 +68,7 @@ const corePrompt = `
   You are a learning planner,
   focusing on help learners make self-study plan
   by creating Targets and Tasks for them.
+  Targets are the goal of finishing Tasks.
 `;
 
 function buildSystemPrompt(searchApiKey: string) {
@@ -87,7 +81,7 @@ function buildSystemPrompt(searchApiKey: string) {
 
 async function createPlannerAgent(config: ModelConfig) {
   const model = createModelAdapter(config);
-  const tools: (DynamicStructuredTool | DynamicTool)[] = [loadResourcesTool];
+  const tools: DynamicStructuredTool[] = [loadResourcesTool];
   const { tavilyApiKey } = config;
   if (tavilyApiKey) {
     tools.push(createWebSearchTool(tavilyApiKey));

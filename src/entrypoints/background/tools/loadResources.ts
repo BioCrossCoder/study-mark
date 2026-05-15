@@ -1,24 +1,32 @@
 import { PlanType, ToolName } from "@/common/enums";
 import { taskData } from "@/stores/tasks";
 import { tool } from "langchain";
+import z from "zod";
 
 export const loadResourcesTool = tool(
   async () => {
     const data = await taskData.getValue();
-    return Object.values(data).filter(
-      (item) => item.type === PlanType.Resource,
+    return JSON.stringify(
+      Object.values(data)
+        .filter((item) => item.type === PlanType.Resource)
+        .map((item) => {
+          const { title, description, source } = item;
+          return { title, source, description };
+        }),
     );
   },
   {
     name: ToolName.LoadResources,
-    description: "Load Resources",
+    description:
+      "Load predefined learning Resources. Use this for making self-study plans.",
+    schema: z.object({}).strict(),
   },
 );
 
 export const loadResourcesToolPrompt = `
-  You can use the ${ToolName.LoadResources} tool to load Resources.
-  Resources are websites that providing many webpages that can be source of Tasks.
-  Check description of a Resource to decide if choose it.
-  Extract source of chosen Resources to a string array,
-  which can be the includeDomains param of the ${ToolName.WebSearch} tool
+  Always use the ${ToolName.LoadResources} tool first to load Resources before planning.
+  Then check their description to choose Resources, only exclude Resources that are clearly not relevant.
+  Finally extract source of chosen Resources to an array, and passing as includeDomains to ${ToolName.WebSearch} tool.
+  Tasks should have proper size, consider complete tutorials instead of their single chapter first.
+  Make an extra calling of ${ToolName.WebSearch} without includeDomains only if you cannot find enough Task sources through chosen Resources. If the Task count is not less than user's explicit demand, it is considered enough.
 `;
