@@ -6,6 +6,7 @@ export const enum MessageType {
   Signal,
   Text,
   Error,
+  Plan,
 }
 
 export enum Signal {
@@ -48,4 +49,9 @@ export const enum ToolName {
   WebSearch = "web_search",
   SearchFavorites = "search_favorites",
   LoadResources = "load_resources",
+}
+
+export enum AgentMode {
+  Chat = "Chat",
+  Plan = "Plan",
 }

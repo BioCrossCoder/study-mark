@@ -30,6 +30,13 @@ export const textMessageSchema = z.object({
 
 export type TextMessage = z.infer<typeof textMessageSchema>;
 
+export const planMessageSchema = z.object({
+  type: z.literal(MessageType.Plan),
+  content: z.string(),
+});
+
+export type PlanMessage = z.infer<typeof planMessageSchema>;
+
 export const errorMessageSchema = z.object({
   type: z.literal(MessageType.Error),
   content: z.string(),

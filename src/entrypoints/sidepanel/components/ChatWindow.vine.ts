@@ -1,19 +1,28 @@
 import { useConnectionStore } from "../stores/connection";
 import {
   Button,
+  Chip,
   IconField,
   InputIcon,
-  InputText,
   Panel,
   ScrollPanel,
   ScrollTop,
+  Select,
+  Textarea,
 } from "primevue";
-import { ChatMessageSender, MessageType, Signal } from "@/common/enums";
+import {
+  AgentMode,
+  ChatMessageSender,
+  MessageType,
+  Signal,
+} from "@/common/enums";
 import { useChatStore } from "../stores/chat";
-import { MessagesSquare } from "@lucide/vue";
+import { ArrowBigUp, CornerDownLeft, MessagesSquare } from "@lucide/vue";
 import {
   ChatMessage,
   errorMessageSchema,
+  PlanMessage,
+  planMessageSchema,
   signalMessageSchema,
   TextMessage,
   textMessageSchema,
@@ -27,6 +36,19 @@ export default function ChatWindow() {
   const bottomAnchor = ref(document.createElement("div"));
   const connection = useConnectionStore();
   const { showError } = useNotice();
+
+  function updateHistory(message: string) {
+    const lastMessage = history.value.at(-1);
+    if (lastMessage?.sender === ChatMessageSender.Robot) {
+      lastMessage.message += message;
+    } else {
+      history.value.push({
+        sender: ChatMessageSender.Robot,
+        message,
+        timestamp: new Date(),
+      });
+    }
+  }
 
   connection.listen((message) => {
     // [HandleError]
@@ -46,16 +68,14 @@ export default function ChatWindow() {
     // [HandleText]
     const textMessage = textMessageSchema.safeParse(message);
     if (textMessage.success) {
-      const lastMessage = history.value.at(-1);
-      if (lastMessage?.sender === ChatMessageSender.Robot) {
-        lastMessage.message += textMessage.data.content;
-      } else {
-        history.value.push({
-          sender: ChatMessageSender.Robot,
-          message: textMessage.data.content,
-          timestamp: new Date(),
-        });
-      }
+      updateHistory(textMessage.data.content);
+      useScroll(bottomAnchor, "smooth", "end");
+      return;
+    } // [/]
+    // [HandlePlan]
+    const planMessage = planMessageSchema.safeParse(message);
+    if (planMessage.success) {
+      updateHistory(planMessage.data.content);
       useScroll(bottomAnchor, "smooth", "end");
       return;
     } // [/]
@@ -116,13 +136,16 @@ function EmptyPlaceholder() {
 
 function InputBox(props: { anchor: HTMLElement }) {
   const question = ref("");
-  const isQuestionEmpty = computed(() => question.value.length === 0);
+  const isQuestionEmpty = computed(() => question.value.trim() === "");
   const { loading } = useChatStore();
   const isSubmitDisabled = computed(
     () => isQuestionEmpty.value || loading.value,
   );
   const { history } = useChatStore();
   const connection = useConnectionStore();
+
+  const mode = ref(AgentMode.Chat);
+  const options = Object.values(AgentMode);
 
   function handleSubmit() {
     if (isSubmitDisabled.value) {
@@ -134,12 +157,30 @@ function InputBox(props: { anchor: HTMLElement }) {
       message: question.value,
       timestamp: new Date(),
     });
-    connection.send<TextMessage>({
-      type: MessageType.Text,
-      content: question.value,
-    });
+    switch (mode.value) {
+      case AgentMode.Chat:
+        connection.send<TextMessage>({
+          type: MessageType.Text,
+          content: question.value,
+        });
+        break;
+      case AgentMode.Plan:
+        connection.send<PlanMessage>({
+          type: MessageType.Plan,
+          content: question.value,
+        });
+        break;
+    }
     question.value = "";
     useScroll(props.anchor, "instant", "end");
+  }
+
+  function handleEnter(event: KeyboardEvent) {
+    if (event.isComposing || event.shiftKey) {
+      return;
+    }
+    event.preventDefault();
+    handleSubmit();
   }
 
   function handleClear() {
@@ -151,14 +192,33 @@ function InputBox(props: { anchor: HTMLElement }) {
   );
 
   return vine`
-    <div class="w-full flex my-2">
-      <IconField class="w-full ml-2">
-        <InputText type="text" v-model="question" @keydown.enter="handleSubmit" class="w-full"/>
+    <div class="w-full flex flex-col px-2 mb-2">
+      <IconField class="w-full">
+        <Textarea
+          v-model="question"
+          @keydown.enter="handleEnter"
+          autocomplete="off"
+          rows="3"
+          class="w-full"
+          style="resize: none;"
+        /> 
         <InputIcon v-if="!isQuestionEmpty">
           <i class="pi pi-times-circle hover:cursor-pointer hover:text-red-300" @click="handleClear"/>
         </InputIcon>
       </IconField>
-      <Button :icon="buttonIcon" class="flex-none mr-2" @click="handleSubmit" :disabled="isSubmitDisabled"/>
+      <div class="flex items-center justify-between">
+        <Select
+          v-model="mode"
+          :options="options"
+        />
+        <Chip label="Newline">
+          <template #icon>
+            <ArrowBigUp class="h-5" />
+            <CornerDownLeft class="h-5" />
+          </template>
+        </Chip>
+        <Button :icon="buttonIcon" class="mr-2" @click="handleSubmit" :disabled="isSubmitDisabled"/>
+      </div>
     </div>
   `;
 }

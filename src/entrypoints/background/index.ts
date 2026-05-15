@@ -1,6 +1,11 @@
 import { Channel, Signal } from "@/common/enums";
-import { textMessageSchema, signalMessageSchema } from "@/common/types";
+import {
+  textMessageSchema,
+  signalMessageSchema,
+  planMessageSchema,
+} from "@/common/types";
 import { chatbotAgent } from "./agents/chatbot";
+import { plannerAgent } from "./agents/planner";
 
 export default defineBackground(() => {
   const connections = new Map<string, globalThis.Browser.runtime.Port>();
@@ -36,6 +41,12 @@ const callbacks: Record<
     const textMessage = textMessageSchema.safeParse(message);
     if (textMessage.success) {
       chatbotAgent.answerQuestion(port, textMessage.data);
+      return;
+    } // [/]
+    // [HandlePlan]
+    const planMessage = planMessageSchema.safeParse(message);
+    if (planMessage.success) {
+      plannerAgent.outputPlan(port, planMessage.data);
       return;
     } // [/]
   },

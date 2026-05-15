@@ -14,6 +14,7 @@ import { createAgent } from "langchain";
 import { createTrimMessagesMiddleware } from "../middlewares/trimMessages";
 import { createSumMessagesMiddleware } from "../middlewares/sumMessages";
 import { createWebSearchTool, webSearchToolPrompt } from "../tools/webSearch";
+import { send } from "@/common/utils";
 
 export const chatbotAgent = {
   answerQuestion,
@@ -25,7 +26,7 @@ async function answerQuestion(
   data: TextMessage,
 ) {
   const agent = createChatbotAgent(await modelConfig.getValue());
-  // [CallLLMWithHistoryAsContext]
+  // [CallAgentWithHistoryAsContext]
   const messages = await chatContext.getValue();
   const { content } = data;
   messages.push(new HumanMessage(content));
@@ -101,8 +102,4 @@ function createChatbotAgent(config: ModelConfig) {
 
 function clearHistory() {
   chatContext.setValue([]);
-}
-
-function send<T>(port: globalThis.Browser.runtime.Port, message: T) {
-  port.postMessage(message);
 }
