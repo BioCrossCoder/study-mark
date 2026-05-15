@@ -1,10 +1,10 @@
 import { Button, InputText, MultiSelect, Panel, Textarea } from "primevue";
-import { useTasksMutation } from "@/stores/tasks";
 import { useRelationsMutation } from "@/stores/relations";
-import { SignalMessage, Task, taskSchema } from "@/common/types";
+import { SignalMessage, taskSchema } from "@/common/types";
 import { ExecStatus, MessageType, ObjectType, Signal } from "@/common/enums";
 import { useTargetOptionsQuery } from "@/stores/target";
 import { sidePanelPath } from "@/stores/sidePanel";
+import { useCreateTask } from "@/composables/useCreateTask";
 
 export default function CreateTaskDialog() {
   function close() {
@@ -30,39 +30,18 @@ export default function CreateTaskDialog() {
   const { data } = useTargetOptionsQuery();
   const options = computed(() => data.value ?? []);
 
-  const { newId, save } = useTasksMutation();
   const { add } = useRelationsMutation();
-  const { showError } = useNotice();
+  const createTask = useCreateTask();
   async function handleSubmit() {
-    // [GenerateUniqueID]
-    const id = await newId();
-    if (id.isErr()) {
-      showError("Generate Task ID Failed", id.error);
-      return;
-    } // [/]
-    const form: Task = {
-      id: id.value,
-      type: ObjectType.Task,
+    const id = await createTask({
       title: title.value,
-      state: ExecStatus.Todo,
       description: description.value,
       source: source.value,
-      position: source.value,
-      createAt: Date.now(),
-    };
-    // [ParseDataFormat]
-    const { success, data, error } = taskSchema.safeParse(form);
-    if (!success) {
-      showError("Create Task Failed", error);
+    });
+    if (!id) {
       return;
-    } // [/]
-    // [PersistDataChange]
-    const result = await save(data);
-    if (result.isErr()) {
-      showError("Create Task Failed", result.error);
-      return;
-    } // [/]
-    await add(targets.value.map((targetId) => [id.value, targetId]));
+    }
+    await add(targets.value.map((targetId) => [id, targetId]));
     browser.runtime.sendMessage({
       type: MessageType.Signal,
       content: Signal.UpdateTask,
