@@ -13,7 +13,6 @@ import {
   HumanMessage,
   toolStrategy,
 } from "langchain";
-import z from "zod";
 import {
   loadResourcesTool,
   loadResourcesToolPrompt,
@@ -23,8 +22,10 @@ import { ResultAsync } from "neverthrow";
 import { send } from "@/common/utils";
 import { MessageType, Signal } from "@/common/enums";
 
+let abortController: AbortController | null = null;
 export const plannerAgent = {
   outputPlan,
+  abortPlan,
 };
 
 async function outputPlan(
@@ -45,7 +46,12 @@ async function outputPlan(
   }
   const stream = result.unwrapOr(null)!; // [/]
   // [TransmitStreamOutput]
+  abortController = new AbortController();
   for await (const [chunk] of stream) {
+    if (abortController.signal.aborted) {
+      await stream.cancel();
+      break;
+    }
     if (chunk.type !== "ai") {
       continue;
     }
@@ -67,10 +73,19 @@ async function outputPlan(
       });
     }
   } // [/]
+  abortController = null;
   send<SignalMessage>(port, {
     type: MessageType.Signal,
     content: Signal.Finish,
   });
+}
+
+function abortPlan() {
+  if (!abortController) {
+    return;
+  }
+  abortController.abort();
+  abortController = null;
 }
 
 const corePrompt = `

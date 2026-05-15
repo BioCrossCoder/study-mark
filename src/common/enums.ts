@@ -15,6 +15,7 @@ export enum Signal {
   Finish,
   UpdateTask,
   ShowTasks,
+  Stop,
 }
 
 export const enum ChatMessageSender {

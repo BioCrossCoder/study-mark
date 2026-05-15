@@ -16,9 +16,11 @@ import { createSumMessagesMiddleware } from "../middlewares/sumMessages";
 import { createWebSearchTool, webSearchToolPrompt } from "../tools/webSearch";
 import { send } from "@/common/utils";
 
+let abortController: AbortController | null = null;
 export const chatbotAgent = {
   answerQuestion,
   clearHistory,
+  abortAnswer,
 };
 
 async function answerQuestion(
@@ -41,8 +43,13 @@ async function answerQuestion(
   }
   const stream = result.unwrapOr(null)!; // [/]
   // [TransmitStreamOutputAndRecordMessage]
+  abortController = new AbortController();
   const responseChunks = new Array<AIMessageChunk>();
   for await (const [chunk] of stream) {
+    if (abortController.signal.aborted) {
+      await stream.cancel();
+      break;
+    }
     if (chunk.type !== "ai") {
       continue;
     }
@@ -67,13 +74,22 @@ async function answerQuestion(
     type: MessageType.Signal,
     content: Signal.Finish,
   });
-  if (responseChunks.length === 0) {
+  if (responseChunks.length === 0 || abortController.signal.aborted) {
     return;
   }
+  abortController = null;
   messages.push(
     responseChunks.reduce((c1, c2) => c1.concat(c2), new AIMessageChunk("")),
   );
   chatContext.setValue(messages); // [/]
+}
+
+function abortAnswer() {
+  if (!abortController) {
+    return;
+  }
+  abortController.abort();
+  abortController = null;
 }
 
 const corePrompt = `

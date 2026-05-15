@@ -24,6 +24,7 @@ export default function CreateResourceDialog() {
 
   const source = ref("");
   async function handleSetSource() {
+    // [LoadTabInfo]
     const tab = (
       await browser.tabs.query({
         active: true,
@@ -31,7 +32,8 @@ export default function CreateResourceDialog() {
       })
     )[0];
     source.value = tab.url ?? source.value;
-    title.value = tab.title ?? title.value;
+    title.value = tab.title ?? title.value; // [/]
+    // [GetDescription]
     if (!source.value) {
       return;
     }
@@ -43,7 +45,7 @@ export default function CreateResourceDialog() {
     if (result.status !== "success") {
       return;
     }
-    description.value = result.data.description ?? description.value;
+    description.value = result.data.description ?? description.value; // [/]
   }
 
   const { newId, save } = useTasksMutation();

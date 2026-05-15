@@ -29,9 +29,14 @@ const callbacks: Record<
   [Channel.SidePanel]: async (message, port) => {
     // [HandleSignal]
     const signalMessage = signalMessageSchema.safeParse(message);
-    if (signalMessage.success && signalMessage.data.content === Signal.Clear) {
-      chatbotAgent.clearHistory();
-      return;
+    if (signalMessage.success) {
+      switch (signalMessage.data.content) {
+        case Signal.Clear:
+          return chatbotAgent.clearHistory();
+        case Signal.Stop:
+          chatbotAgent.abortAnswer();
+          plannerAgent.abortPlan();
+      }
     } // [/]
     // [HandleText]
     const textMessage = textMessageSchema.safeParse(message);

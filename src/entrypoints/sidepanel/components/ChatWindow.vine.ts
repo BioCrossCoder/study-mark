@@ -24,6 +24,7 @@ import {
   ChatMessage,
   errorMessageSchema,
   Plan,
+  SignalMessage,
   signalMessageSchema,
   TextMessage,
   textMessageSchema,
@@ -187,7 +188,7 @@ function InputBox(props: { anchor: HTMLElement }) {
   const isQuestionEmpty = computed(() => question.value.trim() === "");
   const { loading } = useChatStore();
   const isSubmitDisabled = computed(
-    () => isQuestionEmpty.value || loading.value,
+    () => isQuestionEmpty.value && !loading.value,
   );
   const { history } = useChatStore();
   const connection = useConnectionStore();
@@ -196,9 +197,19 @@ function InputBox(props: { anchor: HTMLElement }) {
   const options = Object.values(AgentMode);
 
   function handleSubmit() {
-    if (isSubmitDisabled.value) {
+    // [StopGeneration]
+    if (loading.value) {
+      connection.send<SignalMessage>({
+        type: MessageType.Signal,
+        content: Signal.Stop,
+      });
+      loading.value = false;
+      return;
+    } // [/]
+    if (isQuestionEmpty.value) {
       return;
     }
+    // [StartGeneration]
     loading.value = true;
     history.value.push({
       sender: ChatMessageSender.User,
@@ -210,7 +221,7 @@ function InputBox(props: { anchor: HTMLElement }) {
       content: question.value,
     });
     question.value = "";
-    useScroll(props.anchor, "instant", "end");
+    useScroll(props.anchor, "instant", "end"); // [/]
   }
 
   function handleEnter(event: KeyboardEvent) {
