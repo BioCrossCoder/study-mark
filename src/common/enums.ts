@@ -2,11 +2,12 @@ export const enum Channel {
   SidePanel = "side-panel",
 }
 
-export const enum MessageType {
-  Signal,
-  Text,
-  Error,
-  Plan,
+export enum MessageType {
+  Signal = "signal",
+  Text = "text",
+  Error = "error",
+  Plan = "plan",
+  Infer = "infer",
 }
 
 export enum Signal {

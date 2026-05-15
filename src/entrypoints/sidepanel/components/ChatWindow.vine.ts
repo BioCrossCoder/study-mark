@@ -21,8 +21,6 @@ import { ArrowBigUp, CornerDownLeft, MessagesSquare } from "@lucide/vue";
 import {
   ChatMessage,
   errorMessageSchema,
-  PlanMessage,
-  planMessageSchema,
   signalMessageSchema,
   TextMessage,
   textMessageSchema,
@@ -50,6 +48,7 @@ export default function ChatWindow() {
     }
   }
 
+  const reasoning = ref(false);
   connection.listen((message) => {
     // [HandleError]
     const errorMessage = errorMessageSchema.safeParse(message);
@@ -57,25 +56,27 @@ export default function ChatWindow() {
       loading.value = false;
       history.value.pop();
       showError("Call AI Failed", { message: errorMessage.data.content });
+      reasoning.value = false;
       return;
     } // [/]
     // [HandleSignal]
     const signalMessage = signalMessageSchema.safeParse(message);
     if (signalMessage.success && signalMessage.data.content === Signal.Finish) {
       loading.value = false;
+      reasoning.value = false;
       return;
     } // [/]
     // [HandleText]
     const textMessage = textMessageSchema.safeParse(message);
     if (textMessage.success) {
-      updateHistory(textMessage.data.content);
-      useScroll(bottomAnchor, "smooth", "end");
-      return;
-    } // [/]
-    // [HandlePlan]
-    const planMessage = planMessageSchema.safeParse(message);
-    if (planMessage.success) {
-      updateHistory(planMessage.data.content);
+      const { content } = textMessage.data;
+      if (textMessage.data.type === MessageType.Infer) {
+        updateHistory((reasoning.value ? "" : "\n```\n") + content);
+        reasoning.value = true;
+      } else {
+        updateHistory((reasoning.value ? "\n```\n" : "") + content);
+        reasoning.value = false;
+      }
       useScroll(bottomAnchor, "smooth", "end");
       return;
     } // [/]
@@ -110,7 +111,7 @@ function ChatBubble(props: ChatMessage) {
       <template #header>
         <i :class="sender"/>
       </template>
-      <p v-html="marked.parse(message)" class="whitespace-pre-wrap [&_code]:whitespace-pre-wrap [&_code]:break-all"/>
+      <p v-html="marked.parse(message)" class="whitespace-pre-wrap [&_code]:whitespace-pre-wrap [&_code]:break-all [&_pre]:rounded [&_pre]:p-2 [&_pre]:bg-surface-200 [&_pre]:dark:bg-surface-700"/>
       <template #footer>
         <div class="flex justify-end">
           <span>{{timestamp.toLocaleString()}}</span>
@@ -133,6 +134,11 @@ function EmptyPlaceholder() {
     </div>
   `;
 }
+
+const messageTypeToSend = {
+  [AgentMode.Chat]: MessageType.Text,
+  [AgentMode.Plan]: MessageType.Plan,
+} as const;
 
 function InputBox(props: { anchor: HTMLElement }) {
   const question = ref("");
@@ -157,20 +163,10 @@ function InputBox(props: { anchor: HTMLElement }) {
       message: question.value,
       timestamp: new Date(),
     });
-    switch (mode.value) {
-      case AgentMode.Chat:
-        connection.send<TextMessage>({
-          type: MessageType.Text,
-          content: question.value,
-        });
-        break;
-      case AgentMode.Plan:
-        connection.send<PlanMessage>({
-          type: MessageType.Plan,
-          content: question.value,
-        });
-        break;
-    }
+    connection.send<TextMessage>({
+      type: messageTypeToSend[mode.value],
+      content: question.value,
+    });
     question.value = "";
     useScroll(props.anchor, "instant", "end");
   }

@@ -24,18 +24,11 @@ export const signalMessageSchema = z.object({
 export type SignalMessage = z.infer<typeof signalMessageSchema>;
 
 export const textMessageSchema = z.object({
-  type: z.literal(MessageType.Text),
+  type: z.enum([MessageType.Text,MessageType.Plan,MessageType.Infer]),
   content: z.string(),
 });
 
 export type TextMessage = z.infer<typeof textMessageSchema>;
-
-export const planMessageSchema = z.object({
-  type: z.literal(MessageType.Plan),
-  content: z.string(),
-});
-
-export type PlanMessage = z.infer<typeof planMessageSchema>;
 
 export const errorMessageSchema = z.object({
   type: z.literal(MessageType.Error),

@@ -1,8 +1,8 @@
 import {
   ErrorMessage,
   ModelConfig,
-  PlanMessage,
   SignalMessage,
+  TextMessage,
 } from "@/common/types";
 import { createWebSearchTool, webSearchToolPrompt } from "../tools/webSearch";
 import { createModelAdapter } from "../infra/modelAdapter";
@@ -30,13 +30,13 @@ export const plannerAgent = {
 
 async function outputPlan(
   port: globalThis.Browser.runtime.Port,
-  data: PlanMessage,
+  content: string,
 ) {
   const agent = await createPlannerAgent(await modelConfig.getValue());
   // [CallAgentWithUserInput]
   const result = await ResultAsync.fromThrowable((messages) =>
     agent.stream({ messages }, { streamMode: "messages" }),
-  )([new HumanMessage(data.content)]);
+  )([new HumanMessage(content)]);
   if (result.isErr()) {
     send<ErrorMessage>(port, {
       type: MessageType.Error,
@@ -45,35 +45,30 @@ async function outputPlan(
     return;
   }
   const stream = result.unwrapOr(null)!; // [/]
-  // [TransmitStreamOutputAndRecordMessage]
-  const responseChunks = new Array<AIMessageChunk>();
+  // [TransmitStreamOutput]
   for await (const [chunk] of stream) {
     if (chunk.type !== "ai") {
       continue;
     }
-    responseChunks.push(chunk as AIMessageChunk);
-    const text =
-      typeof chunk.content === "string"
-        ? chunk.content
-        : JSON.stringify(chunk.content);
-    send<PlanMessage>(port, {
-      type: MessageType.Plan,
-      content: text,
-    });
+    const reasoning = chunk.additional_kwargs.reasoning_content;
+    const text = chunk.content;
+    if (reasoning) {
+      send<TextMessage>(port, {
+        type: MessageType.Infer,
+        content:
+          typeof reasoning === "string" ? reasoning : JSON.stringify(reasoning),
+      });
+    } else if (text) {
+      send<TextMessage>(port, {
+        type: MessageType.Plan,
+        content: typeof text === "string" ? text : JSON.stringify(text),
+      });
+    }
   } // [/]
-  // [FinishMessageSendingAndUpdateHistory]
   send<SignalMessage>(port, {
     type: MessageType.Signal,
     content: Signal.Finish,
   });
-  if (responseChunks.length === 0) {
-    return;
-  }
-  const messages = await chatContext.getValue();
-  messages.push(
-    responseChunks.reduce((c1, c2) => c1.concat(c2), new AIMessageChunk("")),
-  );
-  chatContext.setValue(messages); // [/]
 }
 
 const corePrompt = `

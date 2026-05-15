@@ -1,9 +1,5 @@
-import { Channel, Signal } from "@/common/enums";
-import {
-  textMessageSchema,
-  signalMessageSchema,
-  planMessageSchema,
-} from "@/common/types";
+import { Channel, MessageType, Signal } from "@/common/enums";
+import { textMessageSchema, signalMessageSchema } from "@/common/types";
 import { chatbotAgent } from "./agents/chatbot";
 import { plannerAgent } from "./agents/planner";
 
@@ -40,14 +36,13 @@ const callbacks: Record<
     // [HandleText]
     const textMessage = textMessageSchema.safeParse(message);
     if (textMessage.success) {
-      chatbotAgent.answerQuestion(port, textMessage.data);
-      return;
-    } // [/]
-    // [HandlePlan]
-    const planMessage = planMessageSchema.safeParse(message);
-    if (planMessage.success) {
-      plannerAgent.outputPlan(port, planMessage.data);
-      return;
+      const { content } = textMessage.data;
+      switch (textMessage.data.type) {
+        case MessageType.Text:
+          return chatbotAgent.answerQuestion(port, content);
+        case MessageType.Plan:
+          return plannerAgent.outputPlan(port, content);
+      }
     } // [/]
   },
 };

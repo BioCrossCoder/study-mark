@@ -15,10 +15,11 @@ export function createTrimMessagesMiddleware(
         maxTokens,
         strategy: "last",
         startOn: "human",
-        endOn: ["ai", "human"],
+        endOn: ["ai", "human", "tool"],
         tokenCounter: createTokenCounter((content: string) =>
           model.getNumTokens(content),
         ),
+        includeSystem: true,
       });
       return {
         messages: [new RemoveMessage({ id: REMOVE_ALL_MESSAGES }), ...trimmed],

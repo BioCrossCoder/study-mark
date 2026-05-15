@@ -23,12 +23,11 @@ export const chatbotAgent = {
 
 async function answerQuestion(
   port: globalThis.Browser.runtime.Port,
-  data: TextMessage,
+  content: string,
 ) {
   const agent = createChatbotAgent(await modelConfig.getValue());
   // [CallAgentWithHistoryAsContext]
   const messages = await chatContext.getValue();
-  const { content } = data;
   messages.push(new HumanMessage(content));
   const result = await ResultAsync.fromThrowable((messages) =>
     agent.stream({ messages }, { streamMode: "messages" }),
@@ -47,15 +46,21 @@ async function answerQuestion(
     if (chunk.type !== "ai") {
       continue;
     }
-    responseChunks.push(chunk as AIMessageChunk);
-    const text =
-      typeof chunk.content === "string"
-        ? chunk.content
-        : JSON.stringify(chunk.content);
-    send<TextMessage>(port, {
-      type: MessageType.Text,
-      content: text,
-    });
+    const reasoning = chunk.additional_kwargs.reasoning_content;
+    const text = chunk.content;
+    if (reasoning) {
+      send<TextMessage>(port, {
+        type: MessageType.Infer,
+        content:
+          typeof reasoning === "string" ? reasoning : JSON.stringify(reasoning),
+      });
+    } else if (text) {
+      responseChunks.push(chunk as AIMessageChunk);
+      send<TextMessage>(port, {
+        type: MessageType.Text,
+        content: typeof text === "string" ? text : JSON.stringify(text),
+      });
+    }
   } // [/]
   // [FinishMessageSendingAndUpdateHistory]
   send<SignalMessage>(port, {
