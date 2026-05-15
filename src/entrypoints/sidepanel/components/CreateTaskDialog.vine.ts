@@ -1,10 +1,11 @@
 import { useTasksMutation } from "@/stores/tasks";
-import { ExecStatus, PlanType } from "@/common/enums";
+import { ExecStatus, ObjectType } from "@/common/enums";
 import { Button, Dialog, InputText, MultiSelect, Textarea } from "primevue";
-import { Task, taskSchema } from "@/common/types";
+import { taskSchema } from "@/common/types";
 import { useNotice } from "@/composables/useNotice";
 import { useRelationsMutation } from "@/stores/relations";
-import { useTargetOptionsQuery } from '@/stores/target';
+import { useTargetOptionsQuery } from "@/stores/target";
+import { useCreateTask } from "@/composables/useCreateTask";
 
 export default function CreateTaskDialog() {
   const show = ref(false);
@@ -39,39 +40,18 @@ export default function CreateTaskDialog() {
   const { data } = useTargetOptionsQuery();
   const options = computed(() => data.value ?? []);
 
-  const { newId, save } = useTasksMutation();
   const { add } = useRelationsMutation();
-  const { showError } = useNotice();
+  const createTask = useCreateTask();
   async function handleSubmit() {
-    // [GenerateUniqueID]
-    const id = await newId();
-    if (id.isErr()) {
-      showError("Generate Task ID Failed", id.error);
-      return;
-    } // [/]
-    const form: Task = {
-      id: id.value,
-      type: PlanType.Task,
+    const id = await createTask({
       title: title.value,
-      state: ExecStatus.Todo,
       description: description.value,
       source: source.value,
-      position: source.value,
-      createAt: Date.now(),
-    };
-    // [ParseDataFormat]
-    const { success, data, error } = taskSchema.safeParse(form);
-    if (!success) {
-      showError("Create Task Failed", error);
+    });
+    if (!id) {
       return;
-    } // [/]
-    // [PersistDataChange]
-    const result = await save(data);
-    if (result.isErr()) {
-      showError("Create Task Failed", result.error);
-      return;
-    } // [/]
-    add(targets.value.map((targetId) => [id.value, targetId]));
+    }
+    add(targets.value.map((targetId) => [id, targetId]));
     close();
   }
 

@@ -14,7 +14,7 @@ import {
 } from "primevue";
 import { useTasksMutation, useTasksQuery } from "@/stores/tasks";
 import { Resource, signalMessageSchema, Target, Task } from "@/common/types";
-import { PlanType, Signal, statusIcon } from "@/common/enums";
+import { ObjectType, Signal, statusIcon } from "@/common/enums";
 import UpdateTaskDialog from "./UpdateTaskDialog.vine";
 import UpdateTargetDialog from "./UpdateTargetDialog.vine";
 import { useRelationsQuery } from "@/stores/relations";
@@ -23,7 +23,7 @@ import { useConnectionStore } from "../stores/connection";
 import UpdateResourceDialog from "./UpdateResourceDialog.vine";
 
 export default function TaskData() {
-  const tab = ref(PlanType.Task);
+  const tab = ref(ObjectType.Task);
   vineExpose({
     tab,
   });
@@ -48,13 +48,13 @@ export default function TaskData() {
     const resources = new Array<Resource>();
     Object.values(data.value ?? {}).forEach((item) => {
       switch (item.type) {
-        case PlanType.Task:
+        case ObjectType.Task:
           tasks.push(item);
           break;
-        case PlanType.Target:
+        case ObjectType.Target:
           targets.push(item);
           break;
-        case PlanType.Resource:
+        case ObjectType.Resource:
           resources.push(item);
           break;
       }
@@ -77,19 +77,19 @@ export default function TaskData() {
       <Tabs v-model:value="tab">
         <div ref="header">
           <TabList>
-            <Tab :value="PlanType.Task">
+            <Tab :value="ObjectType.Task">
               <div class="flex items-center">
                 <i class="pi pi-list mr-2"/>
                 <p class="text-base">Tasks</p>
               </div>
             </Tab>
-            <Tab :value="PlanType.Target">
+            <Tab :value="ObjectType.Target">
               <div class="flex items-center">
                 <i class="pi pi-bullseye mr-2"/>
                 <p class="text-base">Targets</p>
               </div>
             </Tab>
-            <Tab :value="PlanType.Resource">
+            <Tab :value="ObjectType.Resource">
               <div class="flex items-center">
                 <i class="pi pi-globe mr-2"/>
                 <p class="text-base">Resources</p>
@@ -98,13 +98,13 @@ export default function TaskData() {
           </TabList>
         </div>
         <TabPanels :style="panelStyle">
-          <TabPanel :value="PlanType.Task" class="h-full">
+          <TabPanel :value="ObjectType.Task" class="h-full">
             <TaskList :data="records"/>
           </TabPanel>
-          <TabPanel :value="PlanType.Target" class="h-full">
+          <TabPanel :value="ObjectType.Target" class="h-full">
             <TargetList :data="records"/>
           </TabPanel>
-          <TabPanel :value="PlanType.Resource" class="h-full">
+          <TabPanel :value="ObjectType.Resource" class="h-full">
             <ResourceList :data="records"/>
           </TabPanel>
         </TabPanels>

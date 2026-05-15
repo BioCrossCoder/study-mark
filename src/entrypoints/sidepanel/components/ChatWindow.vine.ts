@@ -13,7 +13,9 @@ import {
 import {
   AgentMode,
   ChatMessageSender,
+  ExecStatus,
   MessageType,
+  ObjectType,
   Signal,
 } from "@/common/enums";
 import { useChatStore } from "../stores/chat";
@@ -21,6 +23,7 @@ import { ArrowBigUp, CornerDownLeft, MessagesSquare } from "@lucide/vue";
 import {
   ChatMessage,
   errorMessageSchema,
+  Plan,
   signalMessageSchema,
   TextMessage,
   textMessageSchema,
@@ -28,24 +31,49 @@ import {
 import { marked } from "marked";
 import { useScroll } from "@/composables/useScroll";
 import { defineVibe } from "vue-vine";
+import { useRelationsMutation } from "@/stores/relations";
+import { useCreateTarget } from "@/composables/useCreateTarget";
+import { useCreateTask } from "@/composables/useCreateTask";
 
 export default function ChatWindow() {
   const { history, isHistoryEmpty, loading } = useChatStore();
   const bottomAnchor = ref(document.createElement("div"));
   const connection = useConnectionStore();
-  const { showError } = useNotice();
+  const { showError, showSuccess } = useNotice();
 
-  function updateHistory(message: string) {
+  function updateHistory(message: string, callback?: () => void) {
     const lastMessage = history.value.at(-1);
     if (lastMessage?.sender === ChatMessageSender.Robot) {
       lastMessage.message += message;
+      lastMessage.callback = callback;
     } else {
       history.value.push({
         sender: ChatMessageSender.Robot,
         message,
+        callback,
         timestamp: new Date(),
       });
     }
+  }
+
+  const createTarget = useCreateTarget();
+  const createTask = useCreateTask();
+  const { add } = useRelationsMutation();
+  async function createPlan(data: Plan) {
+    const id = await createTarget(data.target);
+    if (!id) {
+      return;
+    }
+    const taskIds = new Array<string>();
+    for (const task of data.tasks) {
+      const id = await createTask(task);
+      if (!id) {
+        continue;
+      }
+      taskIds.push(id);
+    }
+    await add(taskIds.map((taskId) => [id, taskId]));
+    showSuccess("Create Plan Succeeded!");
   }
 
   const reasoning = ref(false);
@@ -70,12 +98,24 @@ export default function ChatWindow() {
     const textMessage = textMessageSchema.safeParse(message);
     if (textMessage.success) {
       const { content } = textMessage.data;
-      if (textMessage.data.type === MessageType.Infer) {
-        updateHistory((reasoning.value ? "" : "\n```\n") + content);
-        reasoning.value = true;
-      } else {
-        updateHistory((reasoning.value ? "\n```\n" : "") + content);
-        reasoning.value = false;
+      switch (textMessage.data.type) {
+        case MessageType.Infer:
+          updateHistory((reasoning.value ? "" : "\n```\n") + content);
+          reasoning.value = true;
+          break;
+        case MessageType.Plan:
+          const data = JSON.parse(content);
+          const info = JSON.stringify(data, null, 2);
+          updateHistory(
+            (reasoning.value ? "\n```\n" : "") + `\`\`\`json\n${info}\n\`\`\``,
+            () => createPlan(data),
+          );
+          reasoning.value = false;
+          break;
+        case MessageType.Text:
+          updateHistory((reasoning.value ? "\n```\n" : "") + content);
+          reasoning.value = false;
+          break;
       }
       useScroll(bottomAnchor, "smooth", "end");
       return;
@@ -93,9 +133,9 @@ export default function ChatWindow() {
       <EmptyPlaceholder v-if="isHistoryEmpty"/>
       <ScrollPanel v-else style="width: 100%; height:100%;" class="overflow-hidden">
         <ChatBubble
-          v-for="{sender,message,timestamp} in history"
+          v-for="{sender,message,timestamp,callback} in history"
           :class="'w-3/4'+' '+messagePosition[sender]"
-          :sender="sender" :message="message" :timestamp="timestamp"
+          :sender="sender" :message="message" :timestamp="timestamp" :callback="callback"
         />
         <div ref="bottomAnchor"/>
         <ScrollTop target="parent" :threshold="0"/>
@@ -113,7 +153,9 @@ function ChatBubble(props: ChatMessage) {
       </template>
       <p v-html="marked.parse(message)" class="whitespace-pre-wrap [&_code]:whitespace-pre-wrap [&_code]:break-all [&_pre]:rounded [&_pre]:p-2 [&_pre]:bg-surface-200 [&_pre]:dark:bg-surface-700"/>
       <template #footer>
-        <div class="flex justify-end">
+        <div class="flex justify-between items-center">
+          <Button label="Create" size="small" v-if="callback" @click="callback"/>
+          <div v-else/>
           <span>{{timestamp.toLocaleString()}}</span>
         </div>
       </template>

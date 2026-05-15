@@ -10,5 +10,12 @@ export function useNotice() {
       detail: error.message,
     });
   }
-  return { ...toast, showError };
+  function showSuccess(summary: string) {
+    toast.removeAllGroups();
+    toast.add({
+      severity: "success",
+      summary,
+    });
+  }
+  return { ...toast, showError, showSuccess };
 }

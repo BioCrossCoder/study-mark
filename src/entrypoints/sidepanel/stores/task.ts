@@ -1,4 +1,4 @@
-import { PlanType } from "@/common/enums";
+import { ObjectType } from "@/common/enums";
 import { useTasksQuery } from "@/stores/tasks";
 import { useQuery } from "@tanstack/vue-query";
 
@@ -8,7 +8,7 @@ export function useTaskQuery(id: Ref<string>) {
     queryKey: [id, data, "task"],
     queryFn: async () => {
       const record = (data.value ?? {})[id.value] ?? {};
-      return record.type === PlanType.Task ? record : null;
+      return record.type === ObjectType.Task ? record : null;
     },
   });
 }
@@ -19,7 +19,7 @@ export function useTaskOptionsQuery() {
     queryKey: [data, "taskOptions"],
     queryFn: async () =>
       Object.values(data.value ?? {})
-        .filter((item) => item.type === PlanType.Task)
+        .filter((item) => item.type === ObjectType.Task)
         .map((item) => ({ name: item.title, code: item.id })),
   });
 }

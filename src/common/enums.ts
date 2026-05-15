@@ -34,7 +34,7 @@ export const statusIcon = {
   [ExecStatus.Done]: "pi pi-check-circle",
 };
 
-export const enum PlanType {
+export const enum ObjectType {
   Task,
   Target,
   Resource,

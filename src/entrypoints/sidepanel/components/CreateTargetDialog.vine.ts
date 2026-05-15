@@ -1,10 +1,8 @@
-import { useTasksMutation } from "@/stores/tasks";
-import { ExecStatus, PlanType } from "@/common/enums";
+import { ExecStatus, ObjectType } from "@/common/enums";
 import { Button, Dialog, InputText, MultiSelect, Textarea } from "primevue";
-import { Target, targetSchema } from "@/common/types";
-import { useNotice } from "@/composables/useNotice";
 import { useTaskOptionsQuery } from "../stores/task";
 import { useRelationsMutation } from "@/stores/relations";
+import { useCreateTarget } from "@/composables/useCreateTarget";
 
 export default function CreateTargetDialog() {
   const show = ref(false);
@@ -27,37 +25,17 @@ export default function CreateTargetDialog() {
   const { data } = useTaskOptionsQuery();
   const options = computed(() => data.value ?? []);
 
-  const { newId, save } = useTasksMutation();
   const { add } = useRelationsMutation();
-  const { showError } = useNotice();
+  const createTarget = useCreateTarget();
   async function handleSubmit() {
-    // [GenerateUniqueID]
-    const id = await newId();
-    if (id.isErr()) {
-      showError("Generate Target ID Failed", id.error);
-      return;
-    } // [/]
-    const form: Target = {
-      id: id.value,
-      type: PlanType.Target,
+    const id = await createTarget({
       title: title.value,
-      state: ExecStatus.Todo,
       description: description.value,
-      createAt: Date.now(),
-    };
-    // [ParseDataFormat]
-    const { success, data, error } = targetSchema.safeParse(form);
-    if (!success) {
-      showError("Create Target Failed", error);
+    });
+    if (!id) {
       return;
-    } // [/]
-    // [PersistDataChange]
-    const result = await save(data);
-    if (result.isErr()) {
-      showError("Create Target Failed", result.error);
-      return;
-    } // [/]
-    add(tasks.value.map((taskId) => [id.value, taskId]));
+    }
+    add(tasks.value.map((taskId) => [id, taskId]));
     close();
   }
 

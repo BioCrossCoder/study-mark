@@ -1,12 +1,18 @@
 import {
   ErrorMessage,
   ModelConfig,
+  planSchema,
   SignalMessage,
   TextMessage,
 } from "@/common/types";
 import { createWebSearchTool, webSearchToolPrompt } from "../tools/webSearch";
 import { createModelAdapter } from "../infra/modelAdapter";
-import { createAgent, DynamicStructuredTool, HumanMessage } from "langchain";
+import {
+  createAgent,
+  DynamicStructuredTool,
+  HumanMessage,
+  toolStrategy,
+} from "langchain";
 import z from "zod";
 import {
   loadResourcesTool,
@@ -54,7 +60,10 @@ async function outputPlan(
     } else if (text) {
       send<TextMessage>(port, {
         type: MessageType.Plan,
-        content: typeof text === "string" ? text : JSON.stringify(text),
+        content:
+          typeof text === "string"
+            ? text.replace("Returning structured response: ", "")
+            : JSON.stringify(text),
       });
     }
   } // [/]
@@ -91,20 +100,6 @@ async function createPlannerAgent(config: ModelConfig) {
     model,
     tools,
     systemPrompt,
-    responseFormat: z.object({
-      target: z.object({
-        title: z.string().min(1),
-        description: z.string(),
-      }),
-      tasks: z
-        .array(
-          z.object({
-            title: z.string().min(1),
-            description: z.string(),
-            source: z.url(),
-          }),
-        )
-        .min(1),
-    }),
+    responseFormat: toolStrategy(planSchema),
   });
 }

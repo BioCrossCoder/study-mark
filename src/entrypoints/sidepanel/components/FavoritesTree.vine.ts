@@ -18,7 +18,7 @@ import { useFavoritesQuery } from "@/stores/favorites";
 import { useTasksMutation } from "@/stores/tasks";
 import { Target, targetSchema, Task, taskSchema } from "@/common/types";
 import { useNotice } from "@/composables/useNotice";
-import { ExecStatus, PlanType } from "@/common/enums";
+import { ExecStatus, ObjectType } from "@/common/enums";
 import { err } from "neverthrow";
 import { useRelationsMutation } from "@/stores/relations";
 
@@ -151,7 +151,7 @@ function useCreateTarget() {
     }
     const form: Target = {
       id: id.value,
-      type: PlanType.Target,
+      type: ObjectType.Target,
       title: node.title ?? "",
       state: ExecStatus.Todo,
       description: "",
@@ -175,7 +175,7 @@ function useCreateTask() {
     }
     const form: Task = {
       id: id.value,
-      type: PlanType.Task,
+      type: ObjectType.Task,
       title: node.title ?? "",
       state: ExecStatus.Todo,
       description: "",

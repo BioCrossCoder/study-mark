@@ -2,7 +2,7 @@ import { Button, InputText, MultiSelect, Panel, Textarea } from "primevue";
 import { useTasksMutation } from "@/stores/tasks";
 import { useRelationsMutation } from "@/stores/relations";
 import { SignalMessage, Task, taskSchema } from "@/common/types";
-import { ExecStatus, MessageType, PlanType, Signal } from "@/common/enums";
+import { ExecStatus, MessageType, ObjectType, Signal } from "@/common/enums";
 import { useTargetOptionsQuery } from "@/stores/target";
 import { sidePanelPath } from "@/stores/sidePanel";
 
@@ -42,7 +42,7 @@ export default function CreateTaskDialog() {
     } // [/]
     const form: Task = {
       id: id.value,
-      type: PlanType.Task,
+      type: ObjectType.Task,
       title: title.value,
       state: ExecStatus.Todo,
       description: description.value,

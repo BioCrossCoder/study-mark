@@ -1,6 +1,6 @@
 import { useTasksMutation } from "@/stores/tasks";
 import { useNotice } from "@/composables/useNotice";
-import { PlanType } from "@/common/enums";
+import { ObjectType } from "@/common/enums";
 import { MicroLinkApiResp, Resource, resourceSchema } from "@/common/types";
 import { Button, Dialog, InputText, Textarea } from "primevue";
 
@@ -57,7 +57,7 @@ export default function CreateResourceDialog() {
     } // [/]
     const form: Resource = {
       id: id.value,
-      type: PlanType.Resource,
+      type: ObjectType.Resource,
       title: title.value,
       description: description.value,
       source: source.value,

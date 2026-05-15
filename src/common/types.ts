@@ -4,7 +4,7 @@ import {
   ExecStatus,
   MessageType,
   ModelProviderProtocol,
-  PlanType,
+  ObjectType,
   Signal,
 } from "./enums";
 import { RouteLocationAsString } from "vue-router";
@@ -14,6 +14,7 @@ export type ChatMessage = {
   sender: ChatMessageSender;
   message: string;
   timestamp: Date;
+  callback?: () => void;
 };
 
 export const signalMessageSchema = z.object({
@@ -24,7 +25,7 @@ export const signalMessageSchema = z.object({
 export type SignalMessage = z.infer<typeof signalMessageSchema>;
 
 export const textMessageSchema = z.object({
-  type: z.enum([MessageType.Text,MessageType.Plan,MessageType.Infer]),
+  type: z.enum([MessageType.Text, MessageType.Plan, MessageType.Infer]),
   content: z.string(),
 });
 
@@ -39,7 +40,7 @@ export type ErrorMessage = z.infer<typeof errorMessageSchema>;
 
 export const taskSchema = z.object({
   id: z.string(),
-  type: z.literal(PlanType.Task),
+  type: z.literal(ObjectType.Task),
   title: z.string().min(1),
   state: z.enum(ExecStatus),
   description: z.string(),
@@ -52,7 +53,7 @@ export type Task = z.infer<typeof taskSchema>;
 
 export const targetSchema = z.object({
   id: z.string(),
-  type: z.literal(PlanType.Target),
+  type: z.literal(ObjectType.Target),
   title: z.string().min(1),
   state: z.enum(ExecStatus),
   description: z.string(),
@@ -63,7 +64,7 @@ export type Target = z.infer<typeof targetSchema>;
 
 export const resourceSchema = z.object({
   id: z.string(),
-  type: z.literal(PlanType.Resource),
+  type: z.literal(ObjectType.Resource),
   title: z.string().min(1),
   description: z.string(),
   source: z.url(),
@@ -102,3 +103,21 @@ type MicroLinkApiFailureResp = {
 export type MicroLinkApiResp =
   | MicroLinkApiSuccessResp
   | MicroLinkApiFailureResp;
+
+export const planSchema = z.object({
+  target: z.object({
+    title: z.string().min(1),
+    description: z.string(),
+  }),
+  tasks: z
+    .array(
+      z.object({
+        title: z.string().min(1),
+        description: z.string(),
+        source: z.url(),
+      }),
+    )
+    .min(1),
+});
+
+export type Plan = z.infer<typeof planSchema>;
