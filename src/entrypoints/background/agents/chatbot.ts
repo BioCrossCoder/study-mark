@@ -6,7 +6,11 @@ import {
   SignalMessage,
   TextMessage,
 } from "@/common/types";
-import { AIMessageChunk, HumanMessage } from "@langchain/core/messages";
+import {
+  AIMessage,
+  AIMessageChunk,
+  HumanMessage,
+} from "@langchain/core/messages";
 import { ResultAsync } from "neverthrow";
 import { MessageType, Signal } from "@/common/enums";
 import { createModelAdapter } from "../infra/modelAdapter";
@@ -18,22 +22,19 @@ import { send } from "@/common/utils";
 
 let abortController: AbortController | null = null;
 export const chatbotAgent = {
-  answerQuestion,
+  run,
+  stop,
   clearHistory,
-  abortAnswer,
 };
 
-async function answerQuestion(
-  port: globalThis.Browser.runtime.Port,
-  content: string,
-) {
+async function run(port: globalThis.Browser.runtime.Port, content: string) {
   const agent = createChatbotAgent(await modelConfig.getValue());
+  const { read, write, flush } = useHistory();
   // [CallAgentWithHistoryAsContext]
-  const messages = await chatContext.getValue();
-  messages.push(new HumanMessage(content));
+  await write(new HumanMessage(content));
   const result = await ResultAsync.fromThrowable((messages) =>
     agent.stream({ messages }, { streamMode: "messages" }),
-  )(messages);
+  )(await read());
   if (result.isErr()) {
     send<ErrorMessage>(port, {
       type: MessageType.Error,
@@ -78,13 +79,40 @@ async function answerQuestion(
     return;
   }
   abortController = null;
-  messages.push(
+  write(
     responseChunks.reduce((c1, c2) => c1.concat(c2), new AIMessageChunk("")),
-  );
-  chatContext.setValue(messages); // [/]
+  ).then(flush); // [/]
 }
 
-function abortAnswer() {
+function useHistory() {
+  let cache: (HumanMessage | AIMessage)[] | undefined;
+  async function lazyLoad() {
+    if (!cache) {
+      cache = await chatContext.getValue();
+    }
+  }
+  async function read() {
+    await lazyLoad();
+    return cache;
+  }
+  async function write(message: HumanMessage | AIMessage) {
+    await lazyLoad();
+    cache!.push(message);
+  }
+  async function flush() {
+    if (!cache) {
+      return;
+    }
+    return await chatContext.setValue(cache);
+  }
+  return {
+    read,
+    write,
+    flush,
+  };
+}
+
+function stop() {
   if (!abortController) {
     return;
   }

@@ -34,8 +34,8 @@ const callbacks: Record<
         case Signal.Clear:
           return chatbotAgent.clearHistory();
         case Signal.Stop:
-          chatbotAgent.abortAnswer();
-          plannerAgent.abortPlan();
+          chatbotAgent.stop();
+          plannerAgent.stop();
       }
     } // [/]
     // [HandleText]
@@ -44,9 +44,9 @@ const callbacks: Record<
       const { content } = textMessage.data;
       switch (textMessage.data.type) {
         case MessageType.Text:
-          return chatbotAgent.answerQuestion(port, content);
+          return chatbotAgent.run(port, content);
         case MessageType.Plan:
-          return plannerAgent.outputPlan(port, content);
+          return plannerAgent.run(port, content);
       }
     } // [/]
   },

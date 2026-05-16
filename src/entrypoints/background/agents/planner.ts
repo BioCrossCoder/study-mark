@@ -25,18 +25,18 @@ import { MessageType, Signal } from "@/common/enums";
 
 let abortController: AbortController | null = null;
 export const plannerAgent = {
-  outputPlan,
-  abortPlan,
+  run,
+  stop,
 };
 
-async function outputPlan(
+async function run(
   port: globalThis.Browser.runtime.Port,
   content: string,
 ) {
   let count = 0;
   let finish = false;
   while (count < 3 && !finish) {
-    const agent = await createPlannerAgent(await modelConfig.getValue());
+    const agent = createPlannerAgent(await modelConfig.getValue());
     // [CallAgentWithUserInput]
     const result = await ResultAsync.fromThrowable((messages) =>
       agent.stream({ messages }, { streamMode: "messages" }),
@@ -109,7 +109,7 @@ async function outputPlan(
   }
 }
 
-function abortPlan() {
+function stop() {
   if (!abortController) {
     return;
   }
@@ -132,7 +132,7 @@ function buildSystemPrompt(searchApiKey: string) {
   return prompts.join("\n");
 }
 
-async function createPlannerAgent(config: ModelConfig) {
+function createPlannerAgent(config: ModelConfig) {
   const model = createModelAdapter(config);
   const tools: DynamicStructuredTool[] = [loadResourcesTool];
   const { tavilyApiKey } = config;
