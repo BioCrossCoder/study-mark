@@ -1,17 +1,7 @@
 import { modelConfig } from "@/stores/config";
 import { chatContext } from "../stores/chat";
-import {
-  ErrorMessage,
-  ModelConfig,
-  SignalMessage,
-  TextMessage,
-} from "@/common/types";
-import {
-  AIMessage,
-  AIMessageChunk,
-  HumanMessage,
-} from "@langchain/core/messages";
-import { ResultAsync } from "neverthrow";
+import { ErrorMessage, ModelConfig, SignalMessage } from "@/common/types";
+import { AIMessage, HumanMessage } from "@langchain/core/messages";
 import { MessageType, Signal } from "@/common/enums";
 import { createModelAdapter } from "../infra/modelAdapter";
 import { createAgent } from "langchain";
@@ -19,69 +9,40 @@ import { createTrimMessagesMiddleware } from "../middlewares/trimMessages";
 import { createSumMessagesMiddleware } from "../middlewares/sumMessages";
 import { createWebSearchTool, webSearchToolPrompt } from "../tools/webSearch";
 import { send } from "@/common/utils";
+import { execAgentLoop, useAbortController } from "../infra/agentLoop";
 
-let abortController: AbortController | null = null;
+const abortController = useAbortController();
 export const chatbotAgent = {
   run,
-  stop,
+  stop: abortController.stop,
   clearHistory,
 };
 
 async function run(port: globalThis.Browser.runtime.Port, content: string) {
   const agent = createChatbotAgent(await modelConfig.getValue());
   const { read, write, flush } = useHistory();
-  // [CallAgentWithHistoryAsContext]
   await write(new HumanMessage(content));
-  const result = await ResultAsync.fromThrowable((messages) =>
-    agent.stream({ messages }, { streamMode: "messages" }),
-  )(await read());
+  const result = await execAgentLoop(
+    agent,
+    await read(),
+    abortController,
+    (message) => {
+      send(port, message);
+    },
+  );
   if (result.isErr()) {
-    send<ErrorMessage>(port, {
+    return {
       type: MessageType.Error,
-      content: (result.error as Error).message,
-    });
-    return;
+      content: result.error.message,
+    };
   }
-  const stream = result.unwrapOr(null)!; // [/]
-  // [TransmitStreamOutputAndRecordMessage]
-  abortController = new AbortController();
-  const responseChunks = new Array<AIMessageChunk>();
-  for await (const [chunk] of stream) {
-    if (abortController.signal.aborted) {
-      await stream.cancel();
-      break;
-    }
-    if (chunk.type !== "ai") {
-      continue;
-    }
-    const reasoning = chunk.additional_kwargs.reasoning_content;
-    const text = chunk.content;
-    if (reasoning) {
-      send<TextMessage>(port, {
-        type: MessageType.Infer,
-        content:
-          typeof reasoning === "string" ? reasoning : JSON.stringify(reasoning),
-      });
-    } else if (text) {
-      responseChunks.push(chunk as AIMessageChunk);
-      send<TextMessage>(port, {
-        type: MessageType.Text,
-        content: typeof text === "string" ? text : JSON.stringify(text),
-      });
-    }
-  } // [/]
-  // [FinishMessageSendingAndUpdateHistory]
-  send<SignalMessage>(port, {
+  if (result.value !== Signal.Stop) {
+    write(result.value).then(flush);
+  }
+  return {
     type: MessageType.Signal,
     content: Signal.Finish,
-  });
-  if (responseChunks.length === 0 || abortController.signal.aborted) {
-    return;
-  }
-  abortController = null;
-  write(
-    responseChunks.reduce((c1, c2) => c1.concat(c2), new AIMessageChunk("")),
-  ).then(flush); // [/]
+  };
 }
 
 function useHistory() {
@@ -93,7 +54,7 @@ function useHistory() {
   }
   async function read() {
     await lazyLoad();
-    return cache;
+    return cache!;
   }
   async function write(message: HumanMessage | AIMessage) {
     await lazyLoad();
@@ -110,14 +71,6 @@ function useHistory() {
     write,
     flush,
   };
-}
-
-function stop() {
-  if (!abortController) {
-    return;
-  }
-  abortController.abort();
-  abortController = null;
 }
 
 const corePrompt = `

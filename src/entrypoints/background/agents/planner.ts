@@ -8,6 +8,7 @@ import {
 import { createWebSearchTool, webSearchToolPrompt } from "../tools/webSearch";
 import { createModelAdapter } from "../infra/modelAdapter";
 import {
+  AIMessage,
   AIMessageChunk,
   createAgent,
   DynamicStructuredTool,
@@ -19,102 +20,59 @@ import {
   loadResourcesToolPrompt,
 } from "../tools/loadResources";
 import { modelConfig } from "@/stores/config";
-import { ResultAsync } from "neverthrow";
+import { ok, Result, ResultAsync } from "neverthrow";
 import { send } from "@/common/utils";
 import { MessageType, Signal } from "@/common/enums";
+import { execAgentLoop, useAbortController } from "../infra/agentLoop";
 
-let abortController: AbortController | null = null;
+const abortController = useAbortController();
 export const plannerAgent = {
   run,
-  stop,
+  stop: abortController.stop,
 };
 
-async function run(
-  port: globalThis.Browser.runtime.Port,
-  content: string,
-) {
+async function run(port: globalThis.Browser.runtime.Port, content: string) {
   let count = 0;
   let finish = false;
+  const agent = createPlannerAgent(await modelConfig.getValue());
+  let result: Result<AIMessage | Signal.Stop, Error> = ok(Signal.Stop);
   while (count < 3 && !finish) {
-    const agent = createPlannerAgent(await modelConfig.getValue());
-    // [CallAgentWithUserInput]
-    const result = await ResultAsync.fromThrowable((messages) =>
-      agent.stream({ messages }, { streamMode: "messages" }),
-    )([new HumanMessage(content)]);
-    if (result.isErr()) {
-      send<ErrorMessage>(port, {
-        type: MessageType.Error,
-        content: (result.error as Error).message,
-      });
-      return;
-    }
-    const stream = result.unwrapOr(null)!; // [/]
-    // [TransmitStreamOutput]
-    abortController = new AbortController();
-    for await (const [chunk] of stream) {
-      if (abortController.signal.aborted) {
-        await stream.cancel();
-        break;
-      }
-      if (chunk.type === "tool") {
-        // TODO
-        console.log("call tool", chunk);
-      }
-      if (chunk.type !== "ai") {
-        continue;
-      }
-      const msg = chunk as AIMessageChunk;
-      if (
-        msg.tool_calls?.length ||
-        msg.tool_call_chunks?.length ||
-        msg.invalid_tool_calls?.length
-      ) {
-        // TODO
-        console.log("ai call tool", chunk);
-      }
-      const reasoning = chunk.additional_kwargs.reasoning_content;
-      const text = chunk.content;
-      if (reasoning) {
-        send<TextMessage>(port, {
-          type: MessageType.Infer,
-          content:
-            typeof reasoning === "string"
-              ? reasoning
-              : JSON.stringify(reasoning),
-        });
-      } else if (text) {
-        finish = true;
-        send<TextMessage>(port, {
-          type: MessageType.Plan,
-          content:
-            typeof text === "string"
-              ? text.replace("Returning structured response: ", "")
-              : JSON.stringify(text),
-        });
-      }
-    } // [/]
+    result = await execAgentLoop(
+      agent,
+      [new HumanMessage(content)],
+      abortController,
+      (message) => {
+        if (message.type === MessageType.Text) {
+          finish = true;
+          send(port, {
+            type: MessageType.Plan,
+            content: message.content.replace(
+              "Returning structured response: ",
+              "",
+            ),
+          });
+        } else {
+          send(port, message);
+        }
+      },
+    );
     count++;
   }
-  abortController = null;
-  if (finish) {
-    send<SignalMessage>(port, {
-      type: MessageType.Signal,
-      content: Signal.Finish,
-    });
-  } else {
-    send<ErrorMessage>(port, {
+  if (result!.isErr()) {
+    return {
       type: MessageType.Error,
-      content: "Generate Plan Failed",
-    });
+      content: result.error.message,
+    };
   }
-}
-
-function stop() {
-  if (!abortController) {
-    return;
-  }
-  abortController.abort();
-  abortController = null;
+  return finish
+    ? {
+        type: MessageType.Signal,
+        content: Signal.Finish,
+      }
+    : {
+        type: MessageType.Error,
+        content: "Generate Plan Failed",
+      };
 }
 
 const corePrompt = `

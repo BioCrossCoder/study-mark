@@ -25,7 +25,12 @@ export const signalMessageSchema = z.object({
 export type SignalMessage = z.infer<typeof signalMessageSchema>;
 
 export const textMessageSchema = z.object({
-  type: z.enum([MessageType.Text, MessageType.Plan, MessageType.Infer]),
+  type: z.enum([
+    MessageType.Text,
+    MessageType.Plan,
+    MessageType.Infer,
+    MessageType.Tool,
+  ]),
   content: z.string(),
 });
 

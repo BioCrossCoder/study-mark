@@ -8,6 +8,7 @@ export enum MessageType {
   Error = "error",
   Plan = "plan",
   Infer = "infer",
+  Tool = "tool",
 }
 
 export enum Signal {

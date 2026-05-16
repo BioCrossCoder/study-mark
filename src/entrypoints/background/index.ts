@@ -2,6 +2,7 @@ import { Channel, MessageType, Signal } from "@/common/enums";
 import { textMessageSchema, signalMessageSchema } from "@/common/types";
 import { chatbotAgent } from "./agents/chatbot";
 import { plannerAgent } from "./agents/planner";
+import { send } from "@/common/utils";
 
 export default defineBackground(() => {
   const connections = new Map<string, globalThis.Browser.runtime.Port>();
@@ -44,9 +45,11 @@ const callbacks: Record<
       const { content } = textMessage.data;
       switch (textMessage.data.type) {
         case MessageType.Text:
-          return chatbotAgent.run(port, content);
+          send(port, await chatbotAgent.run(port, content));
+          break;
         case MessageType.Plan:
-          return plannerAgent.run(port, content);
+          send(port, await plannerAgent.run(port, content));
+          break;
       }
     } // [/]
   },
