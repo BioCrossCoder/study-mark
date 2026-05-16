@@ -1,6 +1,6 @@
 import { modelConfig } from "@/stores/config";
 import { chatContext } from "../stores/chat";
-import { ErrorMessage, ModelConfig, SignalMessage } from "@/common/types";
+import { ModelConfig } from "@/common/types";
 import { AIMessage, HumanMessage } from "@langchain/core/messages";
 import { MessageType, Signal } from "@/common/enums";
 import { createModelAdapter } from "../infra/modelAdapter";

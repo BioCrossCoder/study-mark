@@ -33,11 +33,14 @@ const callbacks: Record<
     if (signalMessage.success) {
       switch (signalMessage.data.content) {
         case Signal.Clear:
-          return chatbotAgent.clearHistory();
+          chatbotAgent.clearHistory();
+          break;
         case Signal.Stop:
           chatbotAgent.stop();
           plannerAgent.stop();
+          break;
       }
+      return;
     } // [/]
     // [HandleText]
     const textMessage = textMessageSchema.safeParse(message);

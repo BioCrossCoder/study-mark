@@ -106,7 +106,6 @@ export function useAbortController() {
       return;
     }
     c.abort();
-    c = null;
   }
   function init() {
     c = new AbortController();
