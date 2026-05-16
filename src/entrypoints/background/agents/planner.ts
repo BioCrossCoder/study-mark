@@ -8,6 +8,7 @@ import {
 import { createWebSearchTool, webSearchToolPrompt } from "../tools/webSearch";
 import { createModelAdapter } from "../infra/modelAdapter";
 import {
+  AIMessageChunk,
   createAgent,
   DynamicStructuredTool,
   HumanMessage,
@@ -32,52 +33,80 @@ async function outputPlan(
   port: globalThis.Browser.runtime.Port,
   content: string,
 ) {
-  const agent = await createPlannerAgent(await modelConfig.getValue());
-  // [CallAgentWithUserInput]
-  const result = await ResultAsync.fromThrowable((messages) =>
-    agent.stream({ messages }, { streamMode: "messages" }),
-  )([new HumanMessage(content)]);
-  if (result.isErr()) {
+  let count = 0;
+  let finish = false;
+  while (count < 3 && !finish) {
+    const agent = await createPlannerAgent(await modelConfig.getValue());
+    // [CallAgentWithUserInput]
+    const result = await ResultAsync.fromThrowable((messages) =>
+      agent.stream({ messages }, { streamMode: "messages" }),
+    )([new HumanMessage(content)]);
+    if (result.isErr()) {
+      send<ErrorMessage>(port, {
+        type: MessageType.Error,
+        content: (result.error as Error).message,
+      });
+      return;
+    }
+    const stream = result.unwrapOr(null)!; // [/]
+    // [TransmitStreamOutput]
+    abortController = new AbortController();
+    for await (const [chunk] of stream) {
+      if (abortController.signal.aborted) {
+        await stream.cancel();
+        break;
+      }
+      if (chunk.type === "tool") {
+        // TODO
+        console.log("call tool", chunk);
+      }
+      if (chunk.type !== "ai") {
+        continue;
+      }
+      const msg = chunk as AIMessageChunk;
+      if (
+        msg.tool_calls?.length ||
+        msg.tool_call_chunks?.length ||
+        msg.invalid_tool_calls?.length
+      ) {
+        // TODO
+        console.log("ai call tool", chunk);
+      }
+      const reasoning = chunk.additional_kwargs.reasoning_content;
+      const text = chunk.content;
+      if (reasoning) {
+        send<TextMessage>(port, {
+          type: MessageType.Infer,
+          content:
+            typeof reasoning === "string"
+              ? reasoning
+              : JSON.stringify(reasoning),
+        });
+      } else if (text) {
+        finish = true;
+        send<TextMessage>(port, {
+          type: MessageType.Plan,
+          content:
+            typeof text === "string"
+              ? text.replace("Returning structured response: ", "")
+              : JSON.stringify(text),
+        });
+      }
+    } // [/]
+    count++;
+  }
+  abortController = null;
+  if (finish) {
+    send<SignalMessage>(port, {
+      type: MessageType.Signal,
+      content: Signal.Finish,
+    });
+  } else {
     send<ErrorMessage>(port, {
       type: MessageType.Error,
-      content: (result.error as Error).message,
+      content: "Generate Plan Failed",
     });
-    return;
   }
-  const stream = result.unwrapOr(null)!; // [/]
-  // [TransmitStreamOutput]
-  abortController = new AbortController();
-  for await (const [chunk] of stream) {
-    if (abortController.signal.aborted) {
-      await stream.cancel();
-      break;
-    }
-    if (chunk.type !== "ai") {
-      continue;
-    }
-    const reasoning = chunk.additional_kwargs.reasoning_content;
-    const text = chunk.content;
-    if (reasoning) {
-      send<TextMessage>(port, {
-        type: MessageType.Infer,
-        content:
-          typeof reasoning === "string" ? reasoning : JSON.stringify(reasoning),
-      });
-    } else if (text) {
-      send<TextMessage>(port, {
-        type: MessageType.Plan,
-        content:
-          typeof text === "string"
-            ? text.replace("Returning structured response: ", "")
-            : JSON.stringify(text),
-      });
-    }
-  } // [/]
-  abortController = null;
-  send<SignalMessage>(port, {
-    type: MessageType.Signal,
-    content: Signal.Finish,
-  });
 }
 
 function abortPlan() {
