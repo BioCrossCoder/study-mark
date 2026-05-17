@@ -90,18 +90,33 @@ export default function ChatWindow() {
     } // [/]
     // [HandleSignal]
     const signalMessage = signalMessageSchema.safeParse(message);
-    if (signalMessage.success && signalMessage.data.content === Signal.Finish) {
-      loading.value = false;
-      reasoning.value = false;
+    if (signalMessage.success) {
+      switch (signalMessage.data.content) {
+        case Signal.Finish:
+          reasoning.value = false;
+          loading.value = false;
+          break;
+        case Signal.Tool:
+          if (reasoning.value) {
+            updateHistory("\n```\n");
+          }
+          reasoning.value = false;
+          if (!history.value.at(-1)?.message.endsWith(toolCallingTag)) {
+            updateHistory(toolCallingTag);
+          }
+          break;
+      }
       return;
     } // [/]
     // [HandleText]
     const textMessage = textMessageSchema.safeParse(message);
     if (textMessage.success) {
-      const { content } = textMessage.data;
-      switch (textMessage.data.type) {
+      const { content, type } = textMessage.data;
+      switch (type) {
         case MessageType.Infer:
-          updateHistory((reasoning.value ? "" : "\n```\n") + content);
+          updateHistory(
+            (reasoning.value ? "" : "\n```\n[Thinking]\n") + content,
+          );
           reasoning.value = true;
           break;
         case MessageType.Plan:
@@ -116,6 +131,15 @@ export default function ChatWindow() {
         case MessageType.Text:
           updateHistory((reasoning.value ? "\n```\n" : "") + content);
           reasoning.value = false;
+          break;
+        case MessageType.Tool:
+          if (reasoning.value) {
+            updateHistory("\n```\n");
+          }
+          reasoning.value = false;
+          if (!history.value.at(-1)?.message.endsWith(toolCallingTag)) {
+            updateHistory(toolCallingTag);
+          }
           break;
       }
       useScroll(bottomAnchor, "smooth", "end");
@@ -145,6 +169,8 @@ export default function ChatWindow() {
     </div>
   `;
 }
+
+const toolCallingTag = "\n```\nExec Tool Calling...\n```\n";
 
 function ChatBubble(props: ChatMessage) {
   return vine`
@@ -186,11 +212,10 @@ const messageTypeToSend = {
 function InputBox(props: { anchor: HTMLElement }) {
   const question = ref("");
   const isQuestionEmpty = computed(() => question.value.trim() === "");
-  const { loading } = useChatStore();
+  const { loading, history } = useChatStore();
   const isSubmitDisabled = computed(
     () => isQuestionEmpty.value && !loading.value,
   );
-  const { history } = useChatStore();
   const connection = useConnectionStore();
 
   const mode = ref(AgentMode.Chat);

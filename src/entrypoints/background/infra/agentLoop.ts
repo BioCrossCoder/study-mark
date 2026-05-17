@@ -1,5 +1,5 @@
 import { MessageType, Signal } from "@/common/enums";
-import { TextMessage } from "@/common/types";
+import { SignalMessage, TextMessage } from "@/common/types";
 import {
   AIMessage,
   AIMessageChunk,
@@ -12,7 +12,7 @@ export async function execAgentLoop(
   agent: ReturnType<typeof createAgent>,
   messages: (HumanMessage | AIMessage)[],
   abortController: AbortControllerInterface,
-  send: (message: TextMessage) => void,
+  send: (message: TextMessage | SignalMessage) => void,
 ): Promise<Result<AIMessage | Signal.Stop, Error>> {
   // [CallLLM]
   const result = await ResultAsync.fromThrowable((messages) =>
@@ -43,24 +43,14 @@ export async function execAgentLoop(
     }
     // [SendToolCallingIntention]
     const msg = chunk as AIMessageChunk;
-    if (msg.tool_calls?.length) {
+    if (
+      msg.tool_calls?.length ||
+      msg.tool_call_chunks?.length ||
+      msg.invalid_tool_calls?.length
+    ) {
       send({
-        type: MessageType.Tool,
-        content: JSON.stringify(msg.tool_calls),
-      });
-      continue;
-    }
-    if (msg.tool_call_chunks?.length) {
-      send({
-        type: MessageType.Tool,
-        content: JSON.stringify(msg.tool_call_chunks),
-      });
-      continue;
-    }
-    if (msg.invalid_tool_calls?.length) {
-      send({
-        type: MessageType.Tool,
-        content: JSON.stringify(msg.invalid_tool_calls),
+        type: MessageType.Signal,
+        content: Signal.Tool,
       });
       continue;
     } // [/]
