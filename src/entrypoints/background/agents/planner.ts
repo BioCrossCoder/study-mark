@@ -49,6 +49,9 @@ async function run(port: globalThis.Browser.runtime.Port, content: string) {
         }
       },
     );
+    if (result.isOk() && result.value === Signal.Stop) {
+      finish = true;
+    }
     count++;
   }
   if (result!.isErr()) {
