@@ -113,6 +113,10 @@ export default function TaskData() {
   `;
 }
 
+function handleOpenLink(url: string) {
+  browser.tabs.create({ url });
+}
+
 function TaskList(props: { data: { tasks: Task[] } }) {
   const { save, remove } = useTasksMutation();
   function handleDelete(id: string) {
@@ -122,10 +126,6 @@ function TaskList(props: { data: { tasks: Task[] } }) {
   const dialog = ref({ open: (_: string) => {} });
   function handleUpdate(id: string) {
     dialog.value.open(id);
-  }
-
-  function handleOpenLink(url: string) {
-    browser.tabs.create({ url });
   }
 
   const confirm = useConfirm();
@@ -283,9 +283,13 @@ function ResourceList(props: { data: { resources: Resource[] } }) {
             <div class="flex items-center justify-between">
               <p>{{item.title}}</p>
             </div>
-            <div class="flex justify-between items-center">
+            <div class="flex justify-between items-center gap-4">
               <i
-                class="pi pi-pen-to-square hover:cursor-pointer hover:text-primary-300 mr-4"
+                class="pi pi-external-link hover:cursor-pointer hover:text-primary-300"
+                @click="()=>handleOpenLink(item.source)"
+              />
+              <i
+                class="pi pi-pen-to-square hover:cursor-pointer hover:text-primary-300"
                 @click="()=>handleUpdate(item.id)"
               />
               <i
