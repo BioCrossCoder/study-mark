@@ -52,6 +52,13 @@ const callbacks: Record<
           break;
         case MessageType.Plan:
           send(port, await plannerAgent.run(port, content));
+          browser.notifications.create({
+            type: "basic",
+            iconUrl: "icon/48.png",
+            title: "Plan Generation Finished",
+            message:
+              content.slice(0, 100) + (content.length > 100 ? "..." : ""),
+          });
           break;
       }
     } // [/]
