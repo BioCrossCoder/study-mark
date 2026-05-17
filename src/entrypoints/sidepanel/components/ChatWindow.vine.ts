@@ -107,6 +107,7 @@ export default function ChatWindow() {
           }
           break;
       }
+      useScroll(bottomAnchor, "smooth", "end");
       return;
     } // [/]
     // [HandleText]
@@ -122,9 +123,9 @@ export default function ChatWindow() {
           break;
         case MessageType.Plan:
           const data = JSON.parse(content);
-          const info = JSON.stringify(data, null, 2);
+          const info = planList(data);
           updateHistory(
-            (reasoning.value ? "\n```\n" : "") + `\`\`\`json\n${info}\n\`\`\``,
+            (reasoning.value ? "\n```\n" : "") + `\n${info}\n`,
             () => createPlan(data),
           );
           reasoning.value = false;
@@ -172,6 +173,30 @@ export default function ChatWindow() {
 }
 
 const toolCallingTag = "\n```\nExec Tool Calling...\n```\n";
+
+function planList(data: Plan) {
+  const { target, tasks } = data;
+  const taskList = tasks
+    .map(
+      ({ title, description, source }, i) =>
+        `${i + 1}. ${title}(${source})\n${description}`,
+    )
+    .join("\n");
+  return `
+    \`\`\`
+    [Plan]
+
+    Target - ${target.title}
+      ${target.description}
+
+    Tasks
+      ${taskList}
+    \`\`\`
+  `
+    .split("\n")
+    .map((line) => line.trim())
+    .join("\n");
+}
 
 function ChatBubble(props: ChatMessage) {
   return vine`
