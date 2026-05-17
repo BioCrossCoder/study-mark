@@ -3,8 +3,8 @@ import { SelectButton } from "primevue";
 
 const icons: Record<string, string> = {
   "/sidepanel/": "pi pi-comments",
-  "/sidepanel/favorites": "pi pi-star",
   "/sidepanel/tasks": "pi pi-list",
+  "/sidepanel/favorites": "pi pi-star",
 };
 
 export default function NavigationGroup() {
