@@ -1,7 +1,7 @@
 import { useResourceQuery } from "../stores/resource";
 import { useTasksMutation } from "@/stores/tasks";
 import { useNotice } from "@/composables/useNotice";
-import { resourceSchema } from "@/common/types";
+import { MicroLinkApiResp, resourceSchema } from "@/common/types";
 import { Button, Dialog, InputText, Textarea } from "primevue";
 
 export default function UpdateResourceDialog() {
@@ -30,6 +30,7 @@ export default function UpdateResourceDialog() {
   });
 
   async function handleSetSource() {
+    // [LoadTabInfo]
     const tab = (
       await browser.tabs.query({
         active: true,
@@ -37,6 +38,20 @@ export default function UpdateResourceDialog() {
       })
     )[0];
     source.value = tab.url ?? source.value;
+    title.value = tab.title ?? title.value; // [/]
+    // [GetDescription]
+    if (!source.value) {
+      return;
+    }
+    const resp = await fetch(`https://api.microlink.io?url=${source.value}`);
+    if (!resp.ok) {
+      return;
+    }
+    const result = (await resp.json()) as MicroLinkApiResp;
+    if (result.status !== "success") {
+      return;
+    }
+    description.value = result.data.description ?? description.value; // [/]
   }
 
   const { save } = useTasksMutation();
@@ -67,7 +82,7 @@ export default function UpdateResourceDialog() {
     <Dialog
       v-model:visible="show"
       modal
-      header="Update Task"
+      header="Update Resource"
       class="w-6/7"
       append-to="self"
       :draggable="false"
