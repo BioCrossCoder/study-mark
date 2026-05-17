@@ -9,7 +9,7 @@ export const modelConfig = storage.defineItem<ModelConfig>(key, {
     baseURL: "",
     apiKey: "",
     model: "",
-    tavilyApiKey:''
+    tavilyApiKey: "",
   },
 });
 
@@ -25,7 +25,7 @@ export function useModelConfigMutation() {
   return useMutation({
     mutationFn: modelConfig.setValue,
     onSuccess() {
-      refetch;
+      refetch();
     },
   });
 }

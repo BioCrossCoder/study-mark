@@ -35,6 +35,7 @@ import { defineVibe } from "vue-vine";
 import { useRelationsMutation } from "@/stores/relations";
 import { useCreateTarget } from "@/composables/useCreateTarget";
 import { useCreateTask } from "@/composables/useCreateTask";
+import { useModelConfigQuery } from "@/stores/config";
 
 export default function ChatWindow() {
   const { history, isHistoryEmpty, loading } = useChatStore();
@@ -219,7 +220,25 @@ function InputBox(props: { anchor: HTMLElement }) {
   const connection = useConnectionStore();
 
   const mode = ref(AgentMode.Chat);
-  const options = Object.values(AgentMode);
+  const { data } = useModelConfigQuery();
+  const planModeDisabled = computed(() => !data.value?.tavilyApiKey);
+  watch(planModeDisabled, (value) => {
+    if (value) {
+      mode.value = AgentMode.Chat;
+    }
+  });
+  const options = computed(() => [
+    {
+      name: "Chat",
+      code: AgentMode.Chat,
+      disabled: false,
+    },
+    {
+      name: "Plan",
+      code: AgentMode.Plan,
+      disabled: planModeDisabled.value,
+    },
+  ]);
 
   function handleSubmit() {
     // [StopGeneration]
@@ -284,6 +303,9 @@ function InputBox(props: { anchor: HTMLElement }) {
         <Select
           v-model="mode"
           :options="options"
+          optionLabel="name"
+          optionValue="code"
+          option-disabled="disabled"
         />
         <Chip label="Newline">
           <template #icon>

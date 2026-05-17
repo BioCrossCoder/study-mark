@@ -55,7 +55,7 @@ export const enum ToolName {
   LoadResources = "load_resources",
 }
 
-export enum AgentMode {
-  Chat = "Chat",
-  Plan = "Plan",
+export const enum AgentMode {
+  Chat,
+  Plan,
 }
