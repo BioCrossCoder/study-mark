@@ -17,5 +17,12 @@ export function useNotice() {
       summary,
     });
   }
-  return { ...toast, showError, showSuccess };
+  function showInfo(summary: string) {
+    toast.removeAllGroups();
+    toast.add({
+      severity: "info",
+      summary,
+    });
+  }
+  return { ...toast, showError, showSuccess, showInfo };
 }

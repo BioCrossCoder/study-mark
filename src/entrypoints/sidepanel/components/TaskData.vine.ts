@@ -123,6 +123,12 @@ function TaskList(props: { data: { tasks: Task[] } }) {
     remove(id);
   }
 
+  const { showInfo } = useNotice();
+  async function handleCopy(text: string) {
+    await navigator.clipboard.writeText(text);
+    showInfo("Task title copied!");
+  }
+
   const dialog = ref({ open: (_: string) => {} });
   function handleUpdate(id: string) {
     dialog.value.open(id);
@@ -138,7 +144,12 @@ function TaskList(props: { data: { tasks: Task[] } }) {
         <template #title>
           <div class="flex justify-between items-center">
             <div class="flex items-center justify-between">
-              <p>{{item.title}}</p>
+              <p
+                class="hover:cursor-copy hover:text-primary-300"
+                @click="()=>handleCopy(item.title)"
+              >
+                {{item.title}}
+              </p>
               <i :class="statusIcon[item.state]+' mx-2 text-primary-300'"/>
             </div>
             <div class="flex justify-between items-center">
