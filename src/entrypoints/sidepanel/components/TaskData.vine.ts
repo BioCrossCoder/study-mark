@@ -118,7 +118,7 @@ function handleOpenLink(url: string) {
 }
 
 function TaskList(props: { data: { tasks: Task[] } }) {
-  const { save, remove } = useTasksMutation();
+  const { remove } = useTasksMutation();
   function handleDelete(id: string) {
     remove(id);
   }
@@ -126,39 +126,6 @@ function TaskList(props: { data: { tasks: Task[] } }) {
   const dialog = ref({ open: (_: string) => {} });
   function handleUpdate(id: string) {
     dialog.value.open(id);
-  }
-
-  const confirm = useConfirm();
-  const { showError } = useNotice();
-  async function handleSave(item: Task) {
-    const tab = (
-      await browser.tabs.query({
-        active: true,
-        currentWindow: true,
-      })
-    )[0];
-    confirm.require({
-      message: "Save current page as position of this task?",
-      header: "Confirmation",
-      icon: "pi pi-check-circle",
-      rejectProps: {
-        label: "Cancel",
-        severity: "secondary",
-        outlined: true,
-      },
-      acceptProps: {
-        label: "Save",
-      },
-      accept: async () => {
-        const result = await save({
-          ...item,
-          position: tab.url ?? item.position,
-        });
-        if (result.isErr()) {
-          showError("Save Position Failed", result.error);
-        }
-      },
-    });
   }
 
   const { mapping } = useRelationsQuery();
@@ -198,7 +165,6 @@ function TaskList(props: { data: { tasks: Task[] } }) {
           <div class="flex justify-between">
             <div class="flex gap-2">
             <Button label="Open" size="small" @click="handleOpenLink(item.position)"/>
-            <Button label="Save" size="small" @click="handleSave(item)"/>
             </div>
             <div
               class="flex items-center hover:cursor-pointer hover:text-primary-300"
