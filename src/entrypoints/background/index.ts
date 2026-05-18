@@ -1,4 +1,9 @@
-import { Channel, MessageType, Signal } from "@/common/enums";
+import {
+  Channel,
+  ContextMenuItemID,
+  MessageType,
+  Signal,
+} from "@/common/enums";
 import { textMessageSchema, signalMessageSchema } from "@/common/types";
 import { chatbotAgent } from "./agents/chatbot";
 import { plannerAgent } from "./agents/planner";
@@ -20,6 +25,17 @@ export default defineBackground(() => {
     if (signalMessage.success) {
       connections.get(Channel.SidePanel)?.postMessage(message);
     } // [/]
+  });
+  browser.contextMenus.create({
+    id: ContextMenuItemID.RecordProgress,
+    title: "Save Study Progress",
+    contexts: ["selection"],
+  });
+  browser.contextMenus.onClicked.addListener((_info, tab) => {
+    browser.tabs.sendMessage(tab?.id ?? browser.tabs.TAB_ID_NONE, {
+      type: MessageType.Signal,
+      content: Signal.SaveProgress,
+    });
   });
 });
 

@@ -1,7 +1,14 @@
-import { Resource, Target, Task } from "@/common/types";
+import {
+  BookMark,
+  Resource,
+  SignalMessage,
+  Target,
+  Task,
+} from "@/common/types";
 import { useMutation, useQuery } from "@tanstack/vue-query";
 import { ok, err, Result } from "neverthrow";
 import { useRelationsMutation } from "./relations";
+import { MessageType, ObjectType, Signal } from "@/common/enums";
 
 type Plan = Task | Target | Resource;
 const key = "local:taskData";
@@ -59,4 +66,47 @@ export function useTasksMutation() {
   }
 
   return { ...mutation, save, remove, newId };
+}
+
+export async function getTasksByPosition(position: string) {
+  const data = await taskData.getValue();
+  return Object.values(data)
+    .filter(
+      (item) => item.type === ObjectType.Task && item.position === position,
+    )
+    .map((item) => {
+      const { id, bookmark } = item as Task;
+      return { id, bookmark };
+    });
+}
+
+export async function getTaskByTitle(title: string) {
+  const data = await taskData.getValue();
+  for (const item of Object.values(data)) {
+    if (item.type === ObjectType.Task && item.title === title) {
+      const { id, bookmark } = item;
+      return { id, bookmark };
+    }
+  }
+  return null;
+}
+
+export async function updateTaskProgress(
+  ids: string[],
+  position: string,
+  bookmark: BookMark,
+) {
+  const data = await taskData.getValue();
+  ids.forEach((id) => {
+    const task = data[id];
+    if (task && task.type === ObjectType.Task) {
+      task.position = position;
+      task.bookmark = bookmark;
+    }
+  });
+  await taskData.setValue(data);
+  await browser.runtime.sendMessage({
+    type: MessageType.Signal,
+    content: Signal.UpdateTask,
+  } as SignalMessage);
 }

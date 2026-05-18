@@ -43,6 +43,14 @@ export const errorMessageSchema = z.object({
 
 export type ErrorMessage = z.infer<typeof errorMessageSchema>;
 
+const bookmarkSchema = z.object({
+  id: z.string(),
+  xpath: z.string(),
+  offset: z.number(),
+});
+
+export type BookMark = z.infer<typeof bookmarkSchema>;
+
 export const taskSchema = z.object({
   id: z.string(),
   type: z.literal(ObjectType.Task),
@@ -51,6 +59,7 @@ export const taskSchema = z.object({
   description: z.string(),
   source: z.url(),
   position: z.url(),
+  bookmark: bookmarkSchema.optional(),
   createAt: z.number(),
 });
 

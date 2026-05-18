@@ -18,6 +18,7 @@ export enum Signal {
   ShowTasks,
   Stop,
   Tool,
+  SaveProgress,
 }
 
 export const enum ChatMessageSender {
@@ -58,4 +59,8 @@ export const enum ToolName {
 export const enum AgentMode {
   Chat,
   Plan,
+}
+
+export const enum ContextMenuItemID {
+  RecordProgress = "study-mark-record-progress",
 }
