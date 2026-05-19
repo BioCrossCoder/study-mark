@@ -27,6 +27,7 @@ export default function CreateBookmarkDialog() {
       })
     )[0];
     url.value = tab.url ?? url.value;
+    name.value = tab.title ?? name.value;
   }
 
   const position = ref({} as Record<string, true>);
