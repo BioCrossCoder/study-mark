@@ -1,8 +1,9 @@
 import { useResourceQuery } from "../stores/resource";
 import { useTasksMutation } from "@/stores/tasks";
 import { useNotice } from "@/composables/useNotice";
-import { MicroLinkApiResp, resourceSchema } from "@/common/types";
+import { resourceSchema } from "@/common/types";
 import { Button, Dialog, InputText, Textarea } from "primevue";
+import { useLoadTabInfo } from "@/composables/useLoadTabInfo";
 
 export default function UpdateResourceDialog() {
   const show = ref(false);
@@ -29,30 +30,11 @@ export default function UpdateResourceDialog() {
     source.value = value?.source ?? "";
   });
 
-  async function handleSetSource() {
-    // [LoadTabInfo]
-    const tab = (
-      await browser.tabs.query({
-        active: true,
-        currentWindow: true,
-      })
-    )[0];
-    source.value = tab.url ?? source.value;
-    title.value = tab.title ?? title.value; // [/]
-    // [GetDescription]
-    if (!source.value) {
-      return;
-    }
-    const resp = await fetch(`https://api.microlink.io?url=${source.value}`);
-    if (!resp.ok) {
-      return;
-    }
-    const result = (await resp.json()) as MicroLinkApiResp;
-    if (result.status !== "success") {
-      return;
-    }
-    description.value = result.data.description ?? description.value; // [/]
-  }
+  const { loading, run: handleSetSource } = useLoadTabInfo(
+    source,
+    title,
+    description,
+  );
 
   const { save } = useTasksMutation();
   const { showError } = useNotice();
@@ -105,6 +87,7 @@ export default function UpdateResourceDialog() {
           autocomplete="off"
           rows="3"
           class="flex-auto text-base!"
+          :disabled="loading"
         />
       </div>
       <div class="flex flex-col mb-4">
