@@ -14,7 +14,12 @@ import {
 } from "primevue";
 import { useTasksMutation, useTasksQuery } from "@/stores/tasks";
 import { Resource, signalMessageSchema, Target, Task } from "@/common/types";
-import { ObjectType, Signal, statusIcon } from "@/common/enums";
+import {
+  ConnectionListener,
+  ObjectType,
+  Signal,
+  statusIcon,
+} from "@/common/enums";
 import UpdateTaskDialog from "./UpdateTaskDialog.vine";
 import UpdateTargetDialog from "./UpdateTargetDialog.vine";
 import { useRelationsQuery } from "@/stores/relations";
@@ -31,7 +36,7 @@ export default function TaskData() {
   const { data, refetch } = useTasksQuery();
   const relationsQuery = useRelationsQuery();
   const connection = useConnectionStore();
-  connection.listen((message) => {
+  connection.listen(ConnectionListener.TaskData, (message) => {
     // [UpdateViewOnDataUpdate]
     const signalMessage = signalMessageSchema.safeParse(message);
     if (

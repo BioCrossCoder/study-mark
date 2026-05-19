@@ -1,20 +1,21 @@
-import { Channel } from "@/common/enums";
+import { Channel, ConnectionListener } from "@/common/enums";
 import { defineVibe } from "vue-vine";
 
+const port = browser.runtime.connect({ name: Channel.SidePanel });
 export const [useConnectionStore, initConnectionStore] = defineVibe(
   "connection",
   () => {
-    const port = browser.runtime.connect({ name: Channel.SidePanel });
-    const listeners = new Array<MessageCallback>();
-    function listen(callback: MessageCallback) {
-      if (port.onMessage.hasListener(callback)) {
+    const listeners = new Map<ConnectionListener, MessageCallback>();
+    function listen(key: ConnectionListener, callback: MessageCallback) {
+      if (listeners.has(key)) {
         return;
       }
       port.onMessage.addListener(callback);
-      listeners.push(callback);
+      listeners.set(key, callback);
     }
     function close() {
-      listeners.forEach(port.onMessage.removeListener);
+      listeners.forEach((callback) => port.onMessage.removeListener(callback));
+      listeners.clear();
       port.disconnect();
     }
     function send<T>(message: T) {

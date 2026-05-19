@@ -64,3 +64,8 @@ export const enum AgentMode {
 export const enum ContextMenuItemID {
   RecordProgress = "study-mark-record-progress",
 }
+
+export const enum ConnectionListener {
+  ChatWindow,
+  TaskData,
+}

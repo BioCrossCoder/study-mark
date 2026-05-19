@@ -13,6 +13,7 @@ import {
 import {
   AgentMode,
   ChatMessageSender,
+  ConnectionListener,
   ExecStatus,
   MessageType,
   ObjectType,
@@ -79,7 +80,7 @@ export default function ChatWindow() {
   }
 
   const reasoning = ref(false);
-  connection.listen((message) => {
+  connection.listen(ConnectionListener.ChatWindow, (message) => {
     // [HandleError]
     const errorMessage = errorMessageSchema.safeParse(message);
     if (errorMessage.success) {
