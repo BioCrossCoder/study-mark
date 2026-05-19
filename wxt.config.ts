@@ -39,7 +39,7 @@ export default defineConfig({
       "scripting",
       "notifications",
     ],
-    host_permissions: ["*"],
+    host_permissions: ["<all_urls>"],
     default_locale: "en",
     name: "__MSG_extName__",
     description: "__MSG_extDescription__",
