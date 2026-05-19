@@ -8,4 +8,14 @@
 
 ## 功能
 
-// TODO
+1. 通过AI制作学习计划。
+![plan.png](https://github.com/BioCrossCoder/study-mark/raw/refs/heads/main/images/plan.png)
+
+2. 使用任务和目标来管理学习进度
+![bookmark.png](https://github.com/BioCrossCoder/study-mark/raw/refs/heads/main/images/bookmark.png)
+
+3. 管理收藏夹
+![favorites.png](https://github.com/BioCrossCoder/study-mark/raw/refs/heads/main/images/favorites.png)
+
+4. 从当前标签页创建任务
+![popup.png](https://github.com/BioCrossCoder/study-mark/raw/refs/heads/main/images/popup.png)
