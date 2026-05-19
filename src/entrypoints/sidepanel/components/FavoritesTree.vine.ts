@@ -53,7 +53,7 @@ export default function FavoritesTree() {
   const createTarget = useCreateTarget();
   const createTask = useCreateTask();
   const { add } = useRelationsMutation();
-  const { showError } = useNotice();
+  const { showError, showSuccess } = useNotice();
   const confirm = useConfirm();
   async function handleCreate(event: PointerEvent, node: TreeNode) {
     event.stopPropagation();
@@ -74,36 +74,38 @@ export default function FavoritesTree() {
         label: "Save",
       },
       accept: async () => {
-        // [CreateTaskFromBookmark]
         if (bookmarkNode.url) {
-          const result = await createTask(bookmarkNode);
-          if (result.isErr()) {
-            showError("Create Task Failed", result.error);
-          }
-          return;
-        } // [/]
-        // [CreateTargetFromFolder]
-        let targetId = "";
-        const result = await createTarget(bookmarkNode);
-        if (result.isErr()) {
-          showError("Create Target Failed", result.error);
-          return;
-        }
-        targetId = result.value; // [/]
-        const taskIds = new Array<string>();
-        for (const item of bookmarkNode.children ?? []) {
-          if (!item.url) {
-            continue;
-          }
           // [CreateTaskFromBookmark]
-          const result = await createTask(item);
+          const result = await createTask(bookmarkNode);
           if (result.isErr()) {
             showError("Create Task Failed", result.error);
             return;
           } // [/]
-          taskIds.push(result.value);
+        } else {
+          // [CreateTargetFromFolder]
+          let targetId = "";
+          const result = await createTarget(bookmarkNode);
+          if (result.isErr()) {
+            showError("Create Target Failed", result.error);
+            return;
+          }
+          targetId = result.value; // [/]
+          const taskIds = new Array<string>();
+          for (const item of bookmarkNode.children ?? []) {
+            if (!item.url) {
+              continue;
+            }
+            // [CreateTaskFromBookmark]
+            const result = await createTask(item);
+            if (result.isErr()) {
+              showError("Create Task Failed", result.error);
+              return;
+            } // [/]
+            taskIds.push(result.value);
+          }
+          add(taskIds.map((id) => [id, targetId]));
         }
-        add(taskIds.map((id) => [id, targetId]));
+        showSuccess("Create Plan Succeeded!");
       },
     });
   }
