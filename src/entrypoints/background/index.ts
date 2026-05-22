@@ -26,15 +26,17 @@ export default defineBackground(() => {
       connections.get(Channel.SidePanel)?.postMessage(message);
     } // [/]
   });
-  browser.contextMenus.create({
-    id: ContextMenuItemID.RecordProgress,
-    title: "Save Study Progress",
-    contexts: ["selection"],
-  });
-  browser.contextMenus.onClicked.addListener((_info, tab) => {
-    browser.tabs.sendMessage(tab?.id ?? browser.tabs.TAB_ID_NONE, {
-      type: MessageType.Signal,
-      content: Signal.SaveProgress,
+  browser.runtime.onInstalled.addListener(() => {
+    browser.contextMenus.create({
+      id: ContextMenuItemID.RecordProgress,
+      title: "Save Study Progress",
+      contexts: [browser.contextMenus.ContextType.SELECTION],
+    });
+    browser.contextMenus.onClicked.addListener((_info, tab) => {
+      browser.tabs.sendMessage(tab?.id ?? browser.tabs.TAB_ID_NONE, {
+        type: MessageType.Signal,
+        content: Signal.SaveProgress,
+      });
     });
   });
 });
