@@ -1,13 +1,14 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
+import { useMutation, useQuery } from "@tanstack/vue-query";
 
 const key = "local:relationData";
 const relationData = storage.defineItem<[string, string][]>(key, {
   fallback: [],
 });
 
+const version = ref(0);
 export function useRelationsQuery() {
   const query = useQuery({
-    queryKey: [key],
+    queryKey: [key, version],
     queryFn: relationData.getValue,
   });
   const mapping = computed(() => {
@@ -22,11 +23,10 @@ export function useRelationsQuery() {
 }
 
 export function useRelationsMutation() {
-  const client = useQueryClient();
   const mutation = useMutation({
     mutationFn: relationData.setValue,
-    async onSuccess() {
-      await client.invalidateQueries({ queryKey: [key] });
+    onSuccess() {
+      version.value = Date.now();
     },
   });
 

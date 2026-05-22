@@ -5,7 +5,7 @@ import {
   Target,
   Task,
 } from "@/common/types";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
+import { useMutation, useQuery } from "@tanstack/vue-query";
 import { ok, err, Result } from "neverthrow";
 import { useRelationsMutation } from "./relations";
 import { MessageType, ObjectType, Signal } from "@/common/enums";
@@ -16,19 +16,19 @@ export const taskData = storage.defineItem<Record<string, Plan>>(key, {
   fallback: {},
 });
 
+const version = ref(0);
 export function useTasksQuery() {
   return useQuery({
-    queryKey: [key],
+    queryKey: [key, version],
     queryFn: taskData.getValue,
   });
 }
 
 export function useTasksMutation() {
-  const client = useQueryClient();
   const mutation = useMutation({
     mutationFn: taskData.setValue,
-    async onSuccess() {
-      await client.invalidateQueries({ queryKey: [key] });
+    onSuccess() {
+      version.value = Date.now();
     },
   });
 
