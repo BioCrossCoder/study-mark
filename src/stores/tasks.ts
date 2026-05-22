@@ -5,7 +5,7 @@ import {
   Target,
   Task,
 } from "@/common/types";
-import { useMutation, useQuery } from "@tanstack/vue-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import { ok, err, Result } from "neverthrow";
 import { useRelationsMutation } from "./relations";
 import { MessageType, ObjectType, Signal } from "@/common/enums";
@@ -24,11 +24,11 @@ export function useTasksQuery() {
 }
 
 export function useTasksMutation() {
-  const { refetch } = useTasksQuery();
+  const client = useQueryClient();
   const mutation = useMutation({
     mutationFn: taskData.setValue,
-    onSuccess() {
-      refetch();
+    async onSuccess() {
+      await client.invalidateQueries({ queryKey: [key] });
     },
   });
 

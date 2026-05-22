@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/vue-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import { SidePanelPagePath } from "@/common/types";
 
 const key = "local:sidePanelPath";
@@ -14,11 +14,11 @@ export function useSidePanelPathQuery() {
 }
 
 export function useSidePanelPathMutation() {
-  const { refetch } = useSidePanelPathQuery();
+  const client = useQueryClient();
   return useMutation({
     mutationFn: sidePanelPath.setValue,
-    onSuccess() {
-      refetch();
+    async onSuccess() {
+      await client.invalidateQueries({ queryKey: [key] });
     },
   });
 }

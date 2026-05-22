@@ -1,6 +1,6 @@
 import { ModelProviderProtocol } from "@/common/enums";
 import { ModelConfig } from "@/common/types";
-import { useMutation, useQuery } from "@tanstack/vue-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 
 const key = "sync:modelConfig";
 export const modelConfig = storage.defineItem<ModelConfig>(key, {
@@ -21,11 +21,11 @@ export function useModelConfigQuery() {
 }
 
 export function useModelConfigMutation() {
-  const { refetch } = useModelConfigQuery();
+  const client = useQueryClient();
   return useMutation({
     mutationFn: modelConfig.setValue,
-    onSuccess() {
-      refetch();
+    async onSuccess() {
+      await client.invalidateQueries({ queryKey: [key] });
     },
   });
 }
