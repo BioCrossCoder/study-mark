@@ -175,7 +175,7 @@ function TaskList(props: { data: { tasks: Task[] } }) {
           </div>
         </template>
         <template #content>
-          {{item.description}}
+          <p class="whitespace-pre-wrap break-all">{{item.description}}</p>
         </template>
         <template #footer>
           <div class="flex justify-between">
@@ -239,7 +239,9 @@ function TargetList(props: { data: { targets: Target[] } }) {
             <Tag v-for="id in mapping[item.id]" :value="relatedItems[id].title"/>
           </div>
         </template>
-        <template #content>{{item.description}}</template>
+        <template #content>
+          <p class="whitespace-pre-wrap break-all">{{item.description}}</p>
+        </template>
       </Card>
     </ScrollPanel>
     <UpdateTargetDialog ref="dialog"/>
@@ -281,7 +283,9 @@ function ResourceList(props: { data: { resources: Resource[] } }) {
             </div>
           </div>
         </template>
-        <template #content>{{item.description}}</template>
+        <template #content>
+          <p class="whitespace-pre-wrap break-all">{{item.description}}</p>
+        </template>
       </Card>
     </ScrollPanel>
     <UpdateResourceDialog ref="dialog"/>
