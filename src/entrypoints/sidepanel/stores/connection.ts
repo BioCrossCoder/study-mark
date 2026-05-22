@@ -1,7 +1,37 @@
 import { Channel, ConnectionListener } from "@/common/enums";
 import { defineVibe } from "vue-vine";
 
-const port = browser.runtime.connect({ name: Channel.SidePanel });
+class Connection {
+  constructor(
+    private listeners = new Map<ConnectionListener, MessageCallback>(),
+    private port = this.connect(),
+  ) {
+    this.autoReconnect();
+  }
+  private connect() {
+    return browser.runtime.connect({ name: Channel.SidePanel });
+  }
+  private autoReconnect() {
+    this.port.onDisconnect.addListener(() => {
+      this.port = this.connect();
+      this.listeners.forEach((callback) =>
+        this.port.onMessage.addListener(callback),
+      );
+      this.autoReconnect();
+    });
+  }
+  public get onMessage() {
+    return this.port.onMessage;
+  }
+  public disconnect() {
+    return this.port.disconnect();
+  }
+  public postMessage<T>(message: T) {
+    return this.port.postMessage(message);
+  }
+}
+
+const port = new Connection();
 export const [useConnectionStore, initConnectionStore] = defineVibe(
   "connection",
   () => {
