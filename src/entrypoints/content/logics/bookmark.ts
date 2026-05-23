@@ -15,12 +15,27 @@ export async function loadBookmark() {
     return;
   }
   const { id, xpath, offset } = bookmark;
+  const observer = new MutationObserver(() => {
+    tryInsertBookmark(xpath, offset, id);
+    observer.disconnect();
+  });
+  observer.observe(document, {
+    childList: true,
+    subtree: true,
+    characterData: true,
+  });
+}
+
+function tryInsertBookmark(xpath: string, offset: number, id: string) {
   const result = document.evaluate(
     xpath,
     document,
     null,
     XPathResult.FIRST_ORDERED_NODE_TYPE,
-  ).singleNodeValue!;
+  ).singleNodeValue;
+  if (!result) {
+    return;
+  }
   const range = document.createRange();
   range.setStart(result, offset);
   const anchor = createBookmark(id);

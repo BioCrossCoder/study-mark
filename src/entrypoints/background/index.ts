@@ -38,6 +38,15 @@ export default defineBackground(() => {
         content: Signal.SaveProgress,
       });
     });
+    browser.tabs.onUpdated.addListener((id, info) => {
+      if (!info.url) {
+        return;
+      }
+      browser.tabs.sendMessage(id, {
+        type: MessageType.Signal,
+        content: Signal.Bookmark,
+      });
+    });
   });
 });
 

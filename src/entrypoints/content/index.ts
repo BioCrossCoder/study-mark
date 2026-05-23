@@ -8,10 +8,15 @@ export default defineContentScript({
     loadBookmark();
     browser.runtime.onMessage.addListener((message) => {
       const { success, data } = signalMessageSchema.safeParse(message);
-      if (!success || data.content !== Signal.SaveProgress) {
+      if (!success) {
         return;
       }
-      saveBookmark();
+      switch (data.content) {
+        case Signal.SaveProgress:
+          return saveBookmark();
+        case Signal.Bookmark:
+          return loadBookmark();
+      }
     });
   },
 });

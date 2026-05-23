@@ -19,6 +19,7 @@ export enum Signal {
   Stop,
   Tool,
   SaveProgress,
+  Bookmark,
 }
 
 export const enum ChatMessageSender {
