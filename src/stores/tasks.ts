@@ -68,11 +68,20 @@ export function useTasksMutation() {
   return { ...mutation, save, remove, newId };
 }
 
+function positionMatch(p1: string, p2: string) {
+  const SUFFIX_RE = /(\.html|\.htm|\.php|\.jsp|\.asp|)/;
+  return (
+    new RegExp(`^${p1}${SUFFIX_RE.source}$`).test(p2) ||
+    new RegExp(`^${p2}${SUFFIX_RE.source}$`).test(p1)
+  );
+}
+
 export async function getTasksByPosition(position: string) {
   const data = await taskData.getValue();
   return Object.values(data)
     .filter(
-      (item) => item.type === ObjectType.Task && item.position === position,
+      (item) =>
+        item.type === ObjectType.Task && positionMatch(position, item.position),
     )
     .map((item) => {
       const { id, bookmark } = item as Task;
