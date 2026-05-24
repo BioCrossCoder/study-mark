@@ -15,11 +15,10 @@ import { useShowTasks } from "./composables/useShowTasks";
 export default function App() {
   usePathStore();
   useShowTasks();
-  onMounted(() => {
-    initSelectionStore();
-    initConnectionStore();
-    initChatStore();
-  });
+  // [ProvideCanOnlyCalledInSetup]
+  initSelectionStore();
+  initConnectionStore();
+  initChatStore(); // [/]
   onUnmounted(() => {
     useConnectionStore().close();
   });
