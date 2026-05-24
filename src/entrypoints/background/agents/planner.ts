@@ -14,7 +14,6 @@ import {
 } from "../tools/loadResources";
 import { modelConfig } from "@/stores/config";
 import { ok, Result } from "neverthrow";
-import { send } from "@/common/utils";
 import { MessageType, Signal } from "@/common/enums";
 import { execAgentLoop, useAbortController } from "../infra/agentLoop";
 
@@ -37,7 +36,7 @@ async function run(port: globalThis.Browser.runtime.Port, content: string) {
       (message) => {
         if (message.type === MessageType.Text) {
           finish = true;
-          send(port, {
+          port.postMessage({
             type: MessageType.Plan,
             content: message.content.replace(
               "Returning structured response: ",
@@ -45,7 +44,7 @@ async function run(port: globalThis.Browser.runtime.Port, content: string) {
             ),
           });
         } else {
-          send(port, message);
+          port.postMessage(message);
         }
       },
     );

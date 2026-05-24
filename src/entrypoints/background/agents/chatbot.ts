@@ -8,7 +8,6 @@ import { createAgent } from "langchain";
 import { createTrimMessagesMiddleware } from "../middlewares/trimMessages";
 import { createSumMessagesMiddleware } from "../middlewares/sumMessages";
 import { createWebSearchTool, webSearchToolPrompt } from "../tools/webSearch";
-import { send } from "@/common/utils";
 import { execAgentLoop, useAbortController } from "../infra/agentLoop";
 
 const abortController = useAbortController();
@@ -27,7 +26,7 @@ async function run(port: globalThis.Browser.runtime.Port, content: string) {
     await read(),
     abortController,
     (message) => {
-      send(port, message);
+      port.postMessage(message);
     },
   );
   if (result.isErr()) {

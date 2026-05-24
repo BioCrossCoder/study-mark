@@ -7,7 +7,6 @@ import {
 import { textMessageSchema, signalMessageSchema } from "@/common/types";
 import { chatbotAgent } from "./agents/chatbot";
 import { plannerAgent } from "./agents/planner";
-import { send } from "@/common/utils";
 
 export default defineBackground(() => {
   const connections = new Map<string, globalThis.Browser.runtime.Port>();
@@ -75,10 +74,10 @@ const callbacks: Record<
       const { content } = textMessage.data;
       switch (textMessage.data.type) {
         case MessageType.Text:
-          send(port, await chatbotAgent.run(port, content));
+          port.postMessage(await chatbotAgent.run(port, content));
           break;
         case MessageType.Plan:
-          send(port, await plannerAgent.run(port, content));
+          port.postMessage(await plannerAgent.run(port, content));
           browser.notifications.create({
             type: "basic",
             iconUrl: "icon/48.png",
