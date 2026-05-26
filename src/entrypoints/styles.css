@@ -1,0 +1,15 @@
+@layer tailwind-base, primereact;
+
+@media (prefers-color-scheme: light) {
+    @import 'primereact/resources/themes/lara-light-blue/theme';
+}
+
+@media (prefers-color-scheme: dark) {
+    @import "primereact/resources/themes/lara-dark-blue/theme";
+}
+
+@layer tailwind-base {
+    @import "tailwindcss";
+}
+
+@import "primeicons/primeicons";
