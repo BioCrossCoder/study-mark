@@ -1,9 +1,10 @@
-import { libraryData } from "@/stores/library";
+import { StoreKey } from "@/common/enums";
+import { libraryData } from "@/services/storage/library";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 export function useLibraryQuery() {
   return useQuery({
-    queryKey: [],
+    queryKey: [StoreKey.Library],
     queryFn: libraryData.getValue,
   });
 }
