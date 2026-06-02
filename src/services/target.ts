@@ -56,7 +56,6 @@ export function useCreateTarget(toast: RefObject<Toast | null>) {
       status: ExecStatus.Todo,
       createdAt,
       updatedAt: createdAt,
-      lastVisit: createdAt,
     };
     const { success, data, error } = targetSchema.safeParse(form);
     if (!success) {

@@ -16,7 +16,7 @@ import { Tag } from "primereact/tag";
 export default function TargetList() {
   const { data } = useTargetQuery();
   const list = useMemo(
-    () => (data ? Object.values(data).toSorted(sortBy("lastVisit")) : []),
+    () => (data ? Object.values(data).toSorted(sortBy("createdAt")) : []),
     [data],
   );
   return <DataView value={list} itemTemplate={DataItem} rows={list.length} />;

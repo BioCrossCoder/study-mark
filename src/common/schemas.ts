@@ -31,7 +31,6 @@ export const targetSchema = z.object({
   description: z.string(),
   createdAt: z.number(),
   updatedAt: z.number(),
-  lastVisit: z.number(),
 });
 
 export const librarySchema = z.object({
