@@ -1,7 +1,7 @@
 import { ExecStatus, StoreKey } from "@/common/enums";
 import { taskSchema } from "@/common/schemas";
 import { Task } from "@/common/types";
-import { isItemExist } from "@/common/utils";
+import { isItemExist, mergeObj } from "@/common/utils";
 import { taskData } from "@/services/storage/task";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Toast } from "primereact/toast";
@@ -78,4 +78,85 @@ export function useCreateTask(toast: RefObject<Toast | null>) {
     mutate(tasks);
     return id;
   };
+}
+
+export function useRemoveTask() {
+  const { mutate } = useTaskMutation();
+  return async (id: string) => {
+    const data = await taskData.getValue();
+    delete data[id];
+    mutate(data);
+  };
+}
+
+export function useTaskDetail(id: string) {
+  const { data } = useTaskQuery();
+  return (data ?? {})[id];
+}
+
+export function useTaskOptions() {
+  const { data } = useTaskQuery();
+  return Object.values(data ?? {}).map((item) => ({
+    name: item.name,
+    code: item.id,
+  }));
+}
+
+export function useUpdateTask(toast: RefObject<Toast | null>) {
+  const { mutate } = useTaskMutation();
+  return async (
+    id: string,
+    params: {
+      name: string;
+      description: string;
+      status: ExecStatus;
+    },
+  ) => {
+    const tasks = await taskData.getValue();
+    const summary = "Update Task Failed";
+    const records = Object.values(tasks);
+    if (!isItemExist({ id } as Task, "id", records)) {
+      const detail = "Task not found";
+      toast.current?.show({
+        severity: "error",
+        summary,
+        detail,
+      });
+      return new Error(detail);
+    }
+    const record = records.find((item) => item.name === params.name);
+    if (record && record.id !== id) {
+      const detail = "Task name already exists";
+      toast.current?.show({
+        severity: "error",
+        summary,
+        detail,
+      });
+      return new Error(detail);
+    }
+    const form: Task = {
+      ...tasks[id],
+      ...params,
+      updatedAt: Date.now(),
+    };
+    const { success, data, error } = taskSchema.safeParse(form);
+    if (!success) {
+      toast.current?.show({
+        severity: "error",
+        summary,
+        detail: error.message,
+      });
+      return error;
+    }
+    tasks[id] = data;
+    mutate(tasks);
+    return id;
+  };
+}
+
+export function useTaskNames() {
+  const { data } = useTaskQuery();
+  return Object.values(data ?? {})
+    .map(({ id, name }) => ({ [id]: name }))
+    .reduce(mergeObj, {});
 }

@@ -17,7 +17,7 @@ export const taskSchema = z.object({
   source: z.url(),
   position: z.object({
     url: z.url(),
-    bookmark: bookmarkSchema,
+    bookmark: bookmarkSchema.optional(),
   }),
   createdAt: z.number(),
   updatedAt: z.number(),

@@ -10,3 +10,9 @@ export enum ExecStatus {
   Doing,
   Done,
 }
+
+export const statusIcon = {
+  [ExecStatus.Todo]: "pi pi-clock",
+  [ExecStatus.Doing]: "pi pi-spinner",
+  [ExecStatus.Done]: "pi pi-check-circle",
+};
