@@ -10,7 +10,7 @@ import { useTaskNames } from "@/services/task";
 import { Card } from "primereact/card";
 import { ConfirmPopup, confirmPopup } from "primereact/confirmpopup";
 import { DataView } from "primereact/dataview";
-import UpdateTargetTask from "./UpdateTargetTask";
+import UpdateTargetDialog from "./UpdateTargetDialog";
 import { Tag } from "primereact/tag";
 
 export default function TargetList() {
@@ -23,7 +23,7 @@ export default function TargetList() {
 }
 
 function DataItem(data: Target) {
-  const { id, name, status } = data;
+  const { id, name, status, description } = data;
   const [visible, setVisible] = useState(false);
 
   const relations = useRelationsOfAllTargets();
@@ -62,7 +62,7 @@ function DataItem(data: Target) {
               onClick={() => setVisible(true)}
             />
             {visible && (
-              <UpdateTargetTask close={() => setVisible(false)} id={id} />
+              <UpdateTargetDialog close={() => setVisible(false)} id={id} />
             )}
             <i
               className="pi pi-trash hover:cursor-pointer hover:text-red-400"
@@ -79,6 +79,8 @@ function DataItem(data: Target) {
           ))}
         </div>
       }
-    />
+    >
+      <p className="text-xs">{description}</p>
+    </Card>
   );
 }

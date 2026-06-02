@@ -1,4 +1,6 @@
 import BackgroundPanel from "@/components/common/BackgroundPanel";
+import LibraryList from "@/components/sidepanel/LibraryList";
+import LibraryListHeader from "@/components/sidepanel/LibraryListHeader";
 import TargetList from "@/components/sidepanel/TargetList";
 import TargetListHeader from "@/components/sidepanel/TargetListHeader";
 import TaskList from "@/components/sidepanel/TaskList";
@@ -43,8 +45,8 @@ export default function App() {
               <AccordionTab header={<TargetListHeader />}>
                 <TargetList />
               </AccordionTab>
-              <AccordionTab header="Libraries">
-                // TODO
+              <AccordionTab header={<LibraryListHeader />}>
+                <LibraryList />
               </AccordionTab>
             </Accordion>
           </TabPanel>

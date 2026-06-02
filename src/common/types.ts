@@ -5,6 +5,7 @@ import {
   targetSchema,
   taskSchema,
 } from "./schemas";
+import type { LanguageCode } from "iso-639-1";
 
 export type Bookmark = z.infer<typeof bookmarkSchema>;
 
@@ -18,3 +19,22 @@ export type Relation = {
   taskId: string;
   targetId: string;
 };
+
+type MicroLinkApiSuccessResp = {
+  status: "success";
+  data: {
+    title: string;
+    description: string | null;
+    lang: LanguageCode;
+  };
+};
+
+type MicroLinkApiFailureResp = {
+  status: "fail" | "error";
+  message: string;
+};
+
+// https://microlink.io/docs/api/getting-started/data-fields
+export type MicroLinkApiResp =
+  | MicroLinkApiSuccessResp
+  | MicroLinkApiFailureResp;

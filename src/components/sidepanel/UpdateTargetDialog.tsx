@@ -13,7 +13,7 @@ import { RadioButton } from "primereact/radiobutton";
 import { InputTextarea } from "primereact/inputtextarea";
 import { MultiSelect } from "primereact/multiselect";
 
-export default function UpdateTargetTask(props: {
+export default function UpdateTargetDialog(props: {
   close: () => void;
   id: string;
 }) {

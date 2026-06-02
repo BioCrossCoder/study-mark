@@ -24,7 +24,7 @@ export default function TaskList() {
 }
 
 function DataItem(data: Task) {
-  const { id, name, status, position, source } = data;
+  const { id, name, status, position, source, description } = data;
   const { url } = position;
 
   const toast = useRef<Toast>(null);
@@ -115,6 +115,8 @@ function DataItem(data: Task) {
           </div>
         </div>
       }
-    />
+    >
+      <p className="text-xs">{description}</p>
+    </Card>
   );
 }
