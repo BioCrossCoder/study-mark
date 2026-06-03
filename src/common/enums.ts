@@ -16,3 +16,13 @@ export const statusIcon = {
   [ExecStatus.Doing]: "pi pi-spinner",
   [ExecStatus.Done]: "pi pi-check-circle",
 };
+
+export const enum ContextMenuItemID {
+  UpdateProgress = "study-mark-update-progress",
+}
+
+export const enum MessageID {
+  SaveProgress = "SAVE_PROGRESS",
+  LoadProgress = "LOAD_PROGRESS",
+  ProgressUpdated = "PROGRESS_UPDATED",
+}

@@ -1,4 +1,4 @@
-import { statusIcon } from "@/common/enums";
+import { MessageID, statusIcon } from "@/common/enums";
 import { Task } from "@/common/types";
 import { sortBy } from "@/common/utils";
 import { useRemoveTask, useTaskQuery } from "@/services/task";
@@ -15,7 +15,14 @@ import {
 import { useTargetNames } from "@/services/target";
 
 export default function TaskList() {
-  const { data } = useTaskQuery();
+  const { data, refetch } = useTaskQuery();
+  useEffect(() => {
+    browser.runtime.onMessage.addListener((message) => {
+      if (message === MessageID.ProgressUpdated) {
+        refetch();
+      }
+    });
+  }, []);
   const list = useMemo(
     () => (data ? Object.values(data).toSorted(sortBy("lastVisit")) : []),
     [data],
