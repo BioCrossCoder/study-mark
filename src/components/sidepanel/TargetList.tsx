@@ -14,10 +14,10 @@ import UpdateTargetDialog from "./UpdateTargetDialog";
 import { Tag } from "primereact/tag";
 
 export default function TargetList() {
-  const { data } = useTargetQuery();
+  const { data, dataUpdatedAt } = useTargetQuery();
   const list = useMemo(
     () => (data ? Object.values(data).toSorted(sortBy("createdAt")) : []),
-    [data],
+    [dataUpdatedAt],
   );
   return <DataView value={list} itemTemplate={DataItem} rows={list.length} />;
 }

@@ -7,10 +7,10 @@ import { DataView } from "primereact/dataview";
 import UpdateLibraryDialog from "./UpdateLibraryDialog";
 
 export default function LibraryList() {
-  const { data } = useLibraryQuery();
+  const { data, dataUpdatedAt } = useLibraryQuery();
   const list = useMemo(
     () => (data ? Object.values(data).toSorted(sortBy("createdAt")) : []),
-    [data],
+    [dataUpdatedAt],
   );
   return <DataView value={list} itemTemplate={DataItem} rows={list.length} />;
 }

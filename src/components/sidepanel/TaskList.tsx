@@ -15,7 +15,7 @@ import {
 import { useTargetNames } from "@/services/target";
 
 export default function TaskList() {
-  const { data, refetch } = useTaskQuery();
+  const { data, refetch, dataUpdatedAt } = useTaskQuery();
   useEffect(() => {
     browser.runtime.onMessage.addListener((message) => {
       if (message === MessageID.ProgressUpdated) {
@@ -25,7 +25,7 @@ export default function TaskList() {
   }, []);
   const list = useMemo(
     () => (data ? Object.values(data).toSorted(sortBy("lastVisit")) : []),
-    [data],
+    [dataUpdatedAt],
   );
   return <DataView value={list} itemTemplate={DataItem} rows={list.length} />;
 }
