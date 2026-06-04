@@ -1,7 +1,10 @@
 import z from "zod";
 import {
   bookmarkSchema,
+  chatMessageSchema,
   librarySchema,
+  modelConfigSchema,
+  planSchema,
   targetSchema,
   taskSchema,
 } from "./schemas";
@@ -38,3 +41,9 @@ type MicroLinkApiFailureResp = {
 export type MicroLinkApiResp =
   | MicroLinkApiSuccessResp
   | MicroLinkApiFailureResp;
+
+export type ModelConfig = z.infer<typeof modelConfigSchema>;
+
+export type Plan = z.infer<typeof planSchema>;
+
+export type ChatMessage = z.infer<typeof chatMessageSchema>;

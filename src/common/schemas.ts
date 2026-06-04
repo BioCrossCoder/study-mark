@@ -1,5 +1,5 @@
 import z from "zod";
-import { ExecStatus } from "./enums";
+import { AgentMode, ExecStatus, ModelProviderProtocol, Signal } from "./enums";
 
 const nonEmptyStringSchema = z.string().refine((val) => val.trim() !== "");
 
@@ -43,3 +43,33 @@ export const librarySchema = z.object({
   createdAt: z.number(),
   updatedAt: z.number(),
 });
+
+export const modelConfigSchema = z.object({
+  protocol: z.enum(ModelProviderProtocol),
+  baseURL: z.url(),
+  apiKey: nonEmptyStringSchema,
+  model: nonEmptyStringSchema,
+});
+
+export const planSchema = z.object({
+  target: z.object({
+    name: nonEmptyStringSchema,
+    description: z.string(),
+  }),
+  tasks: z
+    .array(
+      z.object({
+        name: nonEmptyStringSchema,
+        description: z.string(),
+        source: z.url(),
+      }),
+    )
+    .min(1),
+});
+
+export const chatMessageSchema = z.object({
+  mode: z.enum(AgentMode),
+  message: nonEmptyStringSchema,
+});
+
+export const signalSchema = z.enum(Signal);
