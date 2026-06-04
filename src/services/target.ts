@@ -1,5 +1,5 @@
 import { ExecStatus, StoreKey } from "@/common/enums";
-import { targetSchema } from "@/common/schemas";
+import { statusSchema, targetSchema } from "@/common/schemas";
 import { Target } from "@/common/types";
 import { isItemExist, mergeObj } from "@/common/utils";
 import { targetData } from "@/services/storage/target";
@@ -101,7 +101,6 @@ export function useUpdateTarget(toast: RefObject<Toast | null>) {
     params: {
       name: string;
       description: string;
-      status: ExecStatus;
     },
   ) => {
     const targets = await targetData.getValue();
@@ -151,4 +150,34 @@ export function useTargetNames() {
   return Object.values(data ?? {})
     .map(({ id, name }) => ({ [id]: name }))
     .reduce(mergeObj, {});
+}
+
+export function useUpdateTargetStatus(toast: RefObject<Toast | null>) {
+  const { mutate } = useTargetMutation();
+  return async (id: string, status: ExecStatus) => {
+    const targets = await targetData.getValue();
+    const summary = "Update Target status Failed";
+    const records = Object.values(targets);
+    if (!isItemExist({ id } as Target, "id", records)) {
+      const detail = "Target not found";
+      toast.current?.show({
+        severity: "error",
+        summary,
+        detail,
+      });
+      return new Error(detail);
+    }
+    const { success, data, error } = statusSchema.safeParse(status);
+    if (!success) {
+      toast.current?.show({
+        severity: "error",
+        summary,
+        detail: error.message,
+      });
+      return error;
+    }
+    targets[id].status = data;
+    mutate(targets);
+    return id;
+  };
 }

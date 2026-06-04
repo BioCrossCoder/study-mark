@@ -1,5 +1,5 @@
 import { ExecStatus, StoreKey } from "@/common/enums";
-import { taskSchema } from "@/common/schemas";
+import { statusSchema, taskSchema } from "@/common/schemas";
 import { Task } from "@/common/types";
 import { isItemExist, mergeObj } from "@/common/utils";
 import { taskData } from "@/services/storage/task";
@@ -109,7 +109,6 @@ export function useUpdateTask(toast: RefObject<Toast | null>) {
     params: {
       name: string;
       description: string;
-      status: ExecStatus;
     },
   ) => {
     const tasks = await taskData.getValue();
@@ -159,4 +158,34 @@ export function useTaskNames() {
   return Object.values(data ?? {})
     .map(({ id, name }) => ({ [id]: name }))
     .reduce(mergeObj, {});
+}
+
+export function useUpdateTaskStatus(toast: RefObject<Toast | null>) {
+  const { mutate } = useTaskMutation();
+  return async (id: string, status: ExecStatus) => {
+    const tasks = await taskData.getValue();
+    const summary = "Update Task status Failed";
+    const records = Object.values(tasks);
+    if (!isItemExist({ id } as Task, "id", records)) {
+      const detail = "Task not found";
+      toast.current?.show({
+        severity: "error",
+        summary,
+        detail,
+      });
+      return new Error(detail);
+    }
+    const { success, data, error } = statusSchema.safeParse(status);
+    if (!success) {
+      toast.current?.show({
+        severity: "error",
+        summary,
+        detail: error.message,
+      });
+      return error;
+    }
+    tasks[id].status = data;
+    mutate(tasks);
+    return id;
+  };
 }

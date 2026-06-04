@@ -21,7 +21,6 @@ export default function UpdateTargetDialog(props: {
   const target = useTargetDetail(id);
   const [name, setName] = useState(target.name);
   const [description, setDescription] = useState(target.description);
-  const [status, setStatus] = useState(target.status);
 
   const relations = useRelationsOfTarget(target.id);
   const [tasks, setTasks] = useState(relations.map(({ taskId }) => taskId));
@@ -32,7 +31,7 @@ export default function UpdateTargetDialog(props: {
   const removeRelations = useRemoveRelationsOfTarget();
   const createRelations = useCreateRelations();
   async function handleSubmit() {
-    const result = await updateTarget(id, { name, description, status });
+    const result = await updateTarget(id, { name, description });
     if (Error.isError(result)) {
       return result;
     }
@@ -62,26 +61,6 @@ export default function UpdateTargetDialog(props: {
                 className="flex-auto h-10 text-base!"
                 autoFocus
               />
-            ),
-          },
-          {
-            name: "Status",
-            item: (
-              <div className="flex items-center gap-4">
-                {Object.keys(statusIcon).map((item) => (
-                  <div className="flex items-center gap-1">
-                    <RadioButton
-                      value={Number(item)}
-                      checked={status === Number(item)}
-                      onChange={(event) => setStatus(event.target.value)}
-                    />
-                    <label className="flex items-center gap-1">
-                      <p className="text-xs">{ExecStatus[Number(item)]}</p>
-                      <i className={statusIcon[Number(item) as ExecStatus]} />
-                    </label>
-                  </div>
-                ))}
-              </div>
             ),
           },
           {

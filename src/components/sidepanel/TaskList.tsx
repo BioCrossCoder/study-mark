@@ -1,7 +1,11 @@
 import { MessageID, statusIcon } from "@/common/enums";
 import { Task } from "@/common/types";
 import { sortBy } from "@/common/utils";
-import { useRemoveTask, useTaskQuery } from "@/services/task";
+import {
+  useRemoveTask,
+  useTaskQuery,
+  useUpdateTaskStatus,
+} from "@/services/task";
 import { Card } from "primereact/card";
 import { confirmPopup, ConfirmPopup } from "primereact/confirmpopup";
 import { DataView } from "primereact/dataview";
@@ -13,6 +17,7 @@ import {
   useRemoveRelationsOfTask,
 } from "@/services/relation";
 import { useTargetNames } from "@/services/target";
+import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 
 export default function TaskList() {
   const { data, refetch, dataUpdatedAt } = useTaskQuery();
@@ -64,6 +69,14 @@ function DataItem(data: Task) {
     });
   }
 
+  const options = Object.keys(statusIcon);
+  const [option, setOption] = useState(status);
+  const updateTaskStatus = useUpdateTaskStatus(toast);
+  async function handleChangeStatus(event: DropdownChangeEvent) {
+    await updateTaskStatus(id, event.value);
+    setOption(event.value);
+  }
+
   return (
     <Card
       className="bg-(--highlight-bg)! mb-3"
@@ -107,18 +120,24 @@ function DataItem(data: Task) {
       footer={
         <div className="flex justify-between">
           <div
-            className="flex items-center hover:cursor-pointer hover:text-(--primary-color)"
+            className="flex items-center hover:cursor-pointer hover:text-(--primary-color) gap-1"
             onClick={() => browser.tabs.create({ url })}
           >
             <i className="pi pi-bookmark-fill" />
-            <p className="p-2">Position</p>
+            <p className="text-xs">Position</p>
           </div>
+          <Dropdown
+            value={option}
+            onChange={handleChangeStatus}
+            options={options}
+            className="w-30 text-xs"
+          />
           <div
-            className="flex items-center hover:cursor-pointer hover:text-(--primary-color)"
+            className="flex items-center hover:cursor-pointer hover:text-(--primary-color) gap-1"
             onClick={() => browser.tabs.create({ url: source })}
           >
             <i className="pi pi-link" />
-            <p className="p-2">Source</p>
+            <p className="text-xs">Source</p>
           </div>
         </div>
       }

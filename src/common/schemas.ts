@@ -9,10 +9,12 @@ export const bookmarkSchema = z.object({
   offset: z.number(),
 });
 
+export const statusSchema = z.enum(ExecStatus);
+
 export const taskSchema = z.object({
   id: nonEmptyStringSchema,
   name: nonEmptyStringSchema,
-  status: z.enum(ExecStatus),
+  status: statusSchema,
   description: z.string(),
   source: z.url(),
   position: z.object({
@@ -27,7 +29,7 @@ export const taskSchema = z.object({
 export const targetSchema = z.object({
   id: nonEmptyStringSchema,
   name: nonEmptyStringSchema,
-  status: z.enum(ExecStatus),
+  status: statusSchema,
   description: z.string(),
   createdAt: z.number(),
   updatedAt: z.number(),

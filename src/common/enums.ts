@@ -6,9 +6,9 @@ export const enum StoreKey {
 }
 
 export enum ExecStatus {
-  Todo,
-  Doing,
-  Done,
+  Todo = "todo",
+  Doing = "doing",
+  Done = "done",
 }
 
 export const statusIcon = {

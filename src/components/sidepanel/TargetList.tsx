@@ -5,13 +5,19 @@ import {
   useRelationsOfAllTargets,
   useRemoveRelationsOfTarget,
 } from "@/services/relation";
-import { useRemoveTarget, useTargetQuery } from "@/services/target";
+import {
+  useRemoveTarget,
+  useTargetQuery,
+  useUpdateTargetStatus,
+} from "@/services/target";
 import { useTaskNames } from "@/services/task";
 import { Card } from "primereact/card";
 import { ConfirmPopup, confirmPopup } from "primereact/confirmpopup";
 import { DataView } from "primereact/dataview";
 import UpdateTargetDialog from "./UpdateTargetDialog";
 import { Tag } from "primereact/tag";
+import { Toast } from "primereact/toast";
+import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 
 export default function TargetList() {
   const { data, dataUpdatedAt } = useTargetQuery();
@@ -43,6 +49,15 @@ function DataItem(data: Target) {
         await removeRelations(id);
       },
     });
+  }
+
+  const options = Object.keys(statusIcon);
+  const [option, setOption] = useState(status);
+  const toast = useRef<Toast>(null);
+  const updateTargetStatus = useUpdateTargetStatus(toast);
+  async function handleChangeStatus(event: DropdownChangeEvent) {
+    await updateTargetStatus(id, event.value);
+    setOption(event.value);
   }
 
   return (
@@ -77,6 +92,17 @@ function DataItem(data: Target) {
           {(relations[id] ?? []).map((taskId) => (
             <Tag value={taskNames[taskId]} />
           ))}
+        </div>
+      }
+      footer={
+        <div className="flex justify-center">
+          <Dropdown
+            value={option}
+            onChange={handleChangeStatus}
+            options={options}
+            className="w-30 text-xs"
+          />
+          <Toast ref={toast} position="top-center" />
         </div>
       }
     >
