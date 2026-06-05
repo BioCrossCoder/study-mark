@@ -48,9 +48,3 @@ export type ModelConfig = z.infer<typeof modelConfigSchema>;
 export type Plan = z.infer<typeof planSchema>;
 
 export type ChatMessage = z.infer<typeof chatMessageSchema>;
-
-export type WebMcpTool = {
-  name: string;
-  description: string;
-  inputSchema: JSONSchema.BaseSchema;
-};
