@@ -1,4 +1,5 @@
 import { MessagesSquare } from "lucide-react";
+import { Button } from "primereact/button";
 
 export default function ChatEmptyPlaceholder() {
   return (
@@ -9,8 +10,15 @@ export default function ChatEmptyPlaceholder() {
           strokeWidth="1.2"
         />
         <div className="flex items-center gap-2">
-          <p className="text-lg">Set your AI model through</p>
-          <i className="pi pi-cog" />
+          <p className="text-lg">
+            Click
+            <Button
+              icon="pi pi-cog"
+              className="h-8 w-8! mx-2!"
+              onClick={() => browser.runtime.openOptionsPage()}
+            />
+            to set your AI model
+          </p>
         </div>
       </div>
     </div>
