@@ -5,6 +5,7 @@ import { createModelAdapter } from "../infra/modelAdapter";
 import { createAgent, HumanMessage, toolStrategy } from "langchain";
 import { appendHistory } from "@/services/storage/chatHistory";
 import { planSchema } from "@/common/schemas";
+import { createWebSearchTool, webSearchToolPrompt } from "../tools/webSearch";
 
 const abortController = createAbortController();
 export const plannerAgent = {
@@ -28,7 +29,7 @@ async function run(content: HumanMessage) {
   }
 }
 
-const systemPrompt = `
+const corePrompt = `
   You are a learning planner,
   focusing on help learners make self-study plan
   by creating Targets and Tasks for them.
@@ -37,9 +38,12 @@ const systemPrompt = `
 
 async function createPlannerAgent(config: ModelConfig) {
   const model = createModelAdapter(config);
+  const webSearchTool = await createWebSearchTool();
+  const systemPrompt = [corePrompt, webSearchToolPrompt].join("\n");
   return createAgent({
     model,
     systemPrompt,
+    tools: [webSearchTool],
     responseFormat: toolStrategy(planSchema),
   });
 }
