@@ -18,16 +18,15 @@ import {
 } from "@/services/relation";
 import { useTargetNames } from "@/services/target";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
+import { taskData } from "@/services/storage/task";
 
 export default function TaskList() {
   const { data, refetch, dataUpdatedAt } = useTaskQuery();
   useEffect(() => {
-    browser.runtime.onMessage.addListener((message) => {
-      if (message === MessageID.ProgressUpdated) {
-        refetch();
-      }
+    return taskData.watch(() => {
+      refetch();
     });
-  }, []);
+  });
   const list = useMemo(
     () => (data ? Object.values(data).toSorted(sortBy("lastVisit")) : []),
     [dataUpdatedAt],

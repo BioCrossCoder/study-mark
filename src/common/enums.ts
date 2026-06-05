@@ -27,7 +27,6 @@ export const enum ContextMenuItemID {
 export const enum MessageID {
   SaveProgress = "SAVE_PROGRESS",
   LoadProgress = "LOAD_PROGRESS",
-  ProgressUpdated = "PROGRESS_UPDATED",
 }
 
 export enum ModelProviderProtocol {

@@ -6,7 +6,7 @@ import {
 } from "@/common/enums";
 import { chatMessageSchema, signalSchema } from "@/common/schemas";
 import { registerContextMenuItem } from "@/common/utils";
-import { onMessage, sendMessage } from "webext-bridge/background";
+import { sendMessage } from "webext-bridge/background";
 import { plannerAgent } from "./agents/planner";
 import { chatLoadingData } from "@/services/storage/chatLoading";
 import { HumanMessage } from "langchain";
@@ -33,9 +33,6 @@ export default defineBackground(() => {
       context: "content-script",
       tabId,
     });
-  });
-  onMessage(MessageID.ProgressUpdated, () => {
-    browser.runtime.sendMessage(MessageID.ProgressUpdated);
   });
   browser.runtime.onMessage.addListener(async (message) => {
     const signal = signalSchema.safeParse(message);
