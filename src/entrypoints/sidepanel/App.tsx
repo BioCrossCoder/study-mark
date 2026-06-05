@@ -1,4 +1,5 @@
 import BackgroundPanel from "@/components/common/BackgroundPanel";
+import ChatWindow from "@/components/sidepanel/ChatWindow";
 import LibraryList from "@/components/sidepanel/LibraryList";
 import LibraryListHeader from "@/components/sidepanel/LibraryListHeader";
 import TargetList from "@/components/sidepanel/TargetList";
@@ -34,8 +35,16 @@ export default function App() {
             },
           }}
         >
-          <TabPanel header="Chat" leftIcon="pi pi-comments mr-2">
-            // TODO
+          <TabPanel
+            header="Chat"
+            leftIcon="pi pi-comments mr-2"
+            pt={{
+              content: {
+                className: "h-full",
+              },
+            }}
+          >
+            <ChatWindow />
           </TabPanel>
           <TabPanel header="List" leftIcon="pi pi-list mr-2">
             <Accordion>
