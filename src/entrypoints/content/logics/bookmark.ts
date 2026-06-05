@@ -1,10 +1,8 @@
-import { MessageID } from "@/common/enums";
 import {
   getTaskByName,
   getTasksByPositionUrl,
   updateTaskProgress,
 } from "@/services/storage/task";
-import { sendMessage } from "webext-bridge/content-script";
 import { fromRange } from "xpath-range";
 
 export async function loadBookmark() {
@@ -85,7 +83,6 @@ export async function saveBookmark() {
     offset: startOffset,
   }); // [/]
   removeBookmark(tasks.at(0)?.position.bookmark?.id);
-  sendMessage(MessageID.ProgressUpdated, null, "background");
   window.confirm("Task Progress Updated");
 }
 
