@@ -5,6 +5,7 @@ import { Sender } from "@ant-design/x";
 
 export default function ChatInputBox() {
   const [question, setQuestion] = useState("");
+  const isQuestionEmpty = useMemo(() => question.length === 0, [question]);
   const { data: loading } = useChatLoadingQuery();
   function handleSubmit() {
     const message: ChatMessage = {
@@ -65,7 +66,14 @@ export default function ChatInputBox() {
             </div>
           );
         }}
-        suffix={false}
+        suffix={
+          !isQuestionEmpty && (
+            <i
+              className="pi pi-times-circle hover:cursor-pointer hover:text-red-300"
+              onClick={handleClear}
+            />
+          )
+        }
       />
     </div>
   );
