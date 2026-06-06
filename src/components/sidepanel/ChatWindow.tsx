@@ -2,7 +2,10 @@ import { useChatHistoryQuery } from "@/services/chatHistory";
 import ChatEmptyPlaceholder from "./ChatEmptyPlaceholder";
 import { ScrollPanel } from "primereact/scrollpanel";
 import ChatInputBox from "./ChatInputBox";
-import { chatHistoryData } from "@/services/storage/chatHistory";
+import { chatHistoryData, clearHistory } from "@/services/storage/chatHistory";
+import ChatBubble from "./ChatBubble";
+import { Toolbar } from "primereact/toolbar";
+import { confirmDialog, ConfirmDialog } from "primereact/confirmdialog";
 
 export default function ChatWindow() {
   const { data, dataUpdatedAt, refetch } = useChatHistoryQuery();
@@ -16,8 +19,30 @@ export default function ChatWindow() {
     });
   });
 
+  function handleClear() {
+    confirmDialog({
+      message: "Clear Chat History?",
+      header: "Confirmation",
+      icon: "pi pi-exclamation-triangle",
+      defaultFocus: "reject",
+      accept: clearHistory,
+    });
+  }
+
   return (
     <div className="h-full flex flex-col overflow-hidden">
+      <Toolbar
+        className="border-0! rounded-none! border-b! "
+        end={
+          <>
+            <i
+              className="pi pi-trash hover:cursor-pointer hover:text-red-300"
+              onClick={handleClear}
+            />
+            <ConfirmDialog />
+          </>
+        }
+      />
       {isHistoryEmpty ? (
         <ChatEmptyPlaceholder />
       ) : (
@@ -25,7 +50,9 @@ export default function ChatWindow() {
           style={{ width: "100%", height: "100%" }}
           className="overflow-hidden"
         >
-          {(data ?? []).map((item) => JSON.stringify(item)).join("\n\n")}
+          {(data ?? []).map((item) => (
+            <ChatBubble message={item} />
+          ))}
         </ScrollPanel>
       )}
       <ChatInputBox />
