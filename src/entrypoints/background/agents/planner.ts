@@ -14,11 +14,11 @@ export const plannerAgent = {
 };
 
 async function run(content: HumanMessage) {
+  await appendHistory(content);
   let count = 0;
   let finish = false;
   const config = await modelConfigData.getValue();
   const agent = await createPlannerAgent(config);
-  await appendHistory(content);
   while (count < 3 && !finish) {
     try {
       await execAgentLoop(agent, [content], abortController, appendHistory);
