@@ -2,7 +2,7 @@ import { InputTextarea } from "primereact/inputtextarea";
 import FormDialog from "../common/FormDialog";
 import { InputText } from "primereact/inputtext";
 import { MultiSelect } from "primereact/multiselect";
-import { useTargetOptions, useTargetQuery } from "@/services/target";
+import { useTargetOptions } from "@/services/target";
 import { useCreateTask } from "@/services/task";
 import { Toast } from "primereact/toast";
 import { useCreateRelations } from "@/services/relation";

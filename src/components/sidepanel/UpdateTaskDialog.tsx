@@ -10,8 +10,6 @@ import {
 import { useTargetOptions } from "@/services/target";
 import { InputTextarea } from "primereact/inputtextarea";
 import { MultiSelect } from "primereact/multiselect";
-import { ExecStatus, statusIcon } from "@/common/enums";
-import { RadioButton } from "primereact/radiobutton";
 
 export default function UpdateTaskDialog(props: {
   close: () => void;
