@@ -33,9 +33,9 @@ export default function ChatBubble(props: { message: ChatHistoryMessage }) {
                     <Think
                       title="Thinking"
                       icon={<i className="pi pi-lightbulb" />}
-                      defaultExpanded={false}
+                      defaultExpanded={item.loading}
                       loading={item.loading}
-                      key={i}
+                      key={`${i}_${item.loading}`}
                       classNames={{
                         status: "text-(--primary-color-text)!",
                       }}
