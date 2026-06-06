@@ -7,10 +7,10 @@ export function useChatLoadingQuery() {
     queryKey: [StoreKey.ChatLoading],
     queryFn: chatLoadingData.getValue,
   });
-  useEffect(() => {
-    return chatLoadingData.watch(() => {
+  useEffect(() =>
+    chatLoadingData.watch(() => {
       query.refetch();
-    });
-  });
+    }),
+  );
   return query;
 }

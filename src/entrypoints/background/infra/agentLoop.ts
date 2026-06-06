@@ -54,7 +54,6 @@ export async function execAgentLoop(
           result: "",
           loading: true,
         } as ChatToolCallingMessage);
-        console.log(msg);
       } else if (msg.content.length > 0) {
         send({
           type: "text",

@@ -6,6 +6,7 @@ import { chatHistoryData, clearHistory } from "@/services/storage/chatHistory";
 import ChatBubble from "./ChatBubble";
 import { Toolbar } from "primereact/toolbar";
 import { confirmDialog, ConfirmDialog } from "primereact/confirmdialog";
+import { ScrollTop } from "primereact/scrolltop";
 
 export default function ChatWindow() {
   const { data, dataUpdatedAt, refetch } = useChatHistoryQuery();
@@ -13,11 +14,18 @@ export default function ChatWindow() {
     () => (data ?? []).length === 0,
     [dataUpdatedAt],
   );
-  useEffect(() => {
-    return chatHistoryData.watch(() => {
-      refetch();
-    });
-  });
+  const bottomAnchor = useRef(document.createElement("div"));
+  useEffect(
+    () =>
+      chatHistoryData.watch(async () => {
+        await refetch();
+        bottomAnchor.current.scrollIntoView({
+          behavior: data?.at(-1)?.type === "human" ? "instant" : "smooth",
+          block: "end",
+        });
+      }),
+    [bottomAnchor, dataUpdatedAt],
+  );
 
   function handleClear() {
     confirmDialog({
@@ -53,6 +61,8 @@ export default function ChatWindow() {
           {(data ?? []).map((item, i) => (
             <ChatBubble message={item} key={i} />
           ))}
+          <div ref={bottomAnchor} />
+          <ScrollTop target="parent" threshold={0} />
         </ScrollPanel>
       )}
       <ChatInputBox />

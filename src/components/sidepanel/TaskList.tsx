@@ -22,11 +22,11 @@ import { taskData } from "@/services/storage/task";
 
 export default function TaskList() {
   const { data, refetch, dataUpdatedAt } = useTaskQuery();
-  useEffect(() => {
-    return taskData.watch(() => {
+  useEffect(() =>
+    taskData.watch(() => {
       refetch();
-    });
-  });
+    }),
+  );
   const list = useMemo(
     () => (data ? Object.values(data).toSorted(sortBy("lastVisit")) : []),
     [dataUpdatedAt],

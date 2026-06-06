@@ -7,10 +7,10 @@ export function useChatHistoryQuery() {
     queryKey: [StoreKey.ChatHistory],
     queryFn: chatHistoryData.getValue,
   });
-  useEffect(() => {
-    return chatHistoryData.watch(() => {
+  useEffect(() =>
+    chatHistoryData.watch(() => {
       query.refetch();
-    });
-  });
+    }),
+  );
   return query;
 }
