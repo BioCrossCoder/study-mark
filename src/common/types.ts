@@ -83,3 +83,5 @@ export type ChatAIMessageItem =
   | ChatToolCallingMessage;
 
 export type ChatHistoryMessage = ChatHumanMessage | ChatAIMessage;
+
+export type PromiseResultType<T> = T extends Promise<infer R> ? R : never;

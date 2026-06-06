@@ -10,7 +10,7 @@ import { sendMessage } from "webext-bridge/background";
 import { plannerAgent } from "./agents/planner";
 import { chatLoadingData } from "@/services/storage/chatLoading";
 
-export default defineBackground(() => {
+export default defineBackground(async () => {
   browser.runtime.onInstalled.addListener(() => {
     registerContextMenuItem(
       ContextMenuItemID.UpdateProgress,

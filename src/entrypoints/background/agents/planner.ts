@@ -1,4 +1,8 @@
-import { ChatHumanMessage, ModelConfig } from "@/common/types";
+import {
+  ChatHumanMessage,
+  ModelConfig,
+  PromiseResultType,
+} from "@/common/types";
 import { createAbortController, execAgentLoop } from "../infra/agentLoop";
 import { modelConfigData } from "@/services/storage/modelConfig";
 import { createModelAdapter } from "../infra/modelAdapter";
@@ -8,17 +12,25 @@ import { planSchema } from "@/common/schemas";
 import { createWebSearchTool, webSearchToolPrompt } from "../tools/webSearch";
 
 const abortController = createAbortController();
+let agent: PromiseResultType<ReturnType<typeof createPlannerAgent>>;
 export const plannerAgent = {
   run,
   stop: abortController.stop,
 };
 
+async function init() {
+  if (agent) {
+    return;
+  }
+  const config = await modelConfigData.getValue();
+  agent = await createPlannerAgent(config);
+}
+
 async function run(content: string) {
   await updateHistory({ type: "human", content } as ChatHumanMessage);
+  await init();
   let count = 0;
   let finish = false;
-  const config = await modelConfigData.getValue();
-  const agent = await createPlannerAgent(config);
   while (count < 3 && !finish) {
     try {
       await execAgentLoop(
