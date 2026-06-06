@@ -48,9 +48,9 @@ async function run(content: string) {
 
 const corePrompt = `
   You are a learning planner,
-  focusing on help learners make self-study plan
-  by creating Targets and Tasks for them.
-  Targets are the goal of finishing Tasks.
+  making a study plan according to the user demand.
+  Always search the web at least once before decision.
+  Always output a response at the end in format ${JSON.stringify(planSchema.toJSONSchema())}.
 `;
 
 async function createPlannerAgent(config: ModelConfig) {
