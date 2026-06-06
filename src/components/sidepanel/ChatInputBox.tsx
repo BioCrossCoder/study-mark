@@ -26,6 +26,7 @@ export default function ChatInputBox() {
   return (
     <div className="p-2">
       <Sender
+        placeholder="Input your demand to ask AI for a Study Plan"
         value={question}
         onChange={setQuestion}
         loading={loading ?? true}
@@ -34,7 +35,8 @@ export default function ChatInputBox() {
         autoSize={{ minRows: 2, maxRows: 2 }}
         classNames={{
           root: "border-(--primary-color)!",
-          input: "text-(--text-color)! caret-(--text-color)!",
+          input:
+            "text-(--text-color)! caret-(--text-color)! placeholder:text-(--highlight-text-color)!",
         }}
         footer={(_, { components }) => {
           const { SendButton, LoadingButton } = components;

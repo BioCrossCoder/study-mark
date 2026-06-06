@@ -50,8 +50,8 @@ export default function ChatWindow() {
           style={{ width: "100%", height: "100%" }}
           className="overflow-hidden"
         >
-          {(data ?? []).map((item) => (
-            <ChatBubble message={item} />
+          {(data ?? []).map((item, i) => (
+            <ChatBubble message={item} key={i} />
           ))}
         </ScrollPanel>
       )}

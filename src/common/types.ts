@@ -9,7 +9,6 @@ import {
   taskSchema,
 } from "./schemas";
 import type { LanguageCode } from "iso-639-1";
-import { JSONSchema } from "zod/v4/core";
 
 export type Bookmark = z.infer<typeof bookmarkSchema>;
 
@@ -48,3 +47,39 @@ export type ModelConfig = z.infer<typeof modelConfigSchema>;
 export type Plan = z.infer<typeof planSchema>;
 
 export type ChatMessage = z.infer<typeof chatMessageSchema>;
+
+export type ChatHumanMessage = {
+  type: "human";
+  content: string;
+};
+
+export type ChatAIMessage = {
+  type: "ai";
+  content: ChatAIMessageItem[];
+};
+
+export type ChatAITextMessage = {
+  type: "text";
+  content: string;
+};
+
+export type ChatAIReasoningMessage = {
+  type: "think";
+  content: string;
+  loading: boolean;
+};
+
+export type ChatToolCallingMessage = {
+  type: "tool";
+  name: string;
+  params: string;
+  result: string;
+  loading: boolean;
+};
+
+export type ChatAIMessageItem =
+  | ChatAITextMessage
+  | ChatAIReasoningMessage
+  | ChatToolCallingMessage;
+
+export type ChatHistoryMessage = ChatHumanMessage | ChatAIMessage;

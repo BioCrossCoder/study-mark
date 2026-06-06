@@ -36,7 +36,7 @@ export default function App() {
           }}
         >
           <TabPanel
-            header="Chat"
+            header="Plan"
             leftIcon="pi pi-comments mr-2"
             pt={{
               content: {

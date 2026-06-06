@@ -9,7 +9,6 @@ import { registerContextMenuItem } from "@/common/utils";
 import { sendMessage } from "webext-bridge/background";
 import { plannerAgent } from "./agents/planner";
 import { chatLoadingData } from "@/services/storage/chatLoading";
-import { HumanMessage } from "langchain";
 
 export default defineBackground(() => {
   browser.runtime.onInstalled.addListener(() => {
@@ -51,7 +50,7 @@ export default defineBackground(() => {
       switch (mode) {
         case AgentMode.Plan:
           await chatLoadingData.setValue(true);
-          await plannerAgent.run(new HumanMessage(message));
+          await plannerAgent.run(message);
           await chatLoadingData.setValue(false);
           browser.notifications.create({
             type: "basic",

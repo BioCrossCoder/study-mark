@@ -1,16 +1,55 @@
 import { StoreKey } from "@/common/enums";
-import { AIMessage, HumanMessage } from "langchain";
+import {
+  ChatAIMessageItem,
+  ChatHistoryMessage,
+  ChatHumanMessage,
+  ChatToolCallingMessage,
+} from "@/common/types";
 
-export const chatHistoryData = storage.defineItem<(HumanMessage | AIMessage)[]>(
+export const chatHistoryData = storage.defineItem<ChatHistoryMessage[]>(
   StoreKey.ChatHistory,
   {
     fallback: [],
   },
 );
 
-export async function appendHistory(message: HumanMessage | AIMessage) {
+export async function updateHistory(
+  message: ChatHumanMessage | ChatAIMessageItem,
+) {
   const history = await chatHistoryData.getValue();
-  history.push(message);
+  const lastMessage = history.at(-1);
+  if (lastMessage?.type === "ai") {
+    if (message.type === "human") {
+      history.push(message);
+    } else {
+      const lastItem = lastMessage.content.at(-1);
+      if (lastItem?.type === message.type) {
+        if (lastItem.type !== "text") {
+          lastItem.loading = (message as any).loading;
+        }
+        if (lastItem.type !== "tool") {
+          lastItem.content += (message as any).content;
+        } else {
+          const toolMsg = message as ChatToolCallingMessage;
+          lastItem.name = (lastItem.name || toolMsg.name) ?? "";
+          lastItem.params += toolMsg.params;
+          lastItem.result += toolMsg.result;
+          if (lastItem.result && !toolMsg.result) {
+            lastMessage.content.push({ type: "text", content: "" });
+          }
+        }
+      } else {
+        if (lastItem?.type !== "text") {
+          lastItem!.loading = false;
+        }
+        lastMessage.content.push(message);
+      }
+    }
+  } else {
+    history.push(
+      message.type === "human" ? message : { type: "ai", content: [message] },
+    );
+  }
   return await chatHistoryData.setValue(history);
 }
 

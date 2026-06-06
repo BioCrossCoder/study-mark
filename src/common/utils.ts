@@ -41,3 +41,10 @@ export function registerContextMenuItem(
     }
   });
 }
+
+export function tryFormatAsJson(content: string) {
+  try {
+    return JSON.stringify(JSON.parse(content), null, 2);
+  } catch {}
+  return content;
+}
