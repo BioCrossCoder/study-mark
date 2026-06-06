@@ -4,12 +4,24 @@ import { ChatHistoryMessage } from "@/common/types";
 import { XMarkdown } from "@ant-design/x-markdown";
 import { Chip } from "primereact/chip";
 import { tryFormatAsJson } from "@/common/utils";
+import { AgentMode } from "@/common/enums";
+import { Button } from "primereact/button";
+import CreatePlanDialog from "./CreatePlanDialog";
+import { useChatLoadingQuery } from "@/services/chatLoading";
+import { Toast } from "primereact/toast";
 
 export default function ChatBubble(props: { message: ChatHistoryMessage }) {
   const { message } = props;
   const header = message.type === "human" ? "User" : "Agent";
   const sender = message.type === "human" ? "pi pi-user" : "pi pi-microchip-ai";
   const placement = message.type === "human" ? "start" : "end";
+  const { data: loading } = useChatLoadingQuery();
+  const canCreatePlan =
+    loading === false &&
+    message.type === "ai" &&
+    message.mode === AgentMode.Plan;
+  const [visible, setVisible] = useState(false);
+  const toast = useRef(null);
 
   return (
     <Bubble
@@ -76,6 +88,19 @@ export default function ChatBubble(props: { message: ChatHistoryMessage }) {
                   );
               }
             })}
+            {canCreatePlan && (
+              <>
+                <Button label="Create Plan" onClick={() => setVisible(true)} />
+                {visible && (
+                  <CreatePlanDialog
+                    close={() => setVisible(false)}
+                    message={message}
+                    toast={toast}
+                  />
+                )}
+                <Toast ref={toast} position="top-center" />
+              </>
+            )}
           </div>
         )
       }

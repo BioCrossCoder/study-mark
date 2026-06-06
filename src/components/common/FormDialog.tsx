@@ -13,8 +13,9 @@ export default function FormDialog(props: {
   fields: FormField[];
   onSubmit: () => Promise<Error | unknown>;
   onHide: () => void;
+  disabled?: boolean;
 }) {
-  const { header, fields, onHide } = props;
+  const { header, fields, onHide, disabled } = props;
   async function handleSubmit() {
     if (!Error.isError(await props.onSubmit())) {
       onHide();
@@ -23,7 +24,7 @@ export default function FormDialog(props: {
   return (
     <Dialog
       visible={true}
-      className="w-6/7"
+      className="w-6/7 max-h-5/8!"
       onHide={onHide}
       draggable={false}
       header={header}
@@ -35,7 +36,12 @@ export default function FormDialog(props: {
             severity="secondary"
             onClick={onHide}
           />
-          <Button label="Submit" size="small" onClick={handleSubmit} />
+          <Button
+            label="Submit"
+            size="small"
+            onClick={handleSubmit}
+            disabled={disabled}
+          />
         </div>
       }
     >

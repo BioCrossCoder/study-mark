@@ -9,6 +9,7 @@ import {
   taskSchema,
 } from "./schemas";
 import type { LanguageCode } from "iso-639-1";
+import { AgentMode } from "./enums";
 
 export type Bookmark = z.infer<typeof bookmarkSchema>;
 
@@ -55,6 +56,7 @@ export type ChatHumanMessage = {
 
 export type ChatAIMessage = {
   type: "ai";
+  mode: AgentMode;
   content: ChatAIMessageItem[];
 };
 
@@ -75,6 +77,7 @@ export type ChatToolCallingMessage = {
   params: string;
   result: string;
   loading: boolean;
+  fullResult: boolean;
 };
 
 export type ChatAIMessageItem =

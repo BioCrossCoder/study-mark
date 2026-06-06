@@ -10,6 +10,7 @@ import { createAgent, HumanMessage, toolStrategy } from "langchain";
 import { updateHistory } from "@/services/storage/chatHistory";
 import { planSchema } from "@/common/schemas";
 import { createWebSearchTool, webSearchToolPrompt } from "../tools/webSearch";
+import { AgentMode } from "@/common/enums";
 
 const abortController = createAbortController();
 let agent: PromiseResultType<ReturnType<typeof createPlannerAgent>>;
@@ -27,7 +28,10 @@ async function init() {
 }
 
 async function run(content: string) {
-  await updateHistory({ type: "human", content } as ChatHumanMessage);
+  await updateHistory(
+    { type: "human", content } as ChatHumanMessage,
+    AgentMode.Plan,
+  );
   await init();
   let count = 0;
   let finish = false;
@@ -37,7 +41,7 @@ async function run(content: string) {
         agent,
         [new HumanMessage(content)],
         abortController,
-        updateHistory,
+        (message) => updateHistory(message, AgentMode.Plan),
       );
     } catch {
     } finally {

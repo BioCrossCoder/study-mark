@@ -1,4 +1,4 @@
-import { StoreKey } from "@/common/enums";
+import { AgentMode, StoreKey } from "@/common/enums";
 import {
   ChatAIMessageItem,
   ChatHistoryMessage,
@@ -15,6 +15,7 @@ export const chatHistoryData = storage.defineItem<ChatHistoryMessage[]>(
 
 export async function updateHistory(
   message: ChatHumanMessage | ChatAIMessageItem,
+  mode: AgentMode,
 ) {
   const history = await chatHistoryData.getValue();
   const lastMessage = history.at(-1);
@@ -33,7 +34,11 @@ export async function updateHistory(
           const toolMsg = message as ChatToolCallingMessage;
           lastItem.name = (lastItem.name || toolMsg.name) ?? "";
           lastItem.params += toolMsg.params;
-          lastItem.result += toolMsg.result;
+          if (toolMsg.fullResult) {
+            lastItem.result = toolMsg.result;
+          } else {
+            lastItem.result += toolMsg.result;
+          }
           if (lastItem.result && !toolMsg.result) {
             lastMessage.content.push({ type: "text", content: "" });
           }
@@ -47,7 +52,9 @@ export async function updateHistory(
     }
   } else {
     history.push(
-      message.type === "human" ? message : { type: "ai", content: [message] },
+      message.type === "human"
+        ? message
+        : { type: "ai", content: [message], mode },
     );
   }
   return await chatHistoryData.setValue(history);

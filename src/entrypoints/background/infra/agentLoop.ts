@@ -70,15 +70,16 @@ export async function execAgentLoop(
         params: "",
         result,
         loading: true,
+        fullResult: false,
       } as ChatToolCallingMessage);
     } else if (ToolMessage.isInstance(chunk)) {
       const msg = chunk as ToolMessage;
-      console.log(msg);
       await send({
         type: "tool",
         params: "",
         result: msg.content as string,
         loading: false,
+        fullResult: true,
       } as ChatToolCallingMessage);
     }
   }
