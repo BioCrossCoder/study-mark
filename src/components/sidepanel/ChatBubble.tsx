@@ -81,7 +81,7 @@ export default function ChatBubble(props: { message: ChatHistoryMessage }) {
                       }}
                     >
                       <XMarkdown
-                        content={`\`\`\`json\n${tryFormatAsJson(item.params)}\n\`\`\`\n\`\`\`json\n${tryFormatAsJson(item.result)}\n\`\`\``}
+                        content={`**Params**\n\`\`\`json\n${tryFormatAsJson(item.params)}\n\`\`\`\n**Result**\n\`\`\`json\n${tryFormatAsJson(item.result)}\n\`\`\``}
                         className="text-(--primary-color-text)!"
                       />
                     </Sources>
