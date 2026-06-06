@@ -16,7 +16,7 @@ export async function execAgentLoop(
   agent: ReturnType<typeof createAgent>,
   messages: BaseMessage[],
   abortController: AbortControllerInterface,
-  send: (message: ChatAIMessageItem) => void,
+  send: (message: ChatAIMessageItem) => Promise<void>,
 ) {
   const stream = await agent.stream({ messages }, { streamMode: "messages" });
   abortController.init();
@@ -29,7 +29,7 @@ export async function execAgentLoop(
     if (AIMessageChunk.isInstance(chunk)) {
       const msg = chunk as AIMessageChunk;
       if (msg.additional_kwargs.reasoning_content) {
-        send({
+        await send({
           type: "think",
           content: msg.additional_kwargs.reasoning_content,
           loading: true,
@@ -44,7 +44,7 @@ export async function execAgentLoop(
           args && Object.keys(args).length > 0
             ? JSON.stringify(args)
             : undefined;
-        send({
+        await send({
           type: "tool",
           name:
             msg.tool_calls?.at(0)?.name ??
@@ -55,22 +55,26 @@ export async function execAgentLoop(
           loading: true,
         } as ChatToolCallingMessage);
       } else if (msg.content.length > 0) {
-        send({
+        await send({
           type: "text",
           content: msg.content,
         } as ChatAITextMessage);
       }
     } else if (ToolMessageChunk.isInstance(chunk)) {
       const msg = chunk as ToolMessageChunk;
-      send({
+      const output = msg.contentBlocks.at(0)?.output;
+      const result =
+        output && Object.keys(output).length > 0 ? JSON.stringify(output) : "";
+      await send({
         type: "tool",
         params: "",
-        result: msg.contentBlocks.at(0)?.output ?? "",
+        result,
         loading: true,
       } as ChatToolCallingMessage);
     } else if (ToolMessage.isInstance(chunk)) {
       const msg = chunk as ToolMessage;
-      send({
+      console.log(msg);
+      await send({
         type: "tool",
         params: "",
         result: msg.content as string,
