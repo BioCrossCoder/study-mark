@@ -31,27 +31,39 @@ export default function ChatInputBox() {
         loading={loading ?? true}
         onSubmit={handleSubmit}
         onCancel={handleCancel}
-        autoSize={{ minRows: 3, maxRows: 3 }}
+        autoSize={{ minRows: 2, maxRows: 2 }}
         classNames={{
           root: "border-(--primary-color)!",
           input: "text-(--text-color)! caret-(--text-color)!",
         }}
-        suffix={(_, info) => {
-          const { SendButton, LoadingButton } = info.components;
-          return loading ? (
-            <LoadingButton
-              className="bg-(--primary-color)!"
-              icon={
-                <i className="pi pi-spinner pi-spin bg-(--primary-color)! text-(--primary-color-text)!" />
-              }
-            />
-          ) : (
-            <SendButton
-              className="bg-(--primary-color)! disabled:bg-(--highlight-bg)!"
-              icon={<i className="pi pi-send text-(--primary-color-text)!" />}
-            />
+        footer={(_, { components }) => {
+          const { SendButton, LoadingButton } = components;
+          return (
+            <div className="flex justify-between items-center">
+              <div className="flex">
+                <p>⇧↵ newline</p>
+                <p className="mx-1 font-semibold">/</p>
+                <p>↵ send</p>
+              </div>
+              {loading ? (
+                <LoadingButton
+                  className="bg-(--primary-color)!"
+                  icon={
+                    <i className="pi pi-spinner pi-spin bg-(--primary-color)! text-(--primary-color-text)!" />
+                  }
+                />
+              ) : (
+                <SendButton
+                  className="bg-(--primary-color)! disabled:bg-(--highlight-bg)!"
+                  icon={
+                    <i className="pi pi-send text-(--primary-color-text)!" />
+                  }
+                />
+              )}
+            </div>
           );
         }}
+        suffix={false}
       />
     </div>
   );
