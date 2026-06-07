@@ -1,10 +1,5 @@
-import {
-  ChatAIMessage,
-  ChatHumanMessage,
-  ModelConfig,
-  PromiseResultType,
-} from "@/common/types";
-import { createAbortController, execAgentLoop } from "../infra/agentLoop";
+import { ChatAIMessage, ModelConfig, PromiseResultType } from "@/common/types";
+import { execAgentLoop } from "../infra/agentLoop";
 import { modelConfigData } from "@/services/storage/modelConfig";
 import { createModelAdapter } from "../infra/modelAdapter";
 import { createAgent, HumanMessage, toolStrategy } from "langchain";
@@ -18,15 +13,18 @@ import { AgentMode } from "@/common/enums";
 import { systemPrompt } from "../prompts/planner";
 import { loadLibraryTool } from "../tools/loadLibrary";
 import { extractPlanOutline } from "@/common/logics";
+import { createAbortController } from "../infra/abortController";
 
 const abortController = createAbortController();
 let agent: PromiseResultType<ReturnType<typeof createPlannerAgent>>;
 export const plannerAgent = {
+  init,
   run,
   stop: abortController.stop,
 };
 
 async function init() {
+  abortController.init();
   if (agent) {
     return;
   }
@@ -35,11 +33,6 @@ async function init() {
 }
 
 async function run(content: string) {
-  await updateHistory(
-    { type: "human", content } as ChatHumanMessage,
-    AgentMode.Plan,
-  );
-  await init();
   let finish = false;
   for (let i = 0; i < 3; i++) {
     if (finish) {
@@ -54,13 +47,10 @@ async function run(content: string) {
       );
     } catch {
     } finally {
-      const plan = extractPlanOutline(
-        (await getLastHistoryMessage()) as ChatAIMessage,
-      );
-      if (!plan) {
-        abortController.init();
-      }
-      finish = abortController.end();
+      finish =
+        abortController.end() ||
+        extractPlanOutline((await getLastHistoryMessage()) as ChatAIMessage) !==
+          null;
     }
   }
 }

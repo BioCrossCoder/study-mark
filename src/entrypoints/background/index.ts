@@ -9,6 +9,8 @@ import { registerContextMenuItem } from "@/common/utils";
 import { sendMessage } from "webext-bridge/background";
 import { plannerAgent } from "./agents/planner";
 import { chatLoadingData } from "@/services/storage/chatLoading";
+import { updateHistory } from "@/services/storage/chatHistory";
+import { ChatHumanMessage } from "@/common/types";
 
 export default defineBackground(async () => {
   browser.runtime.onInstalled.addListener(() => {
@@ -46,18 +48,24 @@ export default defineBackground(async () => {
     }
     const chatMessage = chatMessageSchema.safeParse(message);
     if (chatMessage.success) {
-      const { mode, message } = chatMessage.data;
+      const { mode, message: content } = chatMessage.data;
+      await updateHistory(
+        { type: "human", content } as ChatHumanMessage,
+        AgentMode.Plan,
+      );
+      await chatLoadingData.setValue(true);
       switch (mode) {
         case AgentMode.Plan:
-          await chatLoadingData.setValue(true);
-          await plannerAgent.run(message);
+          await plannerAgent.init();
+          await plannerAgent.run(content);
+          plannerAgent.stop();
           await chatLoadingData.setValue(false);
           browser.notifications.create({
             type: "basic",
             iconUrl: "icon/48.png",
             title: "Study Plan Generation Finished",
             message:
-              message.slice(0, 100) + (message.length > 100 ? "..." : ""),
+              content.slice(0, 100) + (content.length > 100 ? "..." : ""),
           });
           break;
         case AgentMode.Chat:
