@@ -86,3 +86,9 @@ export type ChatAIMessageItem =
   | ChatToolCallingMessage;
 
 export type ChatHistoryMessage = ChatHumanMessage | ChatAIMessage;
+
+export type Comment = {
+  url: string;
+  xpath: string;
+  content: string;
+};

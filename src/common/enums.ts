@@ -7,6 +7,7 @@ export const enum StoreKey {
   ChatLoading = "local:chatLoading",
   ModelConfig = "sync:modelConfig",
   TabIndex = "local:tabIndex",
+  Comment = "local:comment",
 }
 
 export enum ExecStatus {
@@ -23,12 +24,15 @@ export const statusIcon = {
 
 export const enum ContextMenuItemID {
   UpdateProgress = "study-mark-update-progress",
+  SetComment = "study-mark-set-comment",
 }
 
 export const enum MessageID {
   SaveProgress = "SAVE_PROGRESS",
   LoadProgress = "LOAD_PROGRESS",
   GotoProgress = "GOTO_PROGRESS",
+  SaveComment = "SAVE_COMMENT",
+  LoadComment = "LOAD_COMMENT",
 }
 
 export enum ModelProviderProtocol {

@@ -28,12 +28,27 @@ export default defineBackground(async () => {
         });
       },
     );
+    registerContextMenuItem(
+      ContextMenuItemID.SetComment,
+      "Set Comment",
+      [browser.contextMenus.ContextType.SELECTION],
+      (_, tab) => {
+        sendMessage(MessageID.SaveComment, null, {
+          context: "content-script",
+          tabId: tab?.id ?? browser.tabs.TAB_ID_NONE,
+        });
+      },
+    );
   });
   browser.tabs.onUpdated.addListener((tabId, info) => {
     if (!info.url) {
       return;
     }
     sendMessage(MessageID.LoadProgress, null, {
+      context: "content-script",
+      tabId,
+    });
+    sendMessage(MessageID.LoadComment, null, {
       context: "content-script",
       tabId,
     });
