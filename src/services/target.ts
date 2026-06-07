@@ -41,7 +41,7 @@ export function useCreateTarget(toast: RefObject<Toast | null>) {
       return new Error(detail);
     }
     if (isItemExist(params as Target, "name", records)) {
-      const detail = "Target name already exists";
+      const detail = `Target name "${params.name}" already exists`;
       toast.current?.show({
         severity: "error",
         summary,

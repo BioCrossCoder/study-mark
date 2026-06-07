@@ -45,7 +45,7 @@ export function useCreateTask(toast: RefObject<Toast | null>) {
       return new Error(detail);
     }
     if (isItemExist(params as Task, "name", records)) {
-      const detail = "Task name already exists";
+      const detail = `Task name "${params.name}" already exists`;
       toast.current?.show({
         severity: "error",
         summary,
