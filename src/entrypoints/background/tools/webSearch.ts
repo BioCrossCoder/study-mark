@@ -1,7 +1,7 @@
 import { WebMCPBridge } from "mcp-web-bridge";
 import { tool } from "langchain";
-import { convertJsonSchemaToZod } from "zod-from-json-schema";
 import { ToolName } from "@/common/enums";
+import z from "zod";
 
 export async function createWebSearchTool() {
   const bridge = new WebMCPBridge("https://mcp.exa.ai/mcp");
@@ -16,7 +16,7 @@ export async function createWebSearchTool() {
     {
       name,
       description,
-      schema: convertJsonSchemaToZod(inputSchema),
+      schema: z.fromJSONSchema(inputSchema),
     },
   );
 }
