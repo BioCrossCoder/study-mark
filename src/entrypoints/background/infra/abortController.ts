@@ -1,10 +1,12 @@
 export function createAbortController() {
   let c: AbortController | null = null;
-  function stop() {
-    if (!c) {
-      return;
+  function stop(callback?: () => void) {
+    if (c) {
+      c.abort();
     }
-    c.abort();
+    if (callback) {
+      callback();
+    }
   }
   function init() {
     c = new AbortController();

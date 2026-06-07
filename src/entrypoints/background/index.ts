@@ -9,7 +9,10 @@ import { registerContextMenuItem } from "@/common/utils";
 import { sendMessage } from "webext-bridge/background";
 import { plannerAgent } from "./agents/planner";
 import { chatLoadingData } from "@/services/storage/chatLoading";
-import { updateHistory } from "@/services/storage/chatHistory";
+import {
+  stopLoadingInHistory,
+  updateHistory,
+} from "@/services/storage/chatHistory";
 import { ChatHumanMessage } from "@/common/types";
 
 export default defineBackground(async () => {
@@ -40,7 +43,7 @@ export default defineBackground(async () => {
     if (signal.success) {
       switch (signal.data) {
         case Signal.Stop:
-          plannerAgent.stop();
+          plannerAgent.stop(stopLoadingInHistory);
           await chatLoadingData.setValue(false);
           break;
       }

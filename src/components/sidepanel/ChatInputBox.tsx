@@ -1,7 +1,6 @@
 import { AgentMode, Signal } from "@/common/enums";
 import { ChatMessage } from "@/common/types";
 import { useChatLoadingQuery } from "@/services/chatLoading";
-import { stopLoadingInHistory } from "@/services/storage/chatHistory";
 import { Sender } from "@ant-design/x";
 
 export default function ChatInputBox() {
@@ -19,7 +18,6 @@ export default function ChatInputBox() {
 
   function handleCancel() {
     browser.runtime.sendMessage(Signal.Stop);
-    stopLoadingInHistory();
   }
 
   function handleClear() {
