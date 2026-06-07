@@ -67,3 +67,17 @@ export async function clearHistory() {
 export async function getLastHistoryMessage() {
   return (await chatHistoryData.getValue()).at(-1);
 }
+
+export async function stopLoadingInHistory() {
+  const data = await chatHistoryData.getValue();
+  const record = data.findLast((item) => item.type === "ai");
+  if (!record) {
+    return;
+  }
+  record.content.forEach((item) => {
+    if (item.type !== "text") {
+      item.loading = false;
+    }
+  });
+  return await chatHistoryData.setValue(data);
+}
