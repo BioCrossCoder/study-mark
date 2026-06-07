@@ -59,9 +59,7 @@ export default defineBackground(async () => {
       await chatLoadingData.setValue(true);
       switch (mode) {
         case AgentMode.Plan:
-          await plannerAgent.init();
           await plannerAgent.run(content);
-          plannerAgent.stop();
           await chatLoadingData.setValue(false);
           browser.notifications.create({
             type: "basic",
