@@ -11,10 +11,13 @@ export function extractPlanOutline(message: ChatAIMessage): Plan | null {
     if (item.type !== "tool") {
       continue;
     }
-    const { success, data } = planSchema.safeParse(JSON.parse(item.result));
-    if (success) {
-      return data;
-    }
+    try {
+      const entry = JSON.parse(item.result);
+      const { success, data } = planSchema.safeParse(entry);
+      if (success) {
+        return data;
+      }
+    } catch {}
   }
   return null;
 }

@@ -1,4 +1,4 @@
-import { ChatAIMessage } from "@/common/types";
+import { ChatAIMessage, ChatMessage } from "@/common/types";
 import FormDialog from "../common/FormDialog";
 import { Toast } from "primereact/toast";
 import { CodeHighlighter } from "@ant-design/x";
@@ -8,6 +8,9 @@ import { useCreateRelations } from "@/services/relation";
 import { RefObject } from "react";
 import { Tag } from "primereact/tag";
 import { extractPlanOutline } from "@/common/logics";
+import { Button } from "primereact/button";
+import { getLastHumanMessageInHistory } from "@/services/storage/chatHistory";
+import { AgentMode } from "@/common/enums";
 
 export default function CreatePlanDialog(props: {
   close: () => void;
@@ -49,6 +52,18 @@ export default function CreatePlanDialog(props: {
       taskIds,
     };
   }
+
+  async function handleRetry() {
+    const content = await getLastHumanMessageInHistory();
+    if (content) {
+      const message: ChatMessage = {
+        mode: AgentMode.Plan,
+        message: content.content,
+      };
+      browser.runtime.sendMessage(message);
+      props.close();
+    }
+  }
   return (
     <FormDialog
       header="Create Plan"
@@ -67,11 +82,14 @@ export default function CreatePlanDialog(props: {
               {JSON.stringify(plan, null, 2)}
             </CodeHighlighter>
           ) : (
-            <Tag
-              severity="danger"
-              value="No Plan available"
-              className="text-xl!"
-            />
+            <div className="flex flex-col gap-2 items-center">
+              <Tag
+                severity="danger"
+                value="No Plan available"
+                className="text-xl! w-full"
+              />
+              <Button label="Retry" size="small" onClick={handleRetry} />
+            </div>
           ),
         },
       ]}

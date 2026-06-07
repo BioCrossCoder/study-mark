@@ -81,3 +81,8 @@ export async function stopLoadingInHistory() {
   });
   return await chatHistoryData.setValue(data);
 }
+
+export async function getLastHumanMessageInHistory() {
+  const data = await chatHistoryData.getValue();
+  return data.findLast((item) => item.type === "human");
+}
