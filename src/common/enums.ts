@@ -47,4 +47,5 @@ export enum ToolName {
   // [Exa MCP] https://exa.ai/docs/reference/exa-mcp#available-tools
   WebSearch = "web_search_exa",
   WebFetch = "web_fetch_exa", // [/]
+  LoadLibrary = "load_library",
 }

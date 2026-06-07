@@ -1,6 +1,4 @@
-import { AgentMode } from "@/common/enums";
-import { planSchema } from "@/common/schemas";
-import { ChatAIMessage, ChatToolCallingMessage, Plan } from "@/common/types";
+import { ChatAIMessage } from "@/common/types";
 import FormDialog from "../common/FormDialog";
 import { Toast } from "primereact/toast";
 import { CodeHighlighter } from "@ant-design/x";
@@ -8,26 +6,15 @@ import { useCreateTarget } from "@/services/target";
 import { useCreateTask } from "@/services/task";
 import { useCreateRelations } from "@/services/relation";
 import { RefObject } from "react";
+import { Tag } from "primereact/tag";
+import { extractPlanOutline } from "@/common/logics";
 
 export default function CreatePlanDialog(props: {
   close: () => void;
   message: ChatAIMessage;
   toast: RefObject<Toast | null>;
 }) {
-  const outline = props.message.content.findLast((item) => {
-    if (props.message.mode !== AgentMode.Plan || item.type !== "tool") {
-      return false;
-    }
-    try {
-      const { success } = planSchema.safeParse(JSON.parse(item.result));
-      return success;
-    } catch {
-      return false;
-    }
-  });
-  const plan = outline
-    ? (JSON.parse((outline as ChatToolCallingMessage).result) as Plan)
-    : undefined;
+  const plan = extractPlanOutline(props.message);
   const createTarget = useCreateTarget(props.toast);
   const createTask = useCreateTask(props.toast);
   const createRelations = useCreateRelations();
@@ -69,7 +56,7 @@ export default function CreatePlanDialog(props: {
       fields={[
         {
           name: "",
-          item: (
+          item: plan ? (
             <CodeHighlighter
               lang="json"
               header={false}
@@ -77,13 +64,19 @@ export default function CreatePlanDialog(props: {
                 code: "rounded-xl!",
               }}
             >
-              {plan ? JSON.stringify(plan, null, 2) : ""}
+              {JSON.stringify(plan, null, 2)}
             </CodeHighlighter>
+          ) : (
+            <Tag
+              severity="danger"
+              value="No Plan available"
+              className="text-xl!"
+            />
           ),
         },
       ]}
       onSubmit={handleSubmit}
-      disabled={plan === undefined}
+      disabled={plan === null}
     />
   );
 }

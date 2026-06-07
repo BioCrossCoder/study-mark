@@ -20,9 +20,3 @@ export async function createWebSearchTool() {
     },
   );
 }
-
-export const webSearchToolPrompt = `
-  You can use the ${ToolName.WebSearch} tool to supplement necessary information.
-  Only use it when you need latest information, specific facts or real-time data.
-  For each user question, the ${ToolName.WebSearch} tool can only be called once.
-`;

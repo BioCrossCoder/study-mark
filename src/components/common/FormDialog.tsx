@@ -29,20 +29,17 @@ export default function FormDialog(props: {
       draggable={false}
       header={header}
       footer={
-        <div className="flex justify-end gap-2">
-          <Button
-            label="Cancel"
-            size="small"
-            severity="secondary"
-            onClick={onHide}
-          />
-          <Button
-            label="Submit"
-            size="small"
-            onClick={handleSubmit}
-            disabled={disabled}
-          />
-        </div>
+        !disabled && (
+          <div className="flex justify-end gap-2">
+            <Button
+              label="Cancel"
+              size="small"
+              severity="secondary"
+              onClick={onHide}
+            />
+            <Button label="Submit" size="small" onClick={handleSubmit} />
+          </div>
+        )
       }
     >
       {fields.map(({ name, item, label }) => (

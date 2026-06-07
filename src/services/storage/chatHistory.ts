@@ -63,3 +63,7 @@ export async function updateHistory(
 export async function clearHistory() {
   return await chatHistoryData.setValue([]);
 }
+
+export async function getLastHistoryMessage() {
+  return (await chatHistoryData.getValue()).at(-1);
+}

@@ -1,4 +1,5 @@
 import {
+  ChatAIMessage,
   ChatHumanMessage,
   ModelConfig,
   PromiseResultType,
@@ -7,10 +8,16 @@ import { createAbortController, execAgentLoop } from "../infra/agentLoop";
 import { modelConfigData } from "@/services/storage/modelConfig";
 import { createModelAdapter } from "../infra/modelAdapter";
 import { createAgent, HumanMessage, toolStrategy } from "langchain";
-import { updateHistory } from "@/services/storage/chatHistory";
+import {
+  getLastHistoryMessage,
+  updateHistory,
+} from "@/services/storage/chatHistory";
 import { planSchema } from "@/common/schemas";
-import { createWebSearchTool, webSearchToolPrompt } from "../tools/webSearch";
+import { createWebSearchTool } from "../tools/webSearch";
 import { AgentMode } from "@/common/enums";
+import { systemPrompt } from "../prompts/planner";
+import { loadLibraryTool } from "../tools/loadLibrary";
+import { extractPlanOutline } from "@/common/logics";
 
 const abortController = createAbortController();
 let agent: PromiseResultType<ReturnType<typeof createPlannerAgent>>;
@@ -33,9 +40,11 @@ async function run(content: string) {
     AgentMode.Plan,
   );
   await init();
-  let count = 0;
   let finish = false;
-  while (count < 3 && !finish) {
+  for (let i = 0; i < 3; i++) {
+    if (finish) {
+      break;
+    }
     try {
       await execAgentLoop(
         agent,
@@ -45,26 +54,24 @@ async function run(content: string) {
       );
     } catch {
     } finally {
+      const plan = extractPlanOutline(
+        (await getLastHistoryMessage()) as ChatAIMessage,
+      );
+      if (!plan) {
+        abortController.init();
+      }
       finish = abortController.end();
     }
   }
 }
 
-const corePrompt = `
-  You are a learning planner,
-  making a study plan according to the user demand.
-  Always search the web at least once before decision.
-  Always output a response at the end in format ${JSON.stringify(planSchema.toJSONSchema())}.
-`;
-
 async function createPlannerAgent(config: ModelConfig) {
   const model = createModelAdapter(config);
   const webSearchTool = await createWebSearchTool();
-  const systemPrompt = [corePrompt, webSearchToolPrompt].join("\n");
   return createAgent({
     model,
     systemPrompt,
-    tools: [webSearchTool],
+    tools: [loadLibraryTool, webSearchTool],
     responseFormat: toolStrategy(planSchema),
   });
 }
