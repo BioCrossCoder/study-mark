@@ -10,16 +10,19 @@ import CreatePlanDialog from "./CreatePlanDialog";
 import { useChatLoadingQuery } from "@/services/chatLoading";
 import { Toast } from "primereact/toast";
 
-export default function ChatBubble(props: { message: ChatHistoryMessage }) {
+export default function ChatBubble(props: {
+  message: ChatHistoryMessage;
+  isLast: boolean;
+}) {
   const { message } = props;
   const header = message.type === "human" ? "User" : "Agent";
   const sender = message.type === "human" ? "pi pi-user" : "pi pi-microchip-ai";
   const placement = message.type === "human" ? "start" : "end";
   const { data: loading } = useChatLoadingQuery();
   const canCreatePlan =
-    loading === false &&
     message.type === "ai" &&
-    message.mode === AgentMode.Plan;
+    message.mode === AgentMode.Plan &&
+    (!props.isLast || loading === false);
   const [visible, setVisible] = useState(false);
   const toast = useRef(null);
 

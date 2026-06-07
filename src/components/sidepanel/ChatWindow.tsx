@@ -10,17 +10,14 @@ import { ScrollTop } from "primereact/scrolltop";
 
 export default function ChatWindow() {
   const { data, dataUpdatedAt, refetch } = useChatHistoryQuery();
-  const isHistoryEmpty = useMemo(
-    () => (data ?? []).length === 0,
-    [dataUpdatedAt],
-  );
+  const history = useMemo(() => data ?? [], [dataUpdatedAt]);
   const bottomAnchor = useRef(document.createElement("div"));
   useEffect(
     () =>
       chatHistoryData.watch(async () => {
         await refetch();
         bottomAnchor.current.scrollIntoView({
-          behavior: data?.at(-1)?.type === "human" ? "instant" : "smooth",
+          behavior: history.at(-1)?.type === "human" ? "instant" : "smooth",
           block: "end",
         });
       }),
@@ -51,15 +48,19 @@ export default function ChatWindow() {
           </>
         }
       />
-      {isHistoryEmpty ? (
+      {history.length === 0 ? (
         <ChatEmptyPlaceholder />
       ) : (
         <ScrollPanel
           style={{ width: "100%", height: "100%" }}
           className="overflow-hidden"
         >
-          {(data ?? []).map((item, i) => (
-            <ChatBubble message={item} key={i} />
+          {history.map((item, i) => (
+            <ChatBubble
+              message={item}
+              key={i}
+              isLast={i === history.length - 1}
+            />
           ))}
           <div ref={bottomAnchor} />
           <ScrollTop target="parent" threshold={0} />
