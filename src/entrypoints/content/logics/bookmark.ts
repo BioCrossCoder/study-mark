@@ -5,19 +5,30 @@ import {
 } from "@/services/storage/task";
 import { fromRange } from "xpath-range";
 
+async function queryBookmark(url: string) {
+  const tasks = await getTasksByPositionUrl(url);
+  return tasks.at(0)?.position.bookmark;
+}
+
 export async function loadBookmark() {
   if (!document.body) {
     return;
   }
-  const tasks = await getTasksByPositionUrl(window.location.href);
-  const bookmark = tasks.at(0)?.position.bookmark;
+  const bookmark = await queryBookmark(window.location.href);
   if (!bookmark) {
     return;
   }
   const { id, xpath, offset } = bookmark;
   const observer = new MutationObserver(() => {
     if (!document.getElementById(id)) {
-      tryInsertBookmark(xpath, offset, id);
+      const anchor = tryInsertBookmark(xpath, offset, id);
+      if (anchor) {
+        anchor.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+          inline: "nearest",
+        });
+      }
     }
     observer.disconnect();
   });
@@ -42,11 +53,7 @@ function tryInsertBookmark(xpath: string, offset: number, id: string) {
   range.setStart(result, offset);
   const anchor = createBookmark(id);
   range.insertNode(anchor);
-  anchor.scrollIntoView({
-    behavior: "smooth",
-    block: "center",
-    inline: "nearest",
-  });
+  return anchor;
 }
 
 export async function saveBookmark() {
@@ -96,5 +103,23 @@ export function createBookmark(id: string) {
 export function removeBookmark(id?: string) {
   if (id) {
     document.getElementById(id)?.remove();
+  }
+}
+
+export async function gotoBookmark() {
+  if (!document.body) {
+    return;
+  }
+  const bookmark = await queryBookmark(window.location.href);
+  if (!bookmark) {
+    return;
+  }
+  const anchor = document.getElementById(bookmark.id);
+  if (anchor) {
+    anchor.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+      inline: "nearest",
+    });
   }
 }

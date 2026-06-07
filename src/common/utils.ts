@@ -48,3 +48,12 @@ export function tryFormatAsJson(content: string) {
   } catch {}
   return content;
 }
+
+export async function getCurrentTab() {
+  return (
+    await browser.tabs.query({
+      active: true,
+      currentWindow: true,
+    })
+  ).at(0);
+}

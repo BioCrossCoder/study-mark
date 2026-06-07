@@ -1,5 +1,5 @@
 import { MessageID } from "@/common/enums";
-import { loadBookmark, saveBookmark } from "./logics/bookmark";
+import { gotoBookmark, loadBookmark, saveBookmark } from "./logics/bookmark";
 import { onMessage } from "webext-bridge/content-script";
 
 export default defineContentScript({
@@ -8,5 +8,6 @@ export default defineContentScript({
     loadBookmark();
     onMessage(MessageID.SaveProgress, saveBookmark);
     onMessage(MessageID.LoadProgress, loadBookmark);
+    onMessage(MessageID.GotoProgress, gotoBookmark);
   },
 });

@@ -4,6 +4,7 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Toast } from "primereact/toast";
 import { useGetWebsiteMetadata } from "@/hooks/useGetWebsiteMetadata";
+import { getCurrentTab } from "@/common/utils";
 
 export default function CreateLibraryDialog(props: { close: () => void }) {
   const [name, setName] = useState("");
@@ -13,12 +14,7 @@ export default function CreateLibraryDialog(props: { close: () => void }) {
   const toast = useRef(null);
   const getWebsiteMetadata = useGetWebsiteMetadata(toast);
   async function handleSetSource() {
-    const tab = (
-      await browser.tabs.query({
-        active: true,
-        currentWindow: true,
-      })
-    ).at(0);
+    const tab = await getCurrentTab();
     setName(tab?.title ?? name);
     const newSource = tab?.url ?? source;
     if (!newSource) {

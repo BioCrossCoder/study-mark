@@ -6,6 +6,7 @@ import { useTargetOptions } from "@/services/target";
 import { useCreateTask } from "@/services/task";
 import { Toast } from "primereact/toast";
 import { useCreateRelations } from "@/services/relation";
+import { getCurrentTab } from "@/common/utils";
 
 export default function CreateTaskDialog(props: { close: () => void }) {
   const [name, setName] = useState("");
@@ -14,12 +15,7 @@ export default function CreateTaskDialog(props: { close: () => void }) {
   const [targets, setTargets] = useState(new Array<string>());
   const options = useTargetOptions();
   async function handleSetSource() {
-    const tab = (
-      await browser.tabs.query({
-        active: true,
-        currentWindow: true,
-      })
-    ).at(0);
+    const tab = await getCurrentTab();
     setSource(tab?.url ?? source);
     setName(tab?.title ?? name);
   }

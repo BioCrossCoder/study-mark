@@ -6,6 +6,7 @@ export const enum StoreKey {
   ChatHistory = "local:chatHistory",
   ChatLoading = "local:chatLoading",
   ModelConfig = "sync:modelConfig",
+  TabIndex = "local:tabIndex",
 }
 
 export enum ExecStatus {
@@ -27,6 +28,7 @@ export const enum ContextMenuItemID {
 export const enum MessageID {
   SaveProgress = "SAVE_PROGRESS",
   LoadProgress = "LOAD_PROGRESS",
+  GotoProgress = "GOTO_PROGRESS",
 }
 
 export enum ModelProviderProtocol {
@@ -48,4 +50,9 @@ export enum ToolName {
   WebSearch = "web_search_exa",
   WebFetch = "web_fetch_exa", // [/]
   LoadLibrary = "load_library",
+}
+
+export const enum TabIndex {
+  Plan,
+  List,
 }
