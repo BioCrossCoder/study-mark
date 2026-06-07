@@ -1,16 +1,15 @@
-import { ChatAIMessage, ChatMessage } from "@/common/types";
-import FormDialog from "../common/FormDialog";
+import { ChatAIMessage, ChatMessage, Plan } from "@/common/types";
 import { Toast } from "primereact/toast";
-import { CodeHighlighter } from "@ant-design/x";
-import { useCreateTarget } from "@/services/target";
-import { useCreateTask } from "@/services/task";
-import { useCreateRelations } from "@/services/relation";
 import { RefObject } from "react";
 import { Tag } from "primereact/tag";
 import { extractPlanOutline } from "@/common/logics";
 import { Button } from "primereact/button";
 import { getLastHumanMessageInHistory } from "@/services/storage/chatHistory";
 import { AgentMode } from "@/common/enums";
+import { Dialog } from "primereact/dialog";
+import { useCreatePlan } from "@/hooks/useCreatePlan";
+import TargetFormCard from "./TargetFormCard";
+import TaskFormCard from "./TaskFormCard";
 
 export default function CreatePlanDialog(props: {
   close: () => void;
@@ -18,39 +17,23 @@ export default function CreatePlanDialog(props: {
   toast: RefObject<Toast | null>;
 }) {
   const plan = extractPlanOutline(props.message);
-  const createTarget = useCreateTarget(props.toast);
-  const createTask = useCreateTask(props.toast);
-  const createRelations = useCreateRelations();
+  const [form, setForm] = useState(plan as Plan);
+
+  function handleAddItem() {
+    form.tasks.push({
+      name: "",
+      description: "",
+      source: "",
+    });
+    setForm({ ...form });
+  }
+
+  const createPlan = useCreatePlan(props.toast);
   async function handleSubmit() {
-    if (!plan) {
+    if (!form) {
       return new Error("Empty Plan");
     }
-    const targetId = await createTarget(plan.target);
-    if (Error.isError(targetId)) {
-      return targetId;
-    }
-    const taskIds = new Array<string>();
-    for (const task of plan.tasks) {
-      const result = await createTask(task);
-      if (Error.isError(result)) {
-        return result;
-      }
-      taskIds.push(result);
-    }
-    await createRelations(
-      taskIds.map((taskId) => ({
-        targetId,
-        taskId,
-      })),
-    );
-    props.toast.current?.show({
-      severity: "success",
-      summary: "Create Plan Succeeded",
-    });
-    return {
-      targetId,
-      taskIds,
-    };
+    return await createPlan(form);
   }
 
   async function handleRetry() {
@@ -65,36 +48,58 @@ export default function CreatePlanDialog(props: {
     }
   }
   return (
-    <FormDialog
-      header="Create Plan"
+    <Dialog
+      visible={true}
+      className="w-6/7 max-h-5/8!"
       onHide={props.close}
-      fields={[
-        {
-          name: "",
-          item: plan ? (
-            <CodeHighlighter
-              lang="json"
-              header={false}
-              classNames={{
-                code: "rounded-xl!",
-              }}
-            >
-              {JSON.stringify(plan, null, 2)}
-            </CodeHighlighter>
+      draggable={false}
+      header="Create Plan"
+      footer={
+        <div className="flex justify-end gap-2">
+          <Button
+            label="Cancel"
+            size="small"
+            severity="secondary"
+            onClick={props.close}
+          />
+          {plan ? (
+            <Button label="Submit" size="small" onClick={handleSubmit} />
           ) : (
-            <div className="flex flex-col gap-2 items-center">
-              <Tag
-                severity="danger"
-                value="No Plan available"
-                className="text-xl! w-full"
-              />
-              <Button label="Retry" size="small" onClick={handleRetry} />
-            </div>
-          ),
-        },
-      ]}
-      onSubmit={handleSubmit}
-      disabled={plan === null}
-    />
+            <Button label="Retry" size="small" onClick={handleRetry} />
+          )}
+        </div>
+      }
+    >
+      {plan ? (
+        <div className="flex flex-col gap-4">
+          <TargetFormCard
+            value={form.target}
+            onChange={(target) => setForm({ ...form, target })}
+          />
+          {form.tasks.map((task, i) => (
+            <TaskFormCard
+              value={task}
+              onChange={(task) => {
+                form.tasks[i] = task;
+                setForm({ ...form });
+              }}
+              order={i + 1}
+              onRemove={() => {
+                form.tasks.splice(i, 1);
+                setForm({ ...form });
+              }}
+            />
+          ))}
+          <Button label="New Task" onClick={handleAddItem} />
+        </div>
+      ) : (
+        <Tag
+          severity="danger"
+          icon="pi pi-times"
+          value="No Plan available"
+          className="text-xl! w-full"
+        />
+      )}
+    </Dialog>
   );
 }

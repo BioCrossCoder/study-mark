@@ -1,0 +1,70 @@
+import { Card } from "primereact/card";
+import { Chip } from "primereact/chip";
+import { InputText } from "primereact/inputtext";
+import { InputTextarea } from "primereact/inputtextarea";
+
+export default function TaskFormCard(props: {
+  value: { name: string; description: string; source: string };
+  onChange: (value: {
+    name: string;
+    description: string;
+    source: string;
+  }) => void;
+  order: number;
+  onRemove: () => void;
+}) {
+  const { value, onChange, order, onRemove } = props;
+  return (
+    <Card
+      className="bg-(--highlight-bg)!"
+      title={
+        <div className="flex justify-between items-center">
+          <Chip label={`Task ${order}`} />
+          <i
+            className="pi pi-times-circle hover:cursor-pointer hover:text-red-300"
+            onClick={onRemove}
+          />
+        </div>
+      }
+    >
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-col">
+          <label htmlFor={`task_name_${order}`}>Name</label>
+          <InputText
+            id={`task_name_${order}`}
+            value={value.name}
+            onChange={(event) => {
+              value.name = event.target.value;
+              onChange(value);
+            }}
+            autoComplete="off"
+          />
+        </div>
+        <div className="flex flex-col">
+          <label htmlFor={`task_description_${order}`}>Description</label>
+          <InputTextarea
+            id={`task_description_${order}`}
+            value={value.description}
+            onChange={(event) => {
+              value.description = event.target.value;
+              onChange(value);
+            }}
+            autoComplete="off"
+          />
+        </div>
+        <div className="flex flex-col">
+          <label htmlFor={`task_source_${order}`}>Source</label>
+          <InputText
+            id={`task_source_${order}`}
+            value={value.source}
+            onChange={(event) => {
+              value.source = event.target.value;
+              onChange(value);
+            }}
+            autoComplete="off"
+          />
+        </div>
+      </div>
+    </Card>
+  );
+}
