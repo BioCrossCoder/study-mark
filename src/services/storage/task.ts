@@ -1,5 +1,6 @@
 import { StoreKey } from "@/common/enums";
 import { Bookmark, Task } from "@/common/types";
+import { positionMatch } from "@/common/utils";
 
 export const taskData = storage.defineItem<Record<string, Task>>(
   StoreKey.Task,
@@ -7,14 +8,6 @@ export const taskData = storage.defineItem<Record<string, Task>>(
     fallback: {},
   },
 );
-
-function positionMatch(p1: string, p2: string) {
-  const SUFFIX_RE = /(\.html|\.htm|\.php|\.jsp|\.asp|)/;
-  return (
-    new RegExp(`^${p1}${SUFFIX_RE.source}$`).test(p2) ||
-    new RegExp(`^${p2}${SUFFIX_RE.source}$`).test(p1)
-  );
-}
 
 export async function getTasksByPositionUrl(url: string) {
   const data = await taskData.getValue();

@@ -89,21 +89,19 @@ export async function saveBookmark() {
     xpath: start,
     offset: startOffset,
   }); // [/]
-  removeBookmark(tasks.at(0)?.position.bookmark?.id);
+  // [RemoveOldBookmark]
+  const id = tasks.at(0)?.position.bookmark?.id;
+  if (id !== undefined) {
+    document.getElementById(id)?.remove();
+  } // [/]
   window.confirm("Task Progress Updated");
 }
 
-export function createBookmark(id: string) {
+function createBookmark(id: string) {
   const bookmark = document.createElement("span");
   bookmark.textContent = "🔖";
   bookmark.id = id;
   return bookmark;
-}
-
-export function removeBookmark(id?: string) {
-  if (id) {
-    document.getElementById(id)?.remove();
-  }
 }
 
 export async function gotoBookmark() {

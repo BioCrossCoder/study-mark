@@ -88,7 +88,8 @@ export type ChatAIMessageItem =
 export type ChatHistoryMessage = ChatHumanMessage | ChatAIMessage;
 
 export type Comment = {
+  id: string;
   url: string;
-  xpath: string;
+  range: XPathRange;
   content: string;
 };
