@@ -1,5 +1,6 @@
 import BackgroundPanel from "@/components/common/BackgroundPanel";
 import ChatWindow from "@/components/sidepanel/ChatWindow";
+import CommentHistoryList from "@/components/sidepanel/CommentHistoryList";
 import LibraryList from "@/components/sidepanel/LibraryList";
 import LibraryListHeader from "@/components/sidepanel/LibraryListHeader";
 import TargetList from "@/components/sidepanel/TargetList";
@@ -61,6 +62,9 @@ export default function App() {
               </AccordionTab>
               <AccordionTab header={<LibraryListHeader />}>
                 <LibraryList />
+              </AccordionTab>
+              <AccordionTab header="Comment History">
+                <CommentHistoryList />
               </AccordionTab>
             </Accordion>
           </TabPanel>
