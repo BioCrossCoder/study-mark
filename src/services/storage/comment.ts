@@ -26,13 +26,11 @@ export async function updateComment(id: string, content: string) {
   }
 }
 
-export const emptyCommentPlaceholder = "\n";
-
 export async function removeComment(id: string) {
   const data = await commentData.getValue();
   const index = data.findIndex((item) => item.id === id);
   if (index !== -1) {
-    data[index].content = emptyCommentPlaceholder;
+    data.splice(index, 1);
     await commentData.setValue(data);
   }
 }

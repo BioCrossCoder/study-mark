@@ -65,3 +65,15 @@ export function positionMatch(p1: string, p2: string) {
     new RegExp(`^${p2}${SUFFIX_RE.source}$`).test(p1)
   );
 }
+
+export function registerSingleUseMutationHandler(callback: () => void) {
+  const observer = new MutationObserver(() => {
+    callback();
+    observer.disconnect();
+  });
+  observer.observe(document, {
+    childList: true,
+    subtree: true,
+    characterData: true,
+  });
+}

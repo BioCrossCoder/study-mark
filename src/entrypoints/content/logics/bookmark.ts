@@ -1,3 +1,4 @@
+import { registerSingleUseMutationHandler } from "@/common/utils";
 import {
   getTaskByName,
   getTasksByPositionUrl,
@@ -19,7 +20,7 @@ export async function loadBookmark() {
     return;
   }
   const { id, xpath, offset } = bookmark;
-  const observer = new MutationObserver(() => {
+  registerSingleUseMutationHandler(() => {
     if (!document.getElementById(id)) {
       const anchor = tryInsertBookmark(xpath, offset, id);
       if (anchor) {
@@ -30,12 +31,6 @@ export async function loadBookmark() {
         });
       }
     }
-    observer.disconnect();
-  });
-  observer.observe(document, {
-    childList: true,
-    subtree: true,
-    characterData: true,
   });
 }
 
