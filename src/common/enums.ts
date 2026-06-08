@@ -24,14 +24,14 @@ export const statusIcon = {
 
 export const enum ContextMenuItemID {
   UpdateProgress = "study-mark-update-progress",
-  SetComment = "study-mark-set-comment",
+  AddComment = "study-mark-add-comment",
 }
 
 export const enum MessageID {
   SaveProgress = "SAVE_PROGRESS",
   LoadProgress = "LOAD_PROGRESS",
   GotoProgress = "GOTO_PROGRESS",
-  SaveComment = "SAVE_COMMENT",
+  AddComment = "ADD_COMMENT",
   LoadComment = "LOAD_COMMENT",
 }
 

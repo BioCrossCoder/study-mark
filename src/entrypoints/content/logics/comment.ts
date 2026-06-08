@@ -1,17 +1,33 @@
 import { fromRange, toRange } from "xpath-range";
 import tippy from "tippy.js";
 import {
-  addComment,
+  insertComment,
   getCommentsByUrl,
   removeComment,
   updateComment,
 } from "@/services/storage/comment";
 import { registerSingleUseMutationHandler } from "@/common/utils";
 
+const commentLineCssClassName = "study-mark-comment-line";
+
+export function injectCommentLineStyle() {
+  const style = document.createElement("style");
+  style.innerHTML = /*css*/ `
+    .${commentLineCssClassName} {
+      height: 3px;
+      background-color: orange;
+      position: absolute;
+      border-radius: 2px;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
 export async function loadComments() {
   if (!document.body) {
     return;
   }
+  injectCommentLineStyle();
   const comments = await getCommentsByUrl(window.location.href);
   for (const comment of comments) {
     const { start, startOffset, end, endOffset } = comment.range;
@@ -24,7 +40,7 @@ export async function loadComments() {
   }
 }
 
-export async function saveComment() {
+export async function addComment() {
   const selection = window.getSelection();
   if (!selection || selection.rangeCount === 0) {
     return;
@@ -51,7 +67,7 @@ export async function saveComment() {
     return;
   }
   // [SaveCommentBlockData]
-  await addComment({
+  await insertComment({
     id: result.id,
     url: window.location.href,
     content,
@@ -60,21 +76,22 @@ export async function saveComment() {
 }
 
 function tryInsertCommentBlock(id: string, range: Range, content: string) {
-  const comment = document.createElement("mark");
+  const comment = document.createElement("div");
   comment.id = id;
+  comment.className = commentLineCssClassName;
   const rect = range.getBoundingClientRect();
-  const parent = range.commonAncestorContainer.parentElement!;
-  const parentRect =
-    range.commonAncestorContainer.parentElement?.getBoundingClientRect()!;
-  parent.style.position = "relative";
-  comment.style.position = "absolute";
-  comment.style.opacity = "0.5";
-  comment.style.height = rect.height + "px";
   comment.style.width = rect.width + "px";
-  comment.style.left = rect.left - parentRect.left + "px";
-  comment.style.top = rect.top - parentRect.top + "px";
-  parent.appendChild(comment);
-  const inst = tippy(`#${id}`, { content }).at(0)!;
+  try {
+    const parent = range.commonAncestorContainer.parentElement!;
+    const parentRect = parent.getBoundingClientRect()!;
+    parent.style.position = "relative";
+    comment.style.left = rect.left - parentRect.left + "px";
+    comment.style.top = rect.top - parentRect.top + rect.height + "px";
+    parent.appendChild(comment);
+  } catch (e) {
+    return e as Error;
+  }
+  const inst = tippy(`#${id}`, { content, placement: "bottom" }).at(0)!;
   comment.onclick = async () => {
     const content = window.prompt(
       "Update this comment or leave empty to remove it?",

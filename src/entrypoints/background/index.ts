@@ -29,11 +29,11 @@ export default defineBackground(async () => {
       },
     );
     registerContextMenuItem(
-      ContextMenuItemID.SetComment,
-      "Set Comment",
+      ContextMenuItemID.AddComment,
+      "Add Comment",
       [browser.contextMenus.ContextType.SELECTION],
       (_, tab) => {
-        sendMessage(MessageID.SaveComment, null, {
+        sendMessage(MessageID.AddComment, null, {
           context: "content-script",
           tabId: tab?.id ?? browser.tabs.TAB_ID_NONE,
         });

@@ -11,7 +11,7 @@ export async function getCommentsByUrl(url: string) {
   return data.filter((item) => positionMatch(url, item.url));
 }
 
-export async function addComment(comment: Comment) {
+export async function insertComment(comment: Comment) {
   const data = await commentData.getValue();
   data.push(comment);
   await commentData.setValue(data);
