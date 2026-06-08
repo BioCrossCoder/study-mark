@@ -7,6 +7,13 @@ type XPathRange = {
 
 declare module "xpath-range" {
   export function fromRange(range: Range): XPathRange;
+  export function toRange(
+    start: string,
+    startOffset: number,
+    end: string,
+    endOffset: number,
+    root?,
+  ): Range;
 }
 
 // https://github.com/hemanth/mcp-web-bridge

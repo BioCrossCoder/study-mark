@@ -1,7 +1,9 @@
-import { fromRange } from "xpath-range";
-import tippy, { Instance } from "tippy.js";
+import { fromRange, toRange } from "xpath-range";
+import tippy from "tippy.js";
 import {
   addComment,
+  emptyCommentPlaceholder,
+  getCommentsByUrl,
   removeComment,
   updateComment,
 } from "@/services/storage/comment";
@@ -12,16 +14,32 @@ function injectCommentBlockStyle() {
   const style = document.createElement("style");
   style.innerHTML = /*css*/ `
     .${commentBlockCssClassName} {
-      border: solid 1px yellow;
+      border: solid 1px orange;
     }
   `;
   document.head.appendChild(style);
 }
 
-export function loadComments() {
+export async function loadComments() {
   injectCommentBlockStyle();
-  // TODO
-  console.log("load comments");
+  if (!document.body) {
+    return;
+  }
+  const comments = await getCommentsByUrl(window.location.href);
+  for (const comment of comments) {
+    const { start, startOffset, end, endOffset } = comment.range;
+    const range = toRange(start, startOffset, end, endOffset, document);
+    if (comment.content === emptyCommentPlaceholder) {
+      insertPlaceholder(range);
+    } else {
+      insertCommentBlock(comment.id, range, comment.content);
+    }
+  }
+}
+
+function insertPlaceholder(range: Range) {
+  const comment = document.createElement("span");
+  range.surroundContents(comment);
 }
 
 export async function saveComment() {
@@ -29,14 +47,20 @@ export async function saveComment() {
   if (!selection || selection.rangeCount === 0) {
     return;
   }
-  const range = selection.getRangeAt(0);
+  const selectionRange = selection.getRangeAt(0);
   // [AvoidCommentBlockOverlap]
   if (
     [...document.getElementsByClassName(commentBlockCssClassName)].some(
-      (item) => range.intersectsNode(item),
+      (item) => selectionRange.intersectsNode(item),
     )
   ) {
     window.alert("Comment blocks cannot overlap!");
+    return;
+  } // [/]
+  // [AvoidCommentBlockCrossElement]
+  const range = fromRange(selectionRange);
+  if (range.start !== range.end) {
+    window.alert("Comment blocks cannot cross paragraph");
     return;
   } // [/]
   const content = window.prompt("Enter comment content");
@@ -46,7 +70,7 @@ export async function saveComment() {
   // [InsertCommentBlock]
   const commentBlock = insertCommentBlock(
     `study-mark-${crypto.randomUUID()}-${Date.now()}`,
-    range,
+    selectionRange,
     content,
   ); // [/]
   // [SaveCommentBlockData]
@@ -54,7 +78,7 @@ export async function saveComment() {
     id: commentBlock.id,
     url: window.location.href,
     content,
-    range: fromRange(range),
+    range,
   }); // [/]
 }
 
