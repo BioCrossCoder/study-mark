@@ -89,7 +89,7 @@ function DataItem(data: Task) {
               <UpdateTaskDialog
                 close={() => setVisible(false)}
                 data={data}
-                relatedItemIds={relations[id]}
+                relatedItemIds={relations[id] ?? []}
               />
             )}
             <i

@@ -73,7 +73,7 @@ function DataItem(data: Target) {
               <UpdateTargetDialog
                 close={() => setVisible(false)}
                 data={data}
-                relatedItemIds={relations[id]}
+                relatedItemIds={relations[id] ?? []}
               />
             )}
             <i
