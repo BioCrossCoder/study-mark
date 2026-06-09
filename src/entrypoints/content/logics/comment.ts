@@ -95,6 +95,7 @@ function tryInsertCommentBlock(id: string, range: Range, content: string) {
   comment.onclick = async () => {
     const content = window.prompt(
       "Update this comment or leave empty to remove it?",
+      inst.popper.textContent,
     );
     if (content === null) {
       return;
