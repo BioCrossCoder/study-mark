@@ -33,7 +33,10 @@ export default function CreatePlanDialog(props: {
     if (!form) {
       return new Error("Empty Plan");
     }
-    return await createPlan(form);
+    const result = await createPlan(form);
+    if (!Error.isError(result)) {
+      props.close();
+    }
   }
 
   async function handleRetry() {
