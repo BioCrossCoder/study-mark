@@ -15,7 +15,7 @@ import {
 } from "@/services/storage/chatHistory";
 import { ChatHumanMessage } from "@/common/types";
 
-export default defineBackground(async () => {
+export default defineBackground(() => {
   browser.runtime.onInstalled.addListener(() => {
     registerContextMenuItem(
       ContextMenuItemID.UpdateProgress,
