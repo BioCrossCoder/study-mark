@@ -7,3 +7,9 @@ export const libraryData = storage.defineItem<Record<string, Library>>(
     fallback: {},
   },
 );
+
+export async function removeLibrary(id: string) {
+  const data = await libraryData.getValue();
+  delete data[id];
+  await libraryData.setValue(data);
+}

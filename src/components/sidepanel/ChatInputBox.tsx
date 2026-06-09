@@ -1,12 +1,12 @@
 import { AgentMode, Signal } from "@/common/enums";
 import { ChatMessage } from "@/common/types";
-import { useChatLoadingQuery } from "@/services/chatLoading";
+import { useChatLoadingData } from "@/services/chatLoading";
 import { Sender } from "@ant-design/x";
 
 export default function ChatInputBox() {
   const [question, setQuestion] = useState("");
   const isQuestionEmpty = useMemo(() => question.length === 0, [question]);
-  const { data: loading } = useChatLoadingQuery();
+  const loading = useChatLoadingData();
   function handleSubmit() {
     const message: ChatMessage = {
       mode: AgentMode.Plan,

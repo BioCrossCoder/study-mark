@@ -1,31 +1,16 @@
-import { ExecStatus, StoreKey } from "@/common/enums";
+import { ExecStatus } from "@/common/enums";
 import { statusSchema, taskSchema } from "@/common/schemas";
 import { Task } from "@/common/types";
 import { isItemExist, mergeObj } from "@/common/utils";
 import { taskData } from "@/services/storage/task";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import { Toast } from "primereact/toast";
 import { RefObject } from "react";
 
-export function useTaskQuery() {
-  return useQuery({
-    queryKey: [StoreKey.Task],
-    queryFn: taskData.getValue,
-  });
-}
-
-export function useTaskMutation() {
-  const { refetch } = useTaskQuery();
-  return useMutation({
-    mutationFn: taskData.setValue,
-    onSuccess() {
-      refetch();
-    },
-  });
+export function useTaskData() {
+  return useWxtStore(taskData);
 }
 
 export function useCreateTask(toast: RefObject<Toast | null>) {
-  const { mutate } = useTaskMutation();
   return async (params: {
     name: string;
     description: string;
@@ -75,27 +60,18 @@ export function useCreateTask(toast: RefObject<Toast | null>) {
       return error;
     }
     tasks[id] = data;
-    mutate(tasks);
+    await taskData.setValue(tasks);
     return id;
   };
 }
 
-export function useRemoveTask() {
-  const { mutate } = useTaskMutation();
-  return async (id: string) => {
-    const data = await taskData.getValue();
-    delete data[id];
-    mutate(data);
-  };
-}
-
 export function useTaskDetail(id: string) {
-  const { data } = useTaskQuery();
+  const data = useTaskData();
   return (data ?? {})[id];
 }
 
 export function useTaskOptions() {
-  const { data } = useTaskQuery();
+  const data = useTaskData();
   return Object.values(data ?? {}).map((item) => ({
     name: item.name,
     code: item.id,
@@ -103,7 +79,6 @@ export function useTaskOptions() {
 }
 
 export function useUpdateTask(toast: RefObject<Toast | null>) {
-  const { mutate } = useTaskMutation();
   return async (
     id: string,
     params: {
@@ -148,20 +123,19 @@ export function useUpdateTask(toast: RefObject<Toast | null>) {
       return error;
     }
     tasks[id] = data;
-    mutate(tasks);
+    await taskData.setValue(tasks);
     return id;
   };
 }
 
 export function useTaskNames() {
-  const { data } = useTaskQuery();
+  const data = useTaskData();
   return Object.values(data ?? {})
     .map(({ id, name }) => ({ [id]: name }))
     .reduce(mergeObj, {});
 }
 
 export function useUpdateTaskStatus(toast: RefObject<Toast | null>) {
-  const { mutate } = useTaskMutation();
   return async (id: string, status: ExecStatus) => {
     const tasks = await taskData.getValue();
     const summary = "Update Task status Failed";
@@ -185,7 +159,7 @@ export function useUpdateTaskStatus(toast: RefObject<Toast | null>) {
       return error;
     }
     tasks[id].status = data;
-    mutate(tasks);
+    await taskData.setValue(tasks);
     return id;
   };
 }

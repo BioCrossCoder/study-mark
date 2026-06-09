@@ -2,11 +2,11 @@ import { Toast } from "primereact/toast";
 import FormDialog from "../common/FormDialog";
 import { useTaskOptions } from "@/services/task";
 import { useCreateTarget } from "@/services/target";
-import { useCreateRelations } from "@/services/relation";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { MultiSelect } from "primereact/multiselect";
 import { useId } from "react";
+import { createRelations } from "@/services/storage/relation";
 
 export default function CreateTargetDialog(props: { close: () => void }) {
   const [name, setName] = useState("");
@@ -18,7 +18,6 @@ export default function CreateTargetDialog(props: { close: () => void }) {
   const options = useTaskOptions();
   const toast = useRef(null);
   const createTarget = useCreateTarget(toast);
-  const createRelations = useCreateRelations();
   async function handleSubmit() {
     const result = await createTarget({ name, description });
     if (Error.isError(result)) {

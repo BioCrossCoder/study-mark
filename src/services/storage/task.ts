@@ -40,3 +40,9 @@ export async function updateTaskProgress(
   });
   await taskData.setValue(data);
 }
+
+export async function removeTask(id: string) {
+  const data = await taskData.getValue();
+  delete data[id];
+  await taskData.setValue(data);
+}

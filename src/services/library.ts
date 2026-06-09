@@ -1,31 +1,16 @@
-import { StoreKey } from "@/common/enums";
 import { librarySchema } from "@/common/schemas";
 import { Library } from "@/common/types";
 import { isItemExist } from "@/common/utils";
+import { useWxtStore } from "@/hooks/useWxtStore";
 import { libraryData } from "@/services/storage/library";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import { Toast } from "primereact/toast";
 import { RefObject } from "react";
 
-export function useLibraryQuery() {
-  return useQuery({
-    queryKey: [StoreKey.Library],
-    queryFn: libraryData.getValue,
-  });
-}
-
-export function useLibraryMutation() {
-  const { refetch } = useLibraryQuery();
-  return useMutation({
-    mutationFn: libraryData.setValue,
-    onSuccess() {
-      refetch();
-    },
-  });
+export function useLibraryData() {
+  return useWxtStore(libraryData);
 }
 
 export function useCreateLibrary(toast: RefObject<Toast | null>) {
-  const { mutate } = useLibraryMutation();
   return async (params: {
     name: string;
     description: string;
@@ -70,27 +55,17 @@ export function useCreateLibrary(toast: RefObject<Toast | null>) {
       return error;
     }
     libraries[id] = data;
-    mutate(libraries);
+    await libraryData.setValue(libraries);
     return id;
   };
 }
 
-export function useRemoveLibrary() {
-  const { mutate } = useLibraryMutation();
-  return async (id: string) => {
-    const data = await libraryData.getValue();
-    delete data[id];
-    mutate(data);
-  };
-}
-
 export function useLibraryDetail(id: string) {
-  const { data } = useLibraryQuery();
+  const data = useLibraryData();
   return (data ?? {})[id];
 }
 
 export function useUpdateLibrary(toast: RefObject<Toast | null>) {
-  const { mutate } = useLibraryMutation();
   return async (
     id: string,
     params: {
@@ -136,7 +111,7 @@ export function useUpdateLibrary(toast: RefObject<Toast | null>) {
       return error;
     }
     libraries[id] = data;
-    mutate(libraries);
+    await libraryData.setValue(libraries);
     return id;
   };
 }

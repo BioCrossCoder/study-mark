@@ -7,8 +7,8 @@ import { tryFormatAsJson } from "@/common/utils";
 import { AgentMode } from "@/common/enums";
 import { Button } from "primereact/button";
 import CreatePlanDialog from "./CreatePlanDialog";
-import { useChatLoadingQuery } from "@/services/chatLoading";
 import { Toast } from "primereact/toast";
+import { useChatLoadingData } from "@/services/chatLoading";
 
 export default function ChatBubble(props: {
   message: ChatHistoryMessage;
@@ -18,7 +18,7 @@ export default function ChatBubble(props: {
   const header = message.type === "human" ? "User" : "Agent";
   const sender = message.type === "human" ? "pi pi-user" : "pi pi-microchip-ai";
   const placement = message.type === "human" ? "start" : "end";
-  const { data: loading } = useChatLoadingQuery();
+  const loading = useChatLoadingData();
   const canCreatePlan =
     message.type === "ai" &&
     message.mode === AgentMode.Plan &&

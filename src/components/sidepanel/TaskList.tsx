@@ -1,35 +1,24 @@
 import { statusIcon } from "@/common/enums";
 import { Task } from "@/common/types";
 import { sortBy } from "@/common/utils";
-import {
-  useRemoveTask,
-  useTaskQuery,
-  useUpdateTaskStatus,
-} from "@/services/task";
+import { useTaskData, useUpdateTaskStatus } from "@/services/task";
 import { Card } from "primereact/card";
 import { confirmPopup, ConfirmPopup } from "primereact/confirmpopup";
 import { DataView } from "primereact/dataview";
 import { Toast } from "primereact/toast";
 import UpdateTaskDialog from "./UpdateTaskDialog";
 import { Tag } from "primereact/tag";
-import {
-  useRelationsOfAllTasks,
-  useRemoveRelationsOfTask,
-} from "@/services/relation";
+import { useRelationsOfAllTasks } from "@/services/relation";
 import { useTargetNames } from "@/services/target";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
-import { taskData } from "@/services/storage/task";
+import { removeRelationsOfTask } from "@/services/storage/relation";
+import { removeTask } from "@/services/storage/task";
 
 export default function TaskList() {
-  const { data, refetch, dataUpdatedAt } = useTaskQuery();
-  useEffect(() =>
-    taskData.watch(() => {
-      refetch();
-    }),
-  );
+  const data = useTaskData();
   const list = useMemo(
     () => (data ? Object.values(data).toSorted(sortBy("lastVisit")) : []),
-    [dataUpdatedAt],
+    [data],
   );
   return <DataView value={list} itemTemplate={DataItem} rows={list.length} />;
 }
@@ -52,8 +41,6 @@ function DataItem(data: Task) {
   const relations = useRelationsOfAllTasks();
   const targetNames = useTargetNames();
 
-  const removeTask = useRemoveTask();
-  const removeRelations = useRemoveRelationsOfTask();
   function handleRemove(event: React.MouseEvent<HTMLElement>) {
     confirmPopup({
       target: event.currentTarget,
@@ -63,7 +50,7 @@ function DataItem(data: Task) {
       acceptClassName: "p-button-danger",
       accept: async () => {
         await removeTask(id);
-        await removeRelations(id);
+        await removeRelationsOfTask(id);
       },
     });
   }

@@ -1,16 +1,17 @@
 import { Library } from "@/common/types";
 import { sortBy } from "@/common/utils";
-import { useLibraryQuery, useRemoveLibrary } from "@/services/library";
+import { useLibraryData } from "@/services/library";
 import { Card } from "primereact/card";
 import { ConfirmPopup, confirmPopup } from "primereact/confirmpopup";
 import { DataView } from "primereact/dataview";
 import UpdateLibraryDialog from "./UpdateLibraryDialog";
+import { removeLibrary } from "@/services/storage/library";
 
 export default function LibraryList() {
-  const { data, dataUpdatedAt } = useLibraryQuery();
+  const data = useLibraryData();
   const list = useMemo(
     () => (data ? Object.values(data).toSorted(sortBy("createdAt")) : []),
-    [dataUpdatedAt],
+    [data],
   );
   return <DataView value={list} itemTemplate={DataItem} rows={list.length} />;
 }
@@ -19,7 +20,6 @@ function DataItem(data: Library) {
   const { id, name, description, source } = data;
   const [visible, setVisible] = useState(false);
 
-  const removeLibrary = useRemoveLibrary();
   function handleRemove(event: React.MouseEvent<HTMLElement>) {
     confirmPopup({
       target: event.currentTarget,

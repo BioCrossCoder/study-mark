@@ -8,13 +8,13 @@ import TargetListHeader from "@/components/sidepanel/TargetListHeader";
 import TaskList from "@/components/sidepanel/TaskList";
 import TaskListHeader from "@/components/sidepanel/TaskListHeader";
 import { tabIndexData } from "@/services/storage/tabIndex";
-import { useTabIndexQuery } from "@/services/tabIndex";
+import { useTabIndexData } from "@/services/tabIndex";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import { TabPanel, TabView } from "primereact/tabview";
 
 export default function App() {
   const tabView = useRef<TabView>(null);
-  const { data: activeIndex } = useTabIndexQuery();
+  const activeIndex = useTabIndexData();
   const [navHeight, setNavHeight] = useState(0);
   useEffect(() => {
     const nav = tabView.current

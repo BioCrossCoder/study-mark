@@ -7,3 +7,9 @@ export const targetData = storage.defineItem<Record<string, Target>>(
     fallback: {},
   },
 );
+
+export async function removeTarget(id: string) {
+  const data = await targetData.getValue();
+  delete data[id];
+  await targetData.setValue(data);
+}

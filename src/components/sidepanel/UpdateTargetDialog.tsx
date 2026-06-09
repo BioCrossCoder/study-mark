@@ -1,8 +1,4 @@
-import {
-  useCreateRelations,
-  useRelationsOfTarget,
-  useRemoveRelationsOfTarget,
-} from "@/services/relation";
+import { useRelationsOfTarget } from "@/services/relation";
 import { useTargetDetail, useUpdateTarget } from "@/services/target";
 import { useTaskOptions } from "@/services/task";
 import FormDialog from "../common/FormDialog";
@@ -11,6 +7,10 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { MultiSelect } from "primereact/multiselect";
 import { useId } from "react";
+import {
+  createRelations,
+  removeRelationsOfTarget,
+} from "@/services/storage/relation";
 
 export default function UpdateTargetDialog(props: {
   close: () => void;
@@ -30,14 +30,12 @@ export default function UpdateTargetDialog(props: {
 
   const toast = useRef(null);
   const updateTarget = useUpdateTarget(toast);
-  const removeRelations = useRemoveRelationsOfTarget();
-  const createRelations = useCreateRelations();
   async function handleSubmit() {
     const result = await updateTarget(id, { name, description });
     if (Error.isError(result)) {
       return result;
     }
-    await removeRelations(id);
+    await removeRelationsOfTarget(id);
     return await createRelations(
       tasks.map((taskId) => ({
         targetId: result,

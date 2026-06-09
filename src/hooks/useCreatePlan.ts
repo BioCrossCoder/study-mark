@@ -1,5 +1,5 @@
 import { Plan } from "@/common/types";
-import { useCreateRelations } from "@/services/relation";
+import { createRelations } from "@/services/storage/relation";
 import { useCreateTarget } from "@/services/target";
 import { useCreateTask } from "@/services/task";
 import { Toast } from "primereact/toast";
@@ -8,7 +8,6 @@ import { RefObject } from "react";
 export function useCreatePlan(toast: RefObject<Toast | null>) {
   const createTarget = useCreateTarget(toast);
   const createTask = useCreateTask(toast);
-  const createRelations = useCreateRelations();
   return async (plan: Plan) => {
     const targetId = await createTarget(plan.target);
     if (Error.isError(targetId)) {

@@ -1,15 +1,8 @@
 import { statusIcon } from "@/common/enums";
 import { Target } from "@/common/types";
 import { sortBy } from "@/common/utils";
-import {
-  useRelationsOfAllTargets,
-  useRemoveRelationsOfTarget,
-} from "@/services/relation";
-import {
-  useRemoveTarget,
-  useTargetQuery,
-  useUpdateTargetStatus,
-} from "@/services/target";
+import { useRelationsOfAllTargets } from "@/services/relation";
+import { useTargetData, useUpdateTargetStatus } from "@/services/target";
 import { useTaskNames } from "@/services/task";
 import { Card } from "primereact/card";
 import { ConfirmPopup, confirmPopup } from "primereact/confirmpopup";
@@ -18,12 +11,14 @@ import UpdateTargetDialog from "./UpdateTargetDialog";
 import { Tag } from "primereact/tag";
 import { Toast } from "primereact/toast";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
+import { removeRelationsOfTarget } from "@/services/storage/relation";
+import { removeTarget } from "@/services/storage/target";
 
 export default function TargetList() {
-  const { data, dataUpdatedAt } = useTargetQuery();
+  const data = useTargetData();
   const list = useMemo(
     () => (data ? Object.values(data).toSorted(sortBy("createdAt")) : []),
-    [dataUpdatedAt],
+    [data],
   );
   return <DataView value={list} itemTemplate={DataItem} rows={list.length} />;
 }
@@ -35,8 +30,6 @@ function DataItem(data: Target) {
   const relations = useRelationsOfAllTargets();
   const taskNames = useTaskNames();
 
-  const removeTarget = useRemoveTarget();
-  const removeRelations = useRemoveRelationsOfTarget();
   function handleRemove(event: React.MouseEvent<HTMLElement>) {
     confirmPopup({
       target: event.currentTarget,
@@ -46,7 +39,7 @@ function DataItem(data: Target) {
       acceptClassName: "p-button-danger",
       accept: async () => {
         await removeTarget(id);
-        await removeRelations(id);
+        await removeRelationsOfTarget(id);
       },
     });
   }

@@ -1,23 +1,13 @@
-import { StoreKey } from "@/common/enums";
-import { useQuery } from "@tanstack/react-query";
 import { commentData } from "./storage/comment";
 import { positionMatch } from "@/common/utils";
+import { useWxtStore } from "@/hooks/useWxtStore";
 
-export function useCommentQuery() {
-  const query = useQuery({
-    queryKey: [StoreKey.Comment],
-    queryFn: commentData.getValue,
-  });
-  useEffect(() =>
-    commentData.watch(() => {
-      query.refetch();
-    }),
-  );
-  return query;
+export function useCommentData() {
+  return useWxtStore(commentData);
 }
 
 export function useCommentUrls() {
-  const { data } = useCommentQuery();
+  const data = useCommentData();
   const urls = new Array<string>();
   (data ?? []).forEach(({ url }) => {
     if (!urls.some((item) => positionMatch(item, url))) {

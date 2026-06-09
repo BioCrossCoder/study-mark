@@ -5,9 +5,9 @@ import { MultiSelect } from "primereact/multiselect";
 import { useTargetOptions } from "@/services/target";
 import { useCreateTask } from "@/services/task";
 import { Toast } from "primereact/toast";
-import { useCreateRelations } from "@/services/relation";
 import { getCurrentTab } from "@/common/utils";
 import { useId } from "react";
+import { createRelations } from "@/services/storage/relation";
 
 export default function CreateTaskDialog(props: { close: () => void }) {
   const [name, setName] = useState("");
@@ -27,7 +27,6 @@ export default function CreateTaskDialog(props: { close: () => void }) {
 
   const toast = useRef(null);
   const createTask = useCreateTask(toast);
-  const createRelations = useCreateRelations();
   async function handleSubmit() {
     const result = await createTask({ name, description, source });
     if (Error.isError(result)) {

@@ -1,31 +1,16 @@
-import { ExecStatus, StoreKey } from "@/common/enums";
+import { ExecStatus } from "@/common/enums";
 import { statusSchema, targetSchema } from "@/common/schemas";
 import { Target } from "@/common/types";
 import { isItemExist, mergeObj } from "@/common/utils";
 import { targetData } from "@/services/storage/target";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import { Toast } from "primereact/toast";
 import { RefObject } from "react";
 
-export function useTargetQuery() {
-  return useQuery({
-    queryKey: [StoreKey.Target],
-    queryFn: targetData.getValue,
-  });
-}
-
-export function useTargetMutation() {
-  const { refetch } = useTargetQuery();
-  return useMutation({
-    mutationFn: targetData.setValue,
-    onSuccess() {
-      refetch();
-    },
-  });
+export function useTargetData() {
+  return useWxtStore(targetData);
 }
 
 export function useCreateTarget(toast: RefObject<Toast | null>) {
-  const { mutate } = useTargetMutation();
   return async (params: { name: string; description: string }) => {
     const targets = await targetData.getValue();
     const id = crypto.randomUUID();
@@ -67,27 +52,18 @@ export function useCreateTarget(toast: RefObject<Toast | null>) {
       return error;
     }
     targets[id] = data;
-    mutate(targets);
+    await targetData.setValue(targets);
     return id;
   };
 }
 
-export function useRemoveTarget() {
-  const { mutate } = useTargetMutation();
-  return async (id: string) => {
-    const data = await targetData.getValue();
-    delete data[id];
-    mutate(data);
-  };
-}
-
 export function useTargetDetail(id: string) {
-  const { data } = useTargetQuery();
+  const data = useTargetData();
   return (data ?? {})[id];
 }
 
 export function useTargetOptions() {
-  const { data } = useTargetQuery();
+  const data = useTargetData();
   return Object.values(data ?? {}).map((item) => ({
     name: item.name,
     code: item.id,
@@ -95,7 +71,6 @@ export function useTargetOptions() {
 }
 
 export function useUpdateTarget(toast: RefObject<Toast | null>) {
-  const { mutate } = useTargetMutation();
   return async (
     id: string,
     params: {
@@ -140,20 +115,19 @@ export function useUpdateTarget(toast: RefObject<Toast | null>) {
       return error;
     }
     targets[id] = data;
-    mutate(targets);
+    await targetData.setValue(targets);
     return id;
   };
 }
 
 export function useTargetNames() {
-  const { data } = useTargetQuery();
+  const data = useTargetData();
   return Object.values(data ?? {})
     .map(({ id, name }) => ({ [id]: name }))
     .reduce(mergeObj, {});
 }
 
 export function useUpdateTargetStatus(toast: RefObject<Toast | null>) {
-  const { mutate } = useTargetMutation();
   return async (id: string, status: ExecStatus) => {
     const targets = await targetData.getValue();
     const summary = "Update Target status Failed";
@@ -177,7 +151,7 @@ export function useUpdateTargetStatus(toast: RefObject<Toast | null>) {
       return error;
     }
     targets[id].status = data;
-    mutate(targets);
+    await targetData.setValue(targets);
     return id;
   };
 }

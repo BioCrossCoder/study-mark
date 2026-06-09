@@ -1,9 +1,5 @@
 import { Panel } from "primereact/panel";
 import { InputText } from "primereact/inputtext";
-import {
-  useModelConfigMutation,
-  useModelConfigQuery,
-} from "@/services/modelConfig";
 import { ModelProviderProtocol } from "@/common/enums";
 import { ModelConfig } from "@/common/types";
 import { modelConfigSchema } from "@/common/schemas";
@@ -11,9 +7,10 @@ import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import { useId } from "react";
+import { modelConfigData } from "@/services/storage/modelConfig";
+import { useModelConfigData } from "@/services/modelConfig";
 
 export default function ModelConfigDialog() {
-  const { data, dataUpdatedAt } = useModelConfigQuery();
   const [protocol, setProtocol] = useState(ModelProviderProtocol.OpenAI);
   const protocolId = useId();
   const [baseURL, setBaseURL] = useState("");
@@ -22,20 +19,22 @@ export default function ModelConfigDialog() {
   const modelId = useId();
   const [apiKey, setApiKey] = useState("");
   const keyId = useId();
-  useEffect(() => {
-    setProtocol(data?.protocol ?? protocol);
-    setBaseURL(data?.baseURL ?? baseURL);
-    setModel(data?.model ?? model);
-    setApiKey(data?.apiKey ?? apiKey);
-  }, [dataUpdatedAt]);
 
-  const { mutate } = useModelConfigMutation();
+  const data = useModelConfigData();
+  useEffect(() => {
+    setProtocol(data.protocol);
+    setBaseURL(data.baseURL);
+    setModel(data.model);
+    setApiKey(data.apiKey);
+  }, [data]);
+
   const toast = useRef<Toast | null>(null);
+
   async function handleSubmit() {
     const form: ModelConfig = { protocol, baseURL, model, apiKey };
     const { success, data, error } = modelConfigSchema.safeParse(form);
     if (success) {
-      mutate(data);
+      await modelConfigData.setValue(data);
       toast.current?.show({
         severity: "success",
         summary: "Update Model Config Succeeded",
