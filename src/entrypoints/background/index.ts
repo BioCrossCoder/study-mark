@@ -74,14 +74,17 @@ export default defineBackground(async () => {
       await chatLoadingData.setValue(true);
       switch (mode) {
         case AgentMode.Plan:
-          await plannerAgent.run(content);
+          const result = await plannerAgent.run(content);
+          const notice = Error.isError(result) ? "Failed" : "Succeeded";
+          const message = Error.isError(result)
+            ? result.message
+            : content.slice(0, 100) + (content.length > 100 ? "..." : "");
           await chatLoadingData.setValue(false);
           browser.notifications.create({
             type: "basic",
             iconUrl: "icon/48.png",
-            title: "Study Plan Generation Finished",
-            message:
-              content.slice(0, 100) + (content.length > 100 ? "..." : ""),
+            title: `Study Plan Generation ${notice}`,
+            message,
           });
           break;
         case AgentMode.Chat:

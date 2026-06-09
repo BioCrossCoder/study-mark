@@ -25,18 +25,21 @@ async function run(content: string) {
   let finish = false;
   const config = await modelConfigData.getValue();
   const agent = await createPlannerAgent(config);
+  let err: Error | null = null;
   for (let i = 0; i < 3; i++) {
     if (finish) {
       break;
     }
     try {
+      err = null;
       await execAgentLoop(
         agent,
         [new HumanMessage(content)],
         abortController,
         (message) => updateHistory(message, AgentMode.Plan),
       );
-    } catch {
+    } catch (e) {
+      err = e as Error;
     } finally {
       finish =
         abortController.end() ||
@@ -45,6 +48,7 @@ async function run(content: string) {
     }
   }
   plannerAgent.stop();
+  return err;
 }
 
 async function createPlannerAgent(config: ModelConfig) {
