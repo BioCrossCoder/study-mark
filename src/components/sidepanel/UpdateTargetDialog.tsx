@@ -1,5 +1,4 @@
-import { useRelationsOfTarget } from "@/services/relation";
-import { useTargetDetail, useUpdateTarget } from "@/services/target";
+import { useUpdateTarget } from "@/services/target";
 import { useTaskOptions } from "@/services/task";
 import FormDialog from "../common/FormDialog";
 import { Toast } from "primereact/toast";
@@ -11,31 +10,31 @@ import {
   createRelations,
   removeRelationsOfTarget,
 } from "@/services/storage/relation";
+import { Target } from "@/common/types";
 
 export default function UpdateTargetDialog(props: {
   close: () => void;
-  id: string;
+  data: Target;
+  relatedItemIds: string[];
 }) {
-  const { id, close } = props;
-  const target = useTargetDetail(id);
-  const [name, setName] = useState(target.name);
+  const { data, close, relatedItemIds } = props;
+  const [name, setName] = useState(data.name);
   const nameId = useId();
-  const [description, setDescription] = useState(target.description);
+  const [description, setDescription] = useState(data.description);
   const descriptionId = useId();
 
-  const relations = useRelationsOfTarget(target.id);
-  const [tasks, setTasks] = useState(relations.map(({ taskId }) => taskId));
+  const [tasks, setTasks] = useState(relatedItemIds);
   const tasksId = useId();
   const options = useTaskOptions();
 
   const toast = useRef(null);
   const updateTarget = useUpdateTarget(toast);
   async function handleSubmit() {
-    const result = await updateTarget(id, { name, description });
+    const result = await updateTarget(data.id, { name, description });
     if (Error.isError(result)) {
       return result;
     }
-    await removeRelationsOfTarget(id);
+    await removeRelationsOfTarget(data.id);
     return await createRelations(
       tasks.map((taskId) => ({
         targetId: result,

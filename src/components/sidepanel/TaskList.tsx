@@ -86,7 +86,11 @@ function DataItem(data: Task) {
               onClick={() => setVisible(true)}
             />
             {visible && (
-              <UpdateTaskDialog close={() => setVisible(false)} id={id} />
+              <UpdateTaskDialog
+                close={() => setVisible(false)}
+                data={data}
+                relatedItemIds={relations[id]}
+              />
             )}
             <i
               className="pi pi-trash hover:cursor-pointer hover:text-red-400"

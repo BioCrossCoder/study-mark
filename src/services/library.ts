@@ -60,11 +60,6 @@ export function useCreateLibrary(toast: RefObject<Toast | null>) {
   };
 }
 
-export function useLibraryDetail(id: string) {
-  const data = useLibraryData();
-  return (data ?? {})[id];
-}
-
 export function useUpdateLibrary(toast: RefObject<Toast | null>) {
   return async (
     id: string,

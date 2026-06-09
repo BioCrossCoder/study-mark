@@ -70,7 +70,11 @@ function DataItem(data: Target) {
               onClick={() => setVisible(true)}
             />
             {visible && (
-              <UpdateTargetDialog close={() => setVisible(false)} id={id} />
+              <UpdateTargetDialog
+                close={() => setVisible(false)}
+                data={data}
+                relatedItemIds={relations[id]}
+              />
             )}
             <i
               className="pi pi-trash hover:cursor-pointer hover:text-red-400"

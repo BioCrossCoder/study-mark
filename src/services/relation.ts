@@ -4,16 +4,6 @@ export function useRelationData() {
   return useWxtStore(relationData);
 }
 
-export function useRelationsOfTask(id: string) {
-  const data = useRelationData();
-  return (data ?? []).filter(({ taskId }) => taskId === id);
-}
-
-export function useRelationsOfTarget(id: string) {
-  const data = useRelationData();
-  return (data ?? []).filter(({ targetId }) => targetId === id);
-}
-
 export function useRelationsOfAllTasks() {
   const data = useRelationData();
   const records = {} as Record<string, string[]>;

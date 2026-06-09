@@ -47,7 +47,10 @@ function DataItem(data: Library) {
               onClick={() => setVisible(true)}
             />
             {visible && (
-              <UpdateLibraryDialog close={() => setVisible(false)} id={id} />
+              <UpdateLibraryDialog
+                close={() => setVisible(false)}
+                data={data}
+              />
             )}
             <i
               className="pi pi-trash hover:cursor-pointer hover:text-red-400"

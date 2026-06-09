@@ -65,11 +65,6 @@ export function useCreateTask(toast: RefObject<Toast | null>) {
   };
 }
 
-export function useTaskDetail(id: string) {
-  const data = useTaskData();
-  return (data ?? {})[id];
-}
-
 export function useTaskOptions() {
   const data = useTaskData();
   return Object.values(data ?? {}).map((item) => ({

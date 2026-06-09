@@ -1,8 +1,7 @@
 import { Toast } from "primereact/toast";
 import FormDialog from "../common/FormDialog";
-import { useTaskDetail, useUpdateTask } from "@/services/task";
+import { useUpdateTask } from "@/services/task";
 import { InputText } from "primereact/inputtext";
-import { useRelationsOfTask } from "@/services/relation";
 import { useTargetOptions } from "@/services/target";
 import { InputTextarea } from "primereact/inputtextarea";
 import { MultiSelect } from "primereact/multiselect";
@@ -11,33 +10,31 @@ import {
   createRelations,
   removeRelationsOfTask,
 } from "@/services/storage/relation";
+import { Task } from "@/common/types";
 
 export default function UpdateTaskDialog(props: {
   close: () => void;
-  id: string;
+  data: Task;
+  relatedItemIds: string[];
 }) {
-  const { id, close } = props;
-  const task = useTaskDetail(id);
-  const [name, setName] = useState(task.name);
+  const { close, data, relatedItemIds } = props;
+  const [name, setName] = useState(data.name);
   const nameId = useId();
-  const [description, setDescription] = useState(task.description);
+  const [description, setDescription] = useState(data.description);
   const descriptionId = useId();
 
-  const relations = useRelationsOfTask(task.id);
-  const [targets, setTargets] = useState(
-    relations.map(({ targetId }) => targetId),
-  );
+  const [targets, setTargets] = useState(relatedItemIds);
   const targetsId = useId();
   const options = useTargetOptions();
 
   const toast = useRef(null);
   const updateTask = useUpdateTask(toast);
   async function handleSubmit() {
-    const result = await updateTask(id, { name, description });
+    const result = await updateTask(data.id, { name, description });
     if (Error.isError(result)) {
       return result;
     }
-    await removeRelationsOfTask(id);
+    await removeRelationsOfTask(data.id);
     return await createRelations(
       targets.map((targetId) => ({
         targetId,

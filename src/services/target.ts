@@ -57,11 +57,6 @@ export function useCreateTarget(toast: RefObject<Toast | null>) {
   };
 }
 
-export function useTargetDetail(id: string) {
-  const data = useTargetData();
-  return (data ?? {})[id];
-}
-
 export function useTargetOptions() {
   const data = useTargetData();
   return Object.values(data ?? {}).map((item) => ({
