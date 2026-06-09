@@ -43,14 +43,16 @@ export default function FormDialog(props: {
         )
       }
     >
-      {fields.map(({ id, name, item, label }) => (
-        <div className="flex flex-col mb-4" key={name}>
-          <label htmlFor={id} className="text-lg">
-            {label ?? name}
-          </label>
-          {item}
-        </div>
-      ))}
+      <div onKeyDown={(e) => e.stopPropagation()}>
+        {fields.map(({ id, name, item, label }) => (
+          <div className="flex flex-col mb-4" key={name}>
+            <label htmlFor={id} className="text-lg">
+              {label ?? name}
+            </label>
+            {item}
+          </div>
+        ))}
+      </div>
     </Dialog>
   );
 }
