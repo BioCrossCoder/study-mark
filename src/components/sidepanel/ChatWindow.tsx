@@ -61,7 +61,7 @@ export default function ChatWindow() {
             />
           ))}
           <div ref={bottomAnchor} />
-          <ScrollTop target="parent" threshold={0} />
+          <ScrollTop target="parent" threshold={0} className="right-0!" />
         </ScrollPanel>
       )}
       <ChatInputBox />
