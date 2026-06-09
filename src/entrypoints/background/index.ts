@@ -16,30 +16,28 @@ import {
 import { ChatHumanMessage } from "@/common/types";
 
 export default defineBackground(() => {
-  browser.runtime.onInstalled.addListener(() => {
-    registerContextMenuItem(
-      ContextMenuItemID.UpdateProgress,
-      "Save Study Progress",
-      [browser.contextMenus.ContextType.SELECTION],
-      (_, tab) => {
-        sendMessage(MessageID.SaveProgress, null, {
-          context: "content-script",
-          tabId: tab?.id ?? browser.tabs.TAB_ID_NONE,
-        });
-      },
-    );
-    registerContextMenuItem(
-      ContextMenuItemID.AddComment,
-      "Add Comment",
-      [browser.contextMenus.ContextType.SELECTION],
-      (_, tab) => {
-        sendMessage(MessageID.AddComment, null, {
-          context: "content-script",
-          tabId: tab?.id ?? browser.tabs.TAB_ID_NONE,
-        });
-      },
-    );
-  });
+  registerContextMenuItem(
+    ContextMenuItemID.UpdateProgress,
+    "Save Study Progress",
+    [browser.contextMenus.ContextType.SELECTION],
+    async (_, tab) => {
+      await sendMessage(MessageID.SaveProgress, null, {
+        context: "content-script",
+        tabId: tab?.id ?? browser.tabs.TAB_ID_NONE,
+      });
+    },
+  );
+  registerContextMenuItem(
+    ContextMenuItemID.AddComment,
+    "Add Comment",
+    [browser.contextMenus.ContextType.SELECTION],
+    async (_, tab) => {
+      await sendMessage(MessageID.AddComment, null, {
+        context: "content-script",
+        tabId: tab?.id ?? browser.tabs.TAB_ID_NONE,
+      });
+    },
+  );
   browser.tabs.onUpdated.addListener((tabId, info) => {
     if (!info.url) {
       return;

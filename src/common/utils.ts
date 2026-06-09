@@ -30,13 +30,15 @@ export function registerContextMenuItem(
     tab?: globalThis.Browser.tabs.Tab,
   ) => void,
 ) {
-  const itemId = browser.contextMenus.create({
-    id,
-    title,
-    contexts,
+  browser.runtime.onInstalled.addListener(() => {
+    browser.contextMenus.create({
+      id,
+      title,
+      contexts,
+    });
   });
   browser.contextMenus.onClicked.addListener((info, tab) => {
-    if (info.menuItemId === itemId) {
+    if (info.menuItemId === id) {
       callback(info, tab);
     }
   });
