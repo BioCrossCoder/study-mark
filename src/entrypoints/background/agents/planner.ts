@@ -25,6 +25,7 @@ async function run(content: string) {
   let finish = false;
   const config = await modelConfigData.getValue();
   const agent = await createPlannerAgent(config);
+  abortController.init();
   let err: Error | null = null;
   for (let i = 0; i < 3; i++) {
     if (finish) {
