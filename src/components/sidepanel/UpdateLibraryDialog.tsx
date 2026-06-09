@@ -4,6 +4,7 @@ import { InputText } from "primereact/inputtext";
 import { Toast } from "primereact/toast";
 import { InputTextarea } from "primereact/inputtextarea";
 import { useGetWebsiteMetadata } from "@/hooks/useGetWebsiteMetadata";
+import { useId } from "react";
 
 export default function UpdateLibraryDialog(props: {
   close: () => void;
@@ -12,8 +13,11 @@ export default function UpdateLibraryDialog(props: {
   const { id, close } = props;
   const library = useLibraryDetail(id);
   const [name, setName] = useState(library.name);
+  const nameId = useId();
   const [description, setDescription] = useState(library.description);
+  const descriptionId = useId();
   const [source, setSource] = useState(library.source);
+  const sourceId = useId();
   const [loading, setLoading] = useState(false);
   const toast = useRef(null);
   const getWebsiteMetadata = useGetWebsiteMetadata(toast);
@@ -39,10 +43,11 @@ export default function UpdateLibraryDialog(props: {
         onHide={close}
         fields={[
           {
+            id: nameId,
             name: "Name",
             item: (
               <InputText
-                id="name"
+                id={nameId}
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 autoComplete="off"
@@ -52,6 +57,7 @@ export default function UpdateLibraryDialog(props: {
             ),
           },
           {
+            id: sourceId,
             name: "Source",
             label: (
               <div className="flex items-center">
@@ -64,7 +70,7 @@ export default function UpdateLibraryDialog(props: {
             ),
             item: (
               <InputText
-                id="source"
+                id={sourceId}
                 value={source}
                 onChange={(event) => setSource(event.target.value)}
                 autoComplete="off"
@@ -73,10 +79,11 @@ export default function UpdateLibraryDialog(props: {
             ),
           },
           {
+            id: descriptionId,
             name: "Description",
             item: (
               <InputTextarea
-                id="description"
+                id={descriptionId}
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
                 autoComplete="off"

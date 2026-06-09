@@ -7,12 +7,17 @@ import { useCreateTask } from "@/services/task";
 import { Toast } from "primereact/toast";
 import { useCreateRelations } from "@/services/relation";
 import { getCurrentTab } from "@/common/utils";
+import { useId } from "react";
 
 export default function CreateTaskDialog(props: { close: () => void }) {
   const [name, setName] = useState("");
+  const nameId = useId();
   const [description, setDescription] = useState("");
+  const descriptionId = useId();
   const [source, setSource] = useState("");
+  const sourceId = useId();
   const [targets, setTargets] = useState(new Array<string>());
+  const targetsId = useId();
   const options = useTargetOptions();
   async function handleSetSource() {
     const tab = await getCurrentTab();
@@ -42,10 +47,11 @@ export default function CreateTaskDialog(props: { close: () => void }) {
         onHide={props.close}
         fields={[
           {
+            id: nameId,
             name: "Name",
             item: (
               <InputText
-                id="name"
+                id={nameId}
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 autoComplete="off"
@@ -55,10 +61,11 @@ export default function CreateTaskDialog(props: { close: () => void }) {
             ),
           },
           {
+            id: descriptionId,
             name: "Description",
             item: (
               <InputTextarea
-                id="description"
+                id={descriptionId}
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
                 autoComplete="off"
@@ -68,6 +75,7 @@ export default function CreateTaskDialog(props: { close: () => void }) {
             ),
           },
           {
+            id: sourceId,
             name: "Source",
             label: (
               <div className="flex items-center">
@@ -80,7 +88,7 @@ export default function CreateTaskDialog(props: { close: () => void }) {
             ),
             item: (
               <InputText
-                id="source"
+                id={sourceId}
                 value={source}
                 onChange={(event) => setSource(event.target.value)}
                 autoComplete="off"
@@ -89,10 +97,11 @@ export default function CreateTaskDialog(props: { close: () => void }) {
             ),
           },
           {
+            id: targetsId,
             name: "Targets",
             item: (
               <MultiSelect
-                inputId="targets"
+                inputId={targetsId}
                 value={targets}
                 onChange={(event) => setTargets(event.target.value)}
                 options={options}

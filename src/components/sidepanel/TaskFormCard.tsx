@@ -2,6 +2,7 @@ import { Card } from "primereact/card";
 import { Chip } from "primereact/chip";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
+import { useId } from "react";
 
 export default function TaskFormCard(props: {
   value: { name: string; description: string; source: string };
@@ -14,6 +15,9 @@ export default function TaskFormCard(props: {
   onRemove: () => void;
 }) {
   const { value, onChange, order, onRemove } = props;
+  const nameId = useId();
+  const descriptionId = useId();
+  const sourceId = useId();
   return (
     <Card
       className="bg-(--highlight-bg)!"
@@ -29,9 +33,9 @@ export default function TaskFormCard(props: {
     >
       <div className="flex flex-col gap-2">
         <div className="flex flex-col">
-          <label htmlFor={`task_name_${order}`}>Name</label>
+          <label htmlFor={nameId}>Name</label>
           <InputText
-            id={`task_name_${order}`}
+            id={nameId}
             value={value.name}
             onChange={(event) => {
               value.name = event.target.value;
@@ -41,9 +45,9 @@ export default function TaskFormCard(props: {
           />
         </div>
         <div className="flex flex-col">
-          <label htmlFor={`task_description_${order}`}>Description</label>
+          <label htmlFor={descriptionId}>Description</label>
           <InputTextarea
-            id={`task_description_${order}`}
+            id={descriptionId}
             value={value.description}
             onChange={(event) => {
               value.description = event.target.value;
@@ -53,9 +57,9 @@ export default function TaskFormCard(props: {
           />
         </div>
         <div className="flex flex-col">
-          <label htmlFor={`task_source_${order}`}>Source</label>
+          <label htmlFor={sourceId}>Source</label>
           <InputText
-            id={`task_source_${order}`}
+            id={sourceId}
             value={value.source}
             onChange={(event) => {
               value.source = event.target.value;

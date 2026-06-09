@@ -6,11 +6,15 @@ import { useCreateRelations } from "@/services/relation";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { MultiSelect } from "primereact/multiselect";
+import { useId } from "react";
 
 export default function CreateTargetDialog(props: { close: () => void }) {
   const [name, setName] = useState("");
+  const nameId = useId();
   const [description, setDescription] = useState("");
+  const descriptionId = useId();
   const [tasks, setTasks] = useState(new Array<string>());
+  const tasksId = useId();
   const options = useTaskOptions();
   const toast = useRef(null);
   const createTarget = useCreateTarget(toast);
@@ -34,10 +38,11 @@ export default function CreateTargetDialog(props: { close: () => void }) {
         onHide={props.close}
         fields={[
           {
+            id: nameId,
             name: "Name",
             item: (
               <InputText
-                id="name"
+                id={nameId}
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 autoComplete="off"
@@ -47,10 +52,11 @@ export default function CreateTargetDialog(props: { close: () => void }) {
             ),
           },
           {
+            id: descriptionId,
             name: "Description",
             item: (
               <InputTextarea
-                id="description"
+                id={descriptionId}
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
                 autoComplete="off"
@@ -60,10 +66,11 @@ export default function CreateTargetDialog(props: { close: () => void }) {
             ),
           },
           {
+            id: tasksId,
             name: "Tasks",
             item: (
               <MultiSelect
-                inputId="tasks"
+                inputId={tasksId}
                 value={tasks}
                 onChange={(event) => setTasks(event.target.value)}
                 options={options}

@@ -3,6 +3,7 @@ import { Dialog } from "primereact/dialog";
 import { ReactNode } from "react";
 
 type FormField = {
+  id: string;
   name: string;
   label?: ReactNode;
   item: ReactNode;
@@ -42,9 +43,9 @@ export default function FormDialog(props: {
         )
       }
     >
-      {fields.map(({ name, item, label }) => (
+      {fields.map(({ id, name, item, label }) => (
         <div className="flex flex-col mb-4" key={name}>
-          <label htmlFor={name.toLowerCase()} className="text-lg">
+          <label htmlFor={id} className="text-lg">
             {label ?? name}
           </label>
           {item}

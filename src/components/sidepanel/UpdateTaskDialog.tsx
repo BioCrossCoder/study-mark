@@ -10,6 +10,7 @@ import {
 import { useTargetOptions } from "@/services/target";
 import { InputTextarea } from "primereact/inputtextarea";
 import { MultiSelect } from "primereact/multiselect";
+import { useId } from "react";
 
 export default function UpdateTaskDialog(props: {
   close: () => void;
@@ -18,12 +19,15 @@ export default function UpdateTaskDialog(props: {
   const { id, close } = props;
   const task = useTaskDetail(id);
   const [name, setName] = useState(task.name);
+  const nameId = useId();
   const [description, setDescription] = useState(task.description);
+  const descriptionId = useId();
 
   const relations = useRelationsOfTask(task.id);
   const [targets, setTargets] = useState(
     relations.map(({ targetId }) => targetId),
   );
+  const targetsId = useId();
   const options = useTargetOptions();
 
   const toast = useRef(null);
@@ -51,10 +55,11 @@ export default function UpdateTaskDialog(props: {
         onHide={close}
         fields={[
           {
+            id: nameId,
             name: "Name",
             item: (
               <InputText
-                id="name"
+                id={nameId}
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 autoComplete="off"
@@ -64,10 +69,11 @@ export default function UpdateTaskDialog(props: {
             ),
           },
           {
+            id: descriptionId,
             name: "Description",
             item: (
               <InputTextarea
-                id="description"
+                id={descriptionId}
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
                 autoComplete="off"
@@ -77,10 +83,11 @@ export default function UpdateTaskDialog(props: {
             ),
           },
           {
+            id: targetsId,
             name: "Targets",
             item: (
               <MultiSelect
-                inputId="targets"
+                inputId={targetsId}
                 value={targets}
                 onChange={(event) => setTargets(event.target.value)}
                 options={options}

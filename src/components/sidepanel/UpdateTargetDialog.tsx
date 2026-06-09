@@ -10,6 +10,7 @@ import { Toast } from "primereact/toast";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { MultiSelect } from "primereact/multiselect";
+import { useId } from "react";
 
 export default function UpdateTargetDialog(props: {
   close: () => void;
@@ -18,10 +19,13 @@ export default function UpdateTargetDialog(props: {
   const { id, close } = props;
   const target = useTargetDetail(id);
   const [name, setName] = useState(target.name);
+  const nameId = useId();
   const [description, setDescription] = useState(target.description);
+  const descriptionId = useId();
 
   const relations = useRelationsOfTarget(target.id);
   const [tasks, setTasks] = useState(relations.map(({ taskId }) => taskId));
+  const tasksId = useId();
   const options = useTaskOptions();
 
   const toast = useRef(null);
@@ -49,10 +53,11 @@ export default function UpdateTargetDialog(props: {
         onHide={close}
         fields={[
           {
+            id: nameId,
             name: "Name",
             item: (
               <InputText
-                id="name"
+                id={nameId}
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 autoComplete="off"
@@ -62,10 +67,11 @@ export default function UpdateTargetDialog(props: {
             ),
           },
           {
+            id: descriptionId,
             name: "Description",
             item: (
               <InputTextarea
-                id="description"
+                id={descriptionId}
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
                 autoComplete="off"
@@ -75,10 +81,11 @@ export default function UpdateTargetDialog(props: {
             ),
           },
           {
+            id: tasksId,
             name: "Tasks",
             item: (
               <MultiSelect
-                inputId="tasks"
+                inputId={tasksId}
                 value={tasks}
                 onChange={(event) => setTasks(event.target.value)}
                 options={options}
