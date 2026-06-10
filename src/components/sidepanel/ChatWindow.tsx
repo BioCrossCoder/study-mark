@@ -13,11 +13,13 @@ export default function ChatWindow() {
   const bottomAnchor = useRef(document.createElement("div"));
   useEffect(
     () =>
-      chatHistoryData.watch(async () => {
-        bottomAnchor.current.scrollIntoView({
-          behavior: history.at(-1)?.type === "human" ? "instant" : "smooth",
-          block: "end",
-        });
+      chatHistoryData.watch(() => {
+        if (bottomAnchor.current.offsetParent) {
+          bottomAnchor.current.scrollIntoView({
+            behavior: history.at(-1)?.type === "human" ? "instant" : "smooth",
+            block: "end",
+          });
+        }
       }),
     [bottomAnchor],
   );
