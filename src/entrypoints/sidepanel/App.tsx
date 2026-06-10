@@ -7,14 +7,17 @@ import TargetList from "@/components/sidepanel/TargetList";
 import TargetListHeader from "@/components/sidepanel/TargetListHeader";
 import TaskList from "@/components/sidepanel/TaskList";
 import TaskListHeader from "@/components/sidepanel/TaskListHeader";
-import { tabIndexData } from "@/services/storage/tabIndex";
-import { useTabIndexData } from "@/services/tabIndex";
+import {
+  updateAccordionIndex,
+  updateTabIndex,
+} from "@/services/storage/uiState";
+import { useUiStateData } from "@/services/uiState";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import { TabPanel, TabView } from "primereact/tabview";
 
 export default function App() {
   const tabView = useRef<TabView>(null);
-  const activeIndex = useTabIndexData();
+  const data = useUiStateData();
   const [navHeight, setNavHeight] = useState(0);
   useEffect(() => {
     const nav = tabView.current
@@ -38,8 +41,8 @@ export default function App() {
               },
             },
           }}
-          activeIndex={activeIndex}
-          onTabChange={(event) => tabIndexData.setValue(event.index)}
+          activeIndex={data.tabIndex}
+          onTabChange={(event) => updateTabIndex(event.index)}
         >
           <TabPanel
             header="Plan"
@@ -53,7 +56,12 @@ export default function App() {
             <ChatWindow />
           </TabPanel>
           <TabPanel header="List" leftIcon="pi pi-list mr-2">
-            <Accordion>
+            <Accordion
+              activeIndex={data.accordionIndex}
+              onTabChange={(event) =>
+                updateAccordionIndex(event.index as number)
+              }
+            >
               <AccordionTab header={<TaskListHeader />}>
                 <TaskList />
               </AccordionTab>

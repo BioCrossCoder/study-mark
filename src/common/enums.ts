@@ -6,7 +6,7 @@ export const enum StoreKey {
   ChatHistory = "local:chatHistory",
   ChatLoading = "local:chatLoading",
   ModelConfig = "sync:modelConfig",
-  TabIndex = "local:tabIndex",
+  UiState = "local:uiState",
   Comment = "local:comment",
 }
 
@@ -59,4 +59,11 @@ export enum ToolName {
 export const enum TabIndex {
   Plan,
   List,
+}
+
+export const enum AccordionIndex {
+  Tasks,
+  Targets,
+  Libraries,
+  CommentHistory,
 }

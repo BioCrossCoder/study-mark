@@ -1,10 +1,10 @@
 import { TabIndex } from "@/common/enums";
-import { tabIndexData } from "@/services/storage/tabIndex";
+import { updateTabIndex } from "@/services/storage/uiState";
 import { Button } from "primereact/button";
 
 export default function ViewPlansButton(props: { callback: () => void }) {
   async function handleClick() {
-    await tabIndexData.setValue(TabIndex.List);
+    await updateTabIndex(TabIndex.List);
     browser.sidePanel.open({
       windowId: browser.windows.WINDOW_ID_CURRENT,
     });
