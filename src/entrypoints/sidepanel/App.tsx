@@ -1,26 +1,13 @@
-import { ListStyle } from "@/common/enums";
 import BackgroundPanel from "@/components/common/BackgroundPanel";
 import ChatWindow from "@/components/sidepanel/ChatWindow";
-import CommentHistoryList from "@/components/sidepanel/CommentHistoryList";
-import LibraryList from "@/components/sidepanel/LibraryList";
-import LibraryListHeader from "@/components/sidepanel/LibraryListHeader";
-import TargetList from "@/components/sidepanel/TargetList";
-import TargetListHeader from "@/components/sidepanel/TargetListHeader";
-import TaskList from "@/components/sidepanel/TaskList";
-import TaskListHeader from "@/components/sidepanel/TaskListHeader";
-import {
-  updateAccordionIndex,
-  updateListStyle,
-  updateTabIndex,
-} from "@/services/storage/uiState";
+import PlanList from "@/components/sidepanel/PlanList";
+import { updateTabIndex } from "@/services/storage/uiState";
 import { useUiStateData } from "@/services/uiState";
-import { Accordion, AccordionTab } from "primereact/accordion";
-import { SelectButton } from "primereact/selectbutton";
 import { TabPanel, TabView } from "primereact/tabview";
 
 export default function App() {
   const tabView = useRef<TabView>(null);
-  const data = useUiStateData();
+  const { tabIndex } = useUiStateData();
   const [navHeight, setNavHeight] = useState(0);
   useEffect(() => {
     const nav = tabView.current
@@ -44,7 +31,7 @@ export default function App() {
               },
             },
           }}
-          activeIndex={data.tabIndex}
+          activeIndex={tabIndex}
           onTabChange={(event) => updateTabIndex(event.index)}
         >
           <TabPanel
@@ -58,43 +45,16 @@ export default function App() {
           >
             <ChatWindow />
           </TabPanel>
-          <TabPanel header="List" leftIcon="pi pi-list mr-2">
-            <SelectButton
-              value={data.listStyle}
-              onChange={(event) => {
-                if (event.value) {
-                  updateListStyle(event.value);
-                }
-              }}
-              options={Object.values(ListStyle)}
-              pt={{
-                root: {
-                  className: "flex",
-                },
-                button: {
-                  className: "flex-1 shadow-none!",
-                },
-              }}
-            />
-            <Accordion
-              activeIndex={data.accordionIndex}
-              onTabChange={(event) =>
-                updateAccordionIndex(event.index as number)
-              }
-            >
-              <AccordionTab header={<TaskListHeader />}>
-                <TaskList />
-              </AccordionTab>
-              <AccordionTab header={<TargetListHeader />}>
-                <TargetList />
-              </AccordionTab>
-              <AccordionTab header={<LibraryListHeader />}>
-                <LibraryList />
-              </AccordionTab>
-              <AccordionTab header="Comment History">
-                <CommentHistoryList />
-              </AccordionTab>
-            </Accordion>
+          <TabPanel
+            header="List"
+            leftIcon="pi pi-list mr-2"
+            pt={{
+              content: {
+                className: "h-full",
+              },
+            }}
+          >
+            <PlanList />
           </TabPanel>
         </TabView>
       </BackgroundPanel>
