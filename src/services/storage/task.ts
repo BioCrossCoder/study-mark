@@ -36,6 +36,7 @@ export async function updateTaskProgress(
     const task = data[id];
     if (task) {
       task.position = { url, bookmark };
+      task.lastVisit = Date.now();
     }
   });
   await taskData.setValue(data);

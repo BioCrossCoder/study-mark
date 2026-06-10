@@ -17,7 +17,7 @@ import { removeTarget } from "@/services/storage/target";
 export default function TargetList() {
   const data = useTargetData();
   const list = useMemo(
-    () => (data ? Object.values(data).toSorted(sortBy("createdAt")) : []),
+    () => (data ? Object.values(data).toSorted(sortBy("createdAt", true)) : []),
     [data],
   );
   return <DataView value={list} itemTemplate={DataItem} rows={list.length} />;

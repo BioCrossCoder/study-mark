@@ -17,7 +17,7 @@ import { removeTask } from "@/services/storage/task";
 export default function TaskList() {
   const data = useTaskData();
   const list = useMemo(
-    () => (data ? Object.values(data).toSorted(sortBy("lastVisit")) : []),
+    () => (data ? Object.values(data).toSorted(sortBy("lastVisit", true)) : []),
     [data],
   );
   return <DataView value={list} itemTemplate={DataItem} rows={list.length} />;

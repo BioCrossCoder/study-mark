@@ -2,8 +2,10 @@ import { ContextMenuItemID } from "./enums";
 
 export function sortBy<K extends string, T extends Record<K, number>>(
   field: K,
+  reverse = false,
 ) {
-  return (obj1: T, obj2: T) => obj1[field] - obj2[field];
+  return (obj1: T, obj2: T) =>
+    reverse ? obj2[field] - obj1[field] : obj1[field] - obj2[field];
 }
 
 export function isItemExist<K extends string, T extends Record<K, string>>(

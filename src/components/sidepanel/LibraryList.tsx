@@ -10,7 +10,7 @@ import { removeLibrary } from "@/services/storage/library";
 export default function LibraryList() {
   const data = useLibraryData();
   const list = useMemo(
-    () => (data ? Object.values(data).toSorted(sortBy("createdAt")) : []),
+    () => (data ? Object.values(data).toSorted(sortBy("createdAt", true)) : []),
     [data],
   );
   return <DataView value={list} itemTemplate={DataItem} rows={list.length} />;
