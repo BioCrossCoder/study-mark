@@ -61,14 +61,18 @@ export default function App() {
           <TabPanel header="List" leftIcon="pi pi-list mr-2">
             <SelectButton
               value={data.listStyle}
-              onChange={(event) => updateListStyle(event.value)}
+              onChange={(event) => {
+                if (event.value) {
+                  updateListStyle(event.value);
+                }
+              }}
               options={Object.values(ListStyle)}
               pt={{
                 root: {
                   className: "flex",
                 },
                 button: {
-                  className: "flex-1",
+                  className: "flex-1 shadow-none!",
                 },
               }}
             />
