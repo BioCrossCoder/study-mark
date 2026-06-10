@@ -59,7 +59,7 @@ function DataItem(data: Target) {
       title={
         <div className="flex justify-between items-center">
           <div className="flex justify-between items-center">
-            <p className="text-lg">{name}</p>
+            <p className="text-lg break-all">{name}</p>
             <i
               className={statusIcon[status] + " mx-2 text-(--primary-color)"}
             />
@@ -87,7 +87,7 @@ function DataItem(data: Target) {
       subTitle={
         <div className="grid grid-cols-3 gap-4">
           {(relations[id] ?? []).map((taskId) => (
-            <Tag value={taskNames[taskId]} />
+            <Tag value={taskNames[taskId]} className="break-all" />
           ))}
         </div>
       }

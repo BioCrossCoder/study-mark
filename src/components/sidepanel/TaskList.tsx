@@ -70,7 +70,7 @@ function DataItem(data: Task) {
         <div className="flex justify-between items-center">
           <div className="flex justify-between items-center">
             <p
-              className="text-lg hover:cursor-copy hover:text-(--primary-color)"
+              className="text-lg hover:cursor-copy hover:text-(--primary-color) break-all"
               onClick={handleCopy}
             >
               {name}
@@ -103,7 +103,7 @@ function DataItem(data: Task) {
       subTitle={
         <div className="grid grid-cols-3 gap-4">
           {(relations[id] ?? []).map((targetId) => (
-            <Tag value={targetNames[targetId]} />
+            <Tag value={targetNames[targetId]} className="break-all" />
           ))}
         </div>
       }

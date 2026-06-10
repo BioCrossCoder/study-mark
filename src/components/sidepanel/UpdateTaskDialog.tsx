@@ -93,6 +93,14 @@ export default function UpdateTaskDialog(props: {
                 placeholder="Select Targets"
                 maxSelectedLabels={3}
                 className="flex-auto h-10 text-base! items-center"
+                pt={{
+                  item: {
+                    style: {
+                      whiteSpace: "normal",
+                      wordBreak: "break-all",
+                    },
+                  },
+                }}
               />
             ),
           },

@@ -36,7 +36,7 @@ function DataItem(data: Library) {
       className="bg-(--highlight-bg)! mb-3"
       title={
         <div className="flex justify-between items-center">
-          <p className="text-lg">{name}</p>
+          <p className="text-lg break-all">{name}</p>
           <div className="flex justify-between items-center gap-4">
             <i
               className="pi pi-external-link hover:cursor-pointer hover:text-(--primary-color)"
