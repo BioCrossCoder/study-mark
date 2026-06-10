@@ -1,4 +1,4 @@
-import { statusIcon } from "@/common/enums";
+import { ListStyle, statusIcon } from "@/common/enums";
 import { Target } from "@/common/types";
 import { sortBy } from "@/common/utils";
 import { useRelationsOfAllTargets } from "@/services/relation";
@@ -13,6 +13,9 @@ import { Toast } from "primereact/toast";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { removeRelationsOfTarget } from "@/services/storage/relation";
 import { removeTarget } from "@/services/storage/target";
+import { useUiStateData } from "@/services/uiState";
+import { Chip } from "primereact/chip";
+import StatusButton from "../common/StatusButton";
 
 export default function TargetList() {
   const data = useTargetData();
@@ -24,6 +27,7 @@ export default function TargetList() {
 }
 
 function DataItem(data: Target) {
+  const { listStyle } = useUiStateData();
   const { id, name, status, description } = data;
   const [visible, setVisible] = useState(false);
 
@@ -53,57 +57,74 @@ function DataItem(data: Target) {
     setOption(event.value);
   }
 
-  return (
-    <Card
-      className="bg-(--highlight-bg)! mb-3"
-      title={
-        <div className="flex justify-between items-center">
-          <div className="flex justify-between items-center">
-            <p className="text-lg break-all">{name}</p>
-            <i
-              className={statusIcon[status] + " mx-2 text-(--primary-color)"}
-            />
-          </div>
-          <div className="flex justify-between items-center gap-4">
-            <i
-              className="pi pi-pen-to-square hover:cursor-pointer hover:text-(--primary-color)"
-              onClick={() => setVisible(true)}
-            />
-            {visible && (
-              <UpdateTargetDialog
-                close={() => setVisible(false)}
-                data={data}
-                relatedItemIds={relations[id] ?? []}
+  switch (listStyle) {
+    case ListStyle.Card:
+      return (
+        <Card
+          className="bg-(--highlight-bg)! mb-3"
+          title={
+            <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center">
+                <p className="text-lg break-all">{name}</p>
+                <i
+                  className={
+                    statusIcon[status] + " mx-2 text-(--primary-color)"
+                  }
+                />
+              </div>
+              <div className="flex justify-between items-center gap-4">
+                <i
+                  className="pi pi-pen-to-square hover:cursor-pointer hover:text-(--primary-color)"
+                  onClick={() => setVisible(true)}
+                />
+                {visible && (
+                  <UpdateTargetDialog
+                    close={() => setVisible(false)}
+                    data={data}
+                    relatedItemIds={relations[id] ?? []}
+                  />
+                )}
+                <i
+                  className="pi pi-trash hover:cursor-pointer hover:text-red-400"
+                  onClick={handleRemove}
+                />
+                <ConfirmPopup />
+              </div>
+            </div>
+          }
+          subTitle={
+            <div className="grid grid-cols-3 gap-4">
+              {(relations[id] ?? []).map((taskId) => (
+                <Tag value={taskNames[taskId]} className="break-all" />
+              ))}
+            </div>
+          }
+          footer={
+            <div className="flex justify-center">
+              <Dropdown
+                value={option}
+                onChange={handleChangeStatus}
+                options={options}
+                className="w-30 text-xs"
               />
-            )}
-            <i
-              className="pi pi-trash hover:cursor-pointer hover:text-red-400"
-              onClick={handleRemove}
-            />
-            <ConfirmPopup />
-          </div>
-        </div>
-      }
-      subTitle={
-        <div className="grid grid-cols-3 gap-4">
-          {(relations[id] ?? []).map((taskId) => (
-            <Tag value={taskNames[taskId]} className="break-all" />
-          ))}
-        </div>
-      }
-      footer={
-        <div className="flex justify-center">
-          <Dropdown
-            value={option}
-            onChange={handleChangeStatus}
-            options={options}
-            className="w-30 text-xs"
+              <Toast ref={toast} position="top-center" />
+            </div>
+          }
+        >
+          <p className="text-xs">{description}</p>
+        </Card>
+      );
+    case ListStyle.Line:
+      return (
+        <div className="flex justify-between items-center gap-2">
+          <Chip label={name} className="break-all" />
+          <StatusButton
+            status={status}
+            callback={(value) => updateTargetStatus(id, value)}
           />
-          <Toast ref={toast} position="top-center" />
         </div>
-      }
-    >
-      <p className="text-xs">{description}</p>
-    </Card>
-  );
+      );
+    default:
+      return <></>;
+  }
 }

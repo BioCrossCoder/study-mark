@@ -1,4 +1,4 @@
-import { statusIcon } from "@/common/enums";
+import { ExecStatus, ListStyle, statusIcon } from "@/common/enums";
 import { Task } from "@/common/types";
 import { sortBy } from "@/common/utils";
 import { useTaskData, useUpdateTaskStatus } from "@/services/task";
@@ -13,6 +13,10 @@ import { useTargetNames } from "@/services/target";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { removeRelationsOfTask } from "@/services/storage/relation";
 import { removeTask } from "@/services/storage/task";
+import { useUiStateData } from "@/services/uiState";
+import { Chip } from "primereact/chip";
+import React from "react";
+import StatusButton from "../common/StatusButton";
 
 export default function TaskList() {
   const data = useTaskData();
@@ -24,6 +28,7 @@ export default function TaskList() {
 }
 
 function DataItem(data: Task) {
+  const { listStyle } = useUiStateData();
   const { id, name, status, position, source, description } = data;
   const { url } = position;
 
@@ -63,76 +68,103 @@ function DataItem(data: Task) {
     setOption(event.value);
   }
 
-  return (
-    <Card
-      className="bg-(--highlight-bg)! mb-3"
-      title={
-        <div className="flex justify-between items-center">
-          <div className="flex justify-between items-center">
-            <p
-              className="text-lg hover:cursor-copy hover:text-(--primary-color) break-all"
-              onClick={handleCopy}
-            >
-              {name}
-            </p>
-            <Toast ref={toast} position="top-center" />
-            <i
-              className={statusIcon[status] + " mx-2 text-(--primary-color)"}
-            />
-          </div>
-          <div className="flex justify-between items-center gap-4">
-            <i
-              className="pi pi-pen-to-square hover:cursor-pointer hover:text-(--primary-color)"
-              onClick={() => setVisible(true)}
-            />
-            {visible && (
-              <UpdateTaskDialog
-                close={() => setVisible(false)}
-                data={data}
-                relatedItemIds={relations[id] ?? []}
+  const items = Object.entries(statusIcon).map(([label, icon]) => ({
+    icon,
+    label,
+    command: () => updateTaskStatus(id, label as ExecStatus),
+  }));
+
+  switch (listStyle) {
+    case ListStyle.Card:
+      return (
+        <Card
+          className="bg-(--highlight-bg)! mb-3"
+          title={
+            <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center">
+                <p
+                  className="text-lg hover:cursor-copy hover:text-(--primary-color) break-all"
+                  onClick={handleCopy}
+                >
+                  {name}
+                </p>
+                <Toast ref={toast} position="top-center" />
+                <i
+                  className={
+                    statusIcon[status] + " mx-2 text-(--primary-color)"
+                  }
+                />
+              </div>
+              <div className="flex justify-between items-center gap-4">
+                <i
+                  className="pi pi-pen-to-square hover:cursor-pointer hover:text-(--primary-color)"
+                  onClick={() => setVisible(true)}
+                />
+                {visible && (
+                  <UpdateTaskDialog
+                    close={() => setVisible(false)}
+                    data={data}
+                    relatedItemIds={relations[id] ?? []}
+                  />
+                )}
+                <i
+                  className="pi pi-trash hover:cursor-pointer hover:text-red-400"
+                  onClick={handleRemove}
+                />
+                <ConfirmPopup />
+              </div>
+            </div>
+          }
+          subTitle={
+            <div className="grid grid-cols-3 gap-4">
+              {(relations[id] ?? []).map((targetId) => (
+                <Tag value={targetNames[targetId]} className="break-all" />
+              ))}
+            </div>
+          }
+          footer={
+            <div className="flex justify-between">
+              <div
+                className="flex items-center hover:cursor-pointer hover:text-(--primary-color) gap-1"
+                onClick={() => browser.tabs.create({ url })}
+              >
+                <i className="pi pi-bookmark-fill" />
+                <p className="text-xs">Position</p>
+              </div>
+              <Dropdown
+                value={option}
+                onChange={handleChangeStatus}
+                options={options}
+                className="w-30 text-xs"
               />
-            )}
-            <i
-              className="pi pi-trash hover:cursor-pointer hover:text-red-400"
-              onClick={handleRemove}
-            />
-            <ConfirmPopup />
-          </div>
-        </div>
-      }
-      subTitle={
-        <div className="grid grid-cols-3 gap-4">
-          {(relations[id] ?? []).map((targetId) => (
-            <Tag value={targetNames[targetId]} className="break-all" />
-          ))}
-        </div>
-      }
-      footer={
-        <div className="flex justify-between">
-          <div
-            className="flex items-center hover:cursor-pointer hover:text-(--primary-color) gap-1"
+              <div
+                className="flex items-center hover:cursor-pointer hover:text-(--primary-color) gap-1"
+                onClick={() => browser.tabs.create({ url: source })}
+              >
+                <i className="pi pi-link" />
+                <p className="text-xs">Source</p>
+              </div>
+            </div>
+          }
+        >
+          <p className="text-xs">{description}</p>
+        </Card>
+      );
+    case ListStyle.Line:
+      return (
+        <div className="flex justify-between items-center gap-2">
+          <Chip
+            label={name}
+            className="break-all hover:cursor-pointer hover:text-(--primary-color)!"
             onClick={() => browser.tabs.create({ url })}
-          >
-            <i className="pi pi-bookmark-fill" />
-            <p className="text-xs">Position</p>
-          </div>
-          <Dropdown
-            value={option}
-            onChange={handleChangeStatus}
-            options={options}
-            className="w-30 text-xs"
           />
-          <div
-            className="flex items-center hover:cursor-pointer hover:text-(--primary-color) gap-1"
-            onClick={() => browser.tabs.create({ url: source })}
-          >
-            <i className="pi pi-link" />
-            <p className="text-xs">Source</p>
-          </div>
+          <StatusButton
+            status={status}
+            callback={(value) => updateTaskStatus(id, value)}
+          />
         </div>
-      }
-    >
-      <p className="text-xs">{description}</p>
-    </Card>
-  );
+      );
+    default:
+      return <></>;
+  }
 }

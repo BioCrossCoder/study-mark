@@ -1,3 +1,4 @@
+import { ListStyle } from "@/common/enums";
 import BackgroundPanel from "@/components/common/BackgroundPanel";
 import ChatWindow from "@/components/sidepanel/ChatWindow";
 import CommentHistoryList from "@/components/sidepanel/CommentHistoryList";
@@ -9,10 +10,12 @@ import TaskList from "@/components/sidepanel/TaskList";
 import TaskListHeader from "@/components/sidepanel/TaskListHeader";
 import {
   updateAccordionIndex,
+  updateListStyle,
   updateTabIndex,
 } from "@/services/storage/uiState";
 import { useUiStateData } from "@/services/uiState";
 import { Accordion, AccordionTab } from "primereact/accordion";
+import { SelectButton } from "primereact/selectbutton";
 import { TabPanel, TabView } from "primereact/tabview";
 
 export default function App() {
@@ -56,6 +59,19 @@ export default function App() {
             <ChatWindow />
           </TabPanel>
           <TabPanel header="List" leftIcon="pi pi-list mr-2">
+            <SelectButton
+              value={data.listStyle}
+              onChange={(event) => updateListStyle(event.value)}
+              options={Object.values(ListStyle)}
+              pt={{
+                root: {
+                  className: "flex",
+                },
+                button: {
+                  className: "flex-1",
+                },
+              }}
+            />
             <Accordion
               activeIndex={data.accordionIndex}
               onTabChange={(event) =>

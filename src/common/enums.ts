@@ -67,3 +67,8 @@ export const enum AccordionIndex {
   Libraries,
   CommentHistory,
 }
+
+export enum ListStyle {
+  Card = "card",
+  Line = "line",
+}

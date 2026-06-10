@@ -6,6 +6,9 @@ import { ConfirmPopup, confirmPopup } from "primereact/confirmpopup";
 import { DataView } from "primereact/dataview";
 import UpdateLibraryDialog from "./UpdateLibraryDialog";
 import { removeLibrary } from "@/services/storage/library";
+import { useUiStateData } from "@/services/uiState";
+import { ListStyle } from "@/common/enums";
+import { Chip } from "primereact/chip";
 
 export default function LibraryList() {
   const data = useLibraryData();
@@ -17,7 +20,8 @@ export default function LibraryList() {
 }
 
 function DataItem(data: Library) {
-  const { id, name, description, source } = data;
+  const { listStyle } = useUiStateData();
+  const { id, name, description, source: url } = data;
   const [visible, setVisible] = useState(false);
 
   function handleRemove(event: React.MouseEvent<HTMLElement>) {
@@ -30,38 +34,52 @@ function DataItem(data: Library) {
       accept: async () => removeLibrary(id),
     });
   }
-
-  return (
-    <Card
-      className="bg-(--highlight-bg)! mb-3"
-      title={
-        <div className="flex justify-between items-center">
-          <p className="text-lg break-all">{name}</p>
-          <div className="flex justify-between items-center gap-4">
-            <i
-              className="pi pi-external-link hover:cursor-pointer hover:text-(--primary-color)"
-              onClick={() => browser.tabs.create({ url: source })}
-            />
-            <i
-              className="pi pi-pen-to-square hover:cursor-pointer hover:text-(--primary-color)"
-              onClick={() => setVisible(true)}
-            />
-            {visible && (
-              <UpdateLibraryDialog
-                close={() => setVisible(false)}
-                data={data}
-              />
-            )}
-            <i
-              className="pi pi-trash hover:cursor-pointer hover:text-red-400"
-              onClick={handleRemove}
-            />
-            <ConfirmPopup />
-          </div>
+  switch (listStyle) {
+    case ListStyle.Card:
+      return (
+        <Card
+          className="bg-(--highlight-bg)! mb-3"
+          title={
+            <div className="flex justify-between items-center">
+              <p className="text-lg break-all">{name}</p>
+              <div className="flex justify-between items-center gap-4">
+                <i
+                  className="pi pi-external-link hover:cursor-pointer hover:text-(--primary-color)"
+                  onClick={() => browser.tabs.create({ url })}
+                />
+                <i
+                  className="pi pi-pen-to-square hover:cursor-pointer hover:text-(--primary-color)"
+                  onClick={() => setVisible(true)}
+                />
+                {visible && (
+                  <UpdateLibraryDialog
+                    close={() => setVisible(false)}
+                    data={data}
+                  />
+                )}
+                <i
+                  className="pi pi-trash hover:cursor-pointer hover:text-red-400"
+                  onClick={handleRemove}
+                />
+                <ConfirmPopup />
+              </div>
+            </div>
+          }
+        >
+          <p className="text-xs">{description}</p>
+        </Card>
+      );
+    case ListStyle.Line:
+      return (
+        <div className="flex">
+          <Chip
+            label={name}
+            className="break-all hover:cursor-pointer hover:text-(--primary-color)!"
+            onClick={() => browser.tabs.create({ url })}
+          />
         </div>
-      }
-    >
-      <p className="text-xs">{description}</p>
-    </Card>
-  );
+      );
+    default:
+      return <></>;
+  }
 }
