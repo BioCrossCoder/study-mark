@@ -71,7 +71,7 @@ function DataItem(data: Library) {
       );
     case ListStyle.Line:
       return (
-        <div className="flex">
+        <div className="flex my-1">
           <Chip
             label={name}
             className="break-all hover:cursor-pointer hover:text-(--primary-color)!"
