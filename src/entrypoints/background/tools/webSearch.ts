@@ -3,7 +3,15 @@ import { tool } from "langchain";
 import { ToolName } from "@/common/enums";
 import z from "zod";
 
-export async function createWebSearchTool() {
+let inst: Awaited<ReturnType<typeof createWebSearchTool>> | null = null;
+export const webSearchTool = {
+  async load() {
+    inst = inst ?? (await createWebSearchTool());
+    return inst;
+  },
+};
+
+async function createWebSearchTool() {
   const bridge = new WebMCPBridge("https://mcp.exa.ai/mcp");
   const { tools } = await bridge.connect();
   const item = tools.find(({ name }) => name === ToolName.WebSearch)!;

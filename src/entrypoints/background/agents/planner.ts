@@ -8,7 +8,7 @@ import {
   updateHistory,
 } from "@/services/storage/chatHistory";
 import { planSchema } from "@/common/schemas";
-import { createWebSearchTool } from "../tools/webSearch";
+import { webSearchTool } from "../tools/webSearch";
 import { AgentMode } from "@/common/enums";
 import { systemPrompt } from "../prompts/planner";
 import { loadLibraryTool } from "../tools/loadLibrary";
@@ -54,11 +54,10 @@ async function run(content: string) {
 
 async function createPlannerAgent(config: ModelConfig) {
   const model = createModelAdapter(config);
-  const webSearchTool = await createWebSearchTool();
   return createAgent({
     model,
     systemPrompt,
-    tools: [loadLibraryTool, webSearchTool],
+    tools: [loadLibraryTool, await webSearchTool.load()],
     responseFormat: toolStrategy(planSchema),
   });
 }
