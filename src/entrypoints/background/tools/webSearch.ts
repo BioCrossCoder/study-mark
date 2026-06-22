@@ -6,7 +6,7 @@ import z from "zod";
 let inst: Awaited<ReturnType<typeof createWebSearchTool>> | null = null;
 export const webSearchTool = {
   async load() {
-    inst = inst ?? (await createWebSearchTool());
+    inst ??= await createWebSearchTool();
     return inst;
   },
 };
