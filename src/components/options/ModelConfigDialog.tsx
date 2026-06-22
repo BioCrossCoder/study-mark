@@ -3,13 +3,13 @@ import { InputText } from "primereact/inputtext";
 import { ModelProviderProtocol } from "@/common/enums";
 import { ModelConfig } from "@/common/types";
 import { modelConfigSchema } from "@/common/schemas";
-import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import { useId } from "react";
 import { modelConfigData } from "@/services/storage/modelConfig";
 import { useModelConfigData } from "@/services/modelConfig";
 import { Password } from "primereact/password";
+import { useToast } from "@/hooks/useToast";
 
 export default function ModelConfigDialog() {
   const [protocol, setProtocol] = useState(ModelProviderProtocol.OpenAI);
@@ -29,7 +29,7 @@ export default function ModelConfigDialog() {
     setApiKey(data.apiKey);
   }, [data]);
 
-  const toast = useRef<Toast | null>(null);
+  const toast = useToast();
 
   async function handleSubmit() {
     const form: ModelConfig = { protocol, baseURL, model, apiKey };
@@ -109,7 +109,6 @@ export default function ModelConfigDialog() {
           />
         </div>
       </div>
-      <Toast ref={toast} position="center" />
     </Panel>
   );
 }

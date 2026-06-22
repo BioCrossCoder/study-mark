@@ -9,13 +9,13 @@ import { ConfirmPopup, confirmPopup } from "primereact/confirmpopup";
 import { DataView } from "primereact/dataview";
 import UpdateTargetDialog from "./UpdateTargetDialog";
 import { Tag } from "primereact/tag";
-import { Toast } from "primereact/toast";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { removeRelationsOfTarget } from "@/services/storage/relation";
 import { removeTarget } from "@/services/storage/target";
 import { useUiStateData } from "@/services/uiState";
 import { Chip } from "primereact/chip";
 import StatusButton from "../common/StatusButton";
+import { useToast } from "@/hooks/useToast";
 
 export default function TargetList() {
   const data = useTargetData();
@@ -50,7 +50,7 @@ function DataItem(data: Target) {
 
   const options = Object.keys(statusIcon);
   const [option, setOption] = useState(status);
-  const toast = useRef<Toast>(null);
+  const toast = useToast();
   const updateTargetStatus = useUpdateTargetStatus(toast);
   async function handleChangeStatus(event: DropdownChangeEvent) {
     await updateTargetStatus(id, event.value);
@@ -107,7 +107,6 @@ function DataItem(data: Target) {
                 options={options}
                 className="w-30 text-xs"
               />
-              <Toast ref={toast} position="top-center" />
             </div>
           }
         >

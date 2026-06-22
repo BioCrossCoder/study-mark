@@ -7,7 +7,6 @@ import { tryFormatAsJson } from "@/common/utils";
 import { AgentMode } from "@/common/enums";
 import { Button } from "primereact/button";
 import CreatePlanDialog from "./CreatePlanDialog";
-import { Toast } from "primereact/toast";
 import { useChatLoadingData } from "@/services/chatLoading";
 
 export default function ChatBubble(props: {
@@ -24,7 +23,6 @@ export default function ChatBubble(props: {
     message.mode === AgentMode.Plan &&
     (!props.isLast || loading === false);
   const [visible, setVisible] = useState(false);
-  const toast = useRef(null);
 
   return (
     <Bubble
@@ -98,10 +96,8 @@ export default function ChatBubble(props: {
                   <CreatePlanDialog
                     close={() => setVisible(false)}
                     message={message}
-                    toast={toast}
                   />
                 )}
-                <Toast ref={toast} position="top-center" />
               </>
             )}
           </div>

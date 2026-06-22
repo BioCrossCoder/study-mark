@@ -2,10 +2,10 @@ import { useCreateLibrary } from "@/services/library";
 import FormDialog from "../common/FormDialog";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
-import { Toast } from "primereact/toast";
 import { useGetWebsiteMetadata } from "@/hooks/useGetWebsiteMetadata";
 import { getCurrentTab } from "@/common/utils";
 import { useId } from "react";
+import { useToast } from "@/hooks/useToast";
 
 export default function CreateLibraryDialog(props: { close: () => void }) {
   const [name, setName] = useState("");
@@ -15,7 +15,7 @@ export default function CreateLibraryDialog(props: { close: () => void }) {
   const [source, setSource] = useState("");
   const sourceId = useId();
   const [loading, setLoading] = useState(false);
-  const toast = useRef(null);
+  const toast = useToast();
   const getWebsiteMetadata = useGetWebsiteMetadata(toast);
   async function handleSetSource() {
     const tab = await getCurrentTab();
@@ -98,7 +98,6 @@ export default function CreateLibraryDialog(props: { close: () => void }) {
         ]}
         onSubmit={handleSubmit}
       />
-      <Toast ref={toast} position="top-center" />
     </>
   );
 }

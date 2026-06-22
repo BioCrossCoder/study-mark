@@ -1,7 +1,7 @@
 import { useUpdateTarget } from "@/services/target";
 import { useTaskOptions } from "@/services/task";
 import FormDialog from "../common/FormDialog";
-import { Toast } from "primereact/toast";
+
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { MultiSelect } from "primereact/multiselect";
@@ -11,6 +11,7 @@ import {
   removeRelationsOfTarget,
 } from "@/services/storage/relation";
 import { Target } from "@/common/types";
+import { useToast } from "@/hooks/useToast";
 
 export default function UpdateTargetDialog(props: {
   close: () => void;
@@ -27,7 +28,7 @@ export default function UpdateTargetDialog(props: {
   const tasksId = useId();
   const options = useTaskOptions();
 
-  const toast = useRef(null);
+  const toast = useToast();
   const updateTarget = useUpdateTarget(toast);
   async function handleSubmit() {
     const result = await updateTarget(data.id, { name, description });
@@ -107,7 +108,6 @@ export default function UpdateTargetDialog(props: {
         ]}
         onSubmit={handleSubmit}
       />
-      <Toast ref={toast} position="top-center" />
     </>
   );
 }

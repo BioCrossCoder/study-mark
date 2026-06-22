@@ -1,6 +1,4 @@
 import { ChatAIMessage, ChatMessage, Plan } from "@/common/types";
-import { Toast } from "primereact/toast";
-import { RefObject } from "react";
 import { Tag } from "primereact/tag";
 import { extractPlanOutline } from "@/common/logics";
 import { Button } from "primereact/button";
@@ -10,11 +8,11 @@ import { Dialog } from "primereact/dialog";
 import { useCreatePlan } from "@/hooks/useCreatePlan";
 import TargetFormCard from "./TargetFormCard";
 import TaskFormCard from "./TaskFormCard";
+import { useToast } from "@/hooks/useToast";
 
 export default function CreatePlanDialog(props: {
   close: () => void;
   message: ChatAIMessage;
-  toast: RefObject<Toast | null>;
 }) {
   const plan = extractPlanOutline(props.message);
   const [form, setForm] = useState(plan as Plan);
@@ -28,7 +26,8 @@ export default function CreatePlanDialog(props: {
     setForm({ ...form });
   }
 
-  const createPlan = useCreatePlan(props.toast);
+  const toast = useToast();
+  const createPlan = useCreatePlan(toast);
   async function handleSubmit() {
     if (!form) {
       return new Error("Empty Plan");

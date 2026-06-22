@@ -1,4 +1,3 @@
-import { Toast } from "primereact/toast";
 import FormDialog from "../common/FormDialog";
 import { useTaskOptions } from "@/services/task";
 import { useCreateTarget } from "@/services/target";
@@ -7,6 +6,7 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { MultiSelect } from "primereact/multiselect";
 import { useId } from "react";
 import { createRelations } from "@/services/storage/relation";
+import { useToast } from "@/hooks/useToast";
 
 export default function CreateTargetDialog(props: { close: () => void }) {
   const [name, setName] = useState("");
@@ -16,7 +16,7 @@ export default function CreateTargetDialog(props: { close: () => void }) {
   const [tasks, setTasks] = useState(new Array<string>());
   const tasksId = useId();
   const options = useTaskOptions();
-  const toast = useRef(null);
+  const toast = useToast();
   const createTarget = useCreateTarget(toast);
   async function handleSubmit() {
     const result = await createTarget({ name, description });
@@ -94,7 +94,6 @@ export default function CreateTargetDialog(props: { close: () => void }) {
         ]}
         onSubmit={handleSubmit}
       />
-      <Toast ref={toast} position="top-center" />
     </>
   );
 }

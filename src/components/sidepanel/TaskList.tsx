@@ -5,7 +5,6 @@ import { useTaskData, useUpdateTaskStatus } from "@/services/task";
 import { Card } from "primereact/card";
 import { confirmPopup, ConfirmPopup } from "primereact/confirmpopup";
 import { DataView } from "primereact/dataview";
-import { Toast } from "primereact/toast";
 import UpdateTaskDialog from "./UpdateTaskDialog";
 import { Tag } from "primereact/tag";
 import { useRelationsOfAllTasks } from "@/services/relation";
@@ -17,6 +16,7 @@ import { useUiStateData } from "@/services/uiState";
 import { Chip } from "primereact/chip";
 import React from "react";
 import StatusButton from "../common/StatusButton";
+import { useToast } from "@/hooks/useToast";
 
 export default function TaskList() {
   const data = useTaskData();
@@ -32,7 +32,7 @@ function DataItem(data: Task) {
   const { id, name, status, position, source, description } = data;
   const { url } = position;
 
-  const toast = useRef<Toast>(null);
+  const toast = useToast();
   async function handleCopy() {
     await navigator.clipboard.writeText(name);
     toast.current?.show({
@@ -88,7 +88,6 @@ function DataItem(data: Task) {
                 >
                   {name}
                 </p>
-                <Toast ref={toast} position="top-center" />
                 <i
                   className={
                     statusIcon[status] + " mx-2 text-(--primary-color)"
