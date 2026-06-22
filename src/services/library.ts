@@ -1,7 +1,7 @@
 import { librarySchema } from "@/common/schemas";
 import { Library } from "@/common/types";
 import { isItemExist } from "@/common/utils";
-import { useWxtStore } from "@/hooks/useWxtStore";
+import { useWxtStore } from "@/hooks/common/useWxtStore";
 import { libraryData } from "@/services/storage/library";
 import { Toast } from "primereact/toast";
 import { RefObject } from "react";

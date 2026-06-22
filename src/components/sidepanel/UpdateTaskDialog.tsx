@@ -10,7 +10,7 @@ import {
   removeRelationsOfTask,
 } from "@/services/storage/relation";
 import { Task } from "@/common/types";
-import { useToast } from "@/hooks/useToast";
+import { useToast } from "@/hooks/common/useToast";
 
 export default function UpdateTaskDialog(props: {
   close: () => void;
@@ -44,69 +44,67 @@ export default function UpdateTaskDialog(props: {
   }
 
   return (
-    <>
-      <FormDialog
-        header="Update Task"
-        onHide={close}
-        fields={[
-          {
-            id: nameId,
-            name: "Name",
-            item: (
-              <InputText
-                id={nameId}
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-                autoComplete="off"
-                className="flex-auto h-10 text-base!"
-                autoFocus
-              />
-            ),
-          },
-          {
-            id: descriptionId,
-            name: "Description",
-            item: (
-              <InputTextarea
-                id={descriptionId}
-                value={description}
-                onChange={(event) => setDescription(event.target.value)}
-                autoComplete="off"
-                rows={3}
-                className="flex-auto text-base!"
-              />
-            ),
-          },
-          {
-            id: targetsId,
-            name: "Targets",
-            item: (
-              <MultiSelect
-                inputId={targetsId}
-                value={targets}
-                onChange={(event) => setTargets(event.target.value)}
-                options={options}
-                optionLabel="name"
-                optionValue="code"
-                display="chip"
-                filter={true}
-                placeholder="Select Targets"
-                maxSelectedLabels={3}
-                className="flex-auto h-10 text-base! items-center"
-                pt={{
-                  item: {
-                    style: {
-                      whiteSpace: "normal",
-                      wordBreak: "break-all",
-                    },
+    <FormDialog
+      header="Update Task"
+      onHide={close}
+      fields={[
+        {
+          id: nameId,
+          name: "Name",
+          item: (
+            <InputText
+              id={nameId}
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              autoComplete="off"
+              className="flex-auto h-10 text-base!"
+              autoFocus
+            />
+          ),
+        },
+        {
+          id: descriptionId,
+          name: "Description",
+          item: (
+            <InputTextarea
+              id={descriptionId}
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
+              autoComplete="off"
+              rows={3}
+              className="flex-auto text-base!"
+            />
+          ),
+        },
+        {
+          id: targetsId,
+          name: "Targets",
+          item: (
+            <MultiSelect
+              inputId={targetsId}
+              value={targets}
+              onChange={(event) => setTargets(event.target.value)}
+              options={options}
+              optionLabel="name"
+              optionValue="code"
+              display="chip"
+              filter={true}
+              placeholder="Select Targets"
+              maxSelectedLabels={3}
+              className="flex-auto h-10 text-base! items-center"
+              pt={{
+                item: {
+                  style: {
+                    whiteSpace: "normal",
+                    wordBreak: "break-all",
                   },
-                }}
-              />
-            ),
-          },
-        ]}
-        onSubmit={handleSubmit}
-      />
-    </>
+                },
+              }}
+            />
+          ),
+        },
+      ]}
+      onSubmit={handleSubmit}
+    />
   );
 }

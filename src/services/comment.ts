@@ -1,6 +1,6 @@
 import { commentData } from "./storage/comment";
 import { positionMatch } from "@/common/utils";
-import { useWxtStore } from "@/hooks/useWxtStore";
+import { useWxtStore } from "@/hooks/common/useWxtStore";
 
 export function useCommentData() {
   return useWxtStore(commentData);

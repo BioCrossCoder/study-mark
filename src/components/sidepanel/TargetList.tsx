@@ -15,7 +15,7 @@ import { removeTarget } from "@/services/storage/target";
 import { useUiStateData } from "@/services/uiState";
 import { Chip } from "primereact/chip";
 import StatusButton from "../common/StatusButton";
-import { useToast } from "@/hooks/useToast";
+import { useToast } from "@/hooks/common/useToast";
 
 export default function TargetList() {
   const data = useTargetData();

@@ -16,7 +16,7 @@ import { useUiStateData } from "@/services/uiState";
 import { Chip } from "primereact/chip";
 import React from "react";
 import StatusButton from "../common/StatusButton";
-import { useToast } from "@/hooks/useToast";
+import { useToast } from "@/hooks/common/useToast";
 
 export default function TaskList() {
   const data = useTaskData();

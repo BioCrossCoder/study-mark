@@ -1,3 +1,4 @@
+import { useWxtStore } from "@/hooks/common/useWxtStore";
 import { relationData } from "@/services/storage/relation";
 
 export function useRelationData() {

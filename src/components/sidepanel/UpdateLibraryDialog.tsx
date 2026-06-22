@@ -5,7 +5,7 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { useGetWebsiteMetadata } from "@/hooks/useGetWebsiteMetadata";
 import { useId } from "react";
 import { Library } from "@/common/types";
-import { useToast } from "@/hooks/useToast";
+import { useToast } from "@/hooks/common/useToast";
 
 export default function UpdateLibraryDialog(props: {
   close: () => void;
@@ -37,65 +37,63 @@ export default function UpdateLibraryDialog(props: {
   }
 
   return (
-    <>
-      <FormDialog
-        header="Update Library"
-        onHide={close}
-        fields={[
-          {
-            id: nameId,
-            name: "Name",
-            item: (
-              <InputText
-                id={nameId}
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-                autoComplete="off"
-                className="flex-auto h-10 text-base!"
-                autoFocus
+    <FormDialog
+      header="Update Library"
+      onHide={close}
+      fields={[
+        {
+          id: nameId,
+          name: "Name",
+          item: (
+            <InputText
+              id={nameId}
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              autoComplete="off"
+              className="flex-auto h-10 text-base!"
+              autoFocus
+            />
+          ),
+        },
+        {
+          id: sourceId,
+          name: "Source",
+          label: (
+            <div className="flex items-center">
+              <p>Source</p>
+              <i
+                className="pi pi-bookmark hover:cursor-pointer hover:text-(--primary-color) mx-2"
+                onClick={handleSetSource}
               />
-            ),
-          },
-          {
-            id: sourceId,
-            name: "Source",
-            label: (
-              <div className="flex items-center">
-                <p>Source</p>
-                <i
-                  className="pi pi-bookmark hover:cursor-pointer hover:text-(--primary-color) mx-2"
-                  onClick={handleSetSource}
-                />
-              </div>
-            ),
-            item: (
-              <InputText
-                id={sourceId}
-                value={source}
-                onChange={(event) => setSource(event.target.value)}
-                autoComplete="off"
-                className="flex-auto h-10 text-base!"
-              />
-            ),
-          },
-          {
-            id: descriptionId,
-            name: "Description",
-            item: (
-              <InputTextarea
-                id={descriptionId}
-                value={description}
-                onChange={(event) => setDescription(event.target.value)}
-                autoComplete="off"
-                rows={3}
-                className="flex-auto text-base!"
-                disabled={loading}
-              />
-            ),
-          },
-        ]}
-        onSubmit={handleSubmit}
-      />
-    </>
+            </div>
+          ),
+          item: (
+            <InputText
+              id={sourceId}
+              value={source}
+              onChange={(event) => setSource(event.target.value)}
+              autoComplete="off"
+              className="flex-auto h-10 text-base!"
+            />
+          ),
+        },
+        {
+          id: descriptionId,
+          name: "Description",
+          item: (
+            <InputTextarea
+              id={descriptionId}
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
+              autoComplete="off"
+              rows={3}
+              className="flex-auto text-base!"
+              disabled={loading}
+            />
+          ),
+        },
+      ]}
+      onSubmit={handleSubmit}
+    />
   );
 }

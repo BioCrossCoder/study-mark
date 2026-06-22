@@ -9,7 +9,7 @@ import { useId } from "react";
 import { modelConfigData } from "@/services/storage/modelConfig";
 import { useModelConfigData } from "@/services/modelConfig";
 import { Password } from "primereact/password";
-import { useToast } from "@/hooks/useToast";
+import { useToast } from "@/hooks/common/useToast";
 
 export default function ModelConfigDialog() {
   const [protocol, setProtocol] = useState(ModelProviderProtocol.OpenAI);

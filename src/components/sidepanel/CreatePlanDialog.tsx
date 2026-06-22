@@ -8,7 +8,7 @@ import { Dialog } from "primereact/dialog";
 import { useCreatePlan } from "@/hooks/useCreatePlan";
 import TargetFormCard from "./TargetFormCard";
 import TaskFormCard from "./TaskFormCard";
-import { useToast } from "@/hooks/useToast";
+import { useToast } from "@/hooks/common/useToast";
 
 export default function CreatePlanDialog(props: {
   close: () => void;

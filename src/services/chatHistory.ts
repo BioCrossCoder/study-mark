@@ -1,4 +1,4 @@
-import { useWxtStore } from "@/hooks/useWxtStore";
+import { useWxtStore } from "@/hooks/common/useWxtStore";
 import { chatHistoryData } from "./storage/chatHistory";
 
 export function useChatHistoryData() {

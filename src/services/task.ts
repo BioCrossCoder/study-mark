@@ -2,6 +2,7 @@ import { ExecStatus } from "@/common/enums";
 import { statusSchema, taskSchema } from "@/common/schemas";
 import { Task } from "@/common/types";
 import { isItemExist, mergeObj } from "@/common/utils";
+import { useWxtStore } from "@/hooks/common/useWxtStore";
 import { taskData } from "@/services/storage/task";
 import { Toast } from "primereact/toast";
 import { RefObject } from "react";
