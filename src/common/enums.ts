@@ -72,3 +72,14 @@ export enum ListStyle {
   Card = "card",
   Line = "line",
 }
+
+export const enum DialogType {
+  None,
+  CreateTask,
+  CreateTarget,
+  CreateLibrary,
+  UpdateTask,
+  UpdateTarget,
+  UpdateLibrary,
+  CreatePlan,
+}

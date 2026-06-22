@@ -1,7 +1,9 @@
+import { DialogType } from "@/common/enums";
 import CreateLibraryDialog from "./CreateLibraryDialog";
+import { useDialogVisible } from "@/hooks/useDialogVisible";
 
 export default function LibraryListHeader() {
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useDialogVisible(DialogType.CreateLibrary);
   return (
     <div onClick={(e) => e.stopPropagation()}>
       <div className="flex justify-between items-center">

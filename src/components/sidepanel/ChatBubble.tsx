@@ -4,16 +4,18 @@ import { ChatHistoryMessage } from "@/common/types";
 import { XMarkdown } from "@ant-design/x-markdown";
 import { Chip } from "primereact/chip";
 import { tryFormatAsJson } from "@/common/utils";
-import { AgentMode } from "@/common/enums";
+import { AgentMode, DialogType } from "@/common/enums";
 import { Button } from "primereact/button";
 import CreatePlanDialog from "./CreatePlanDialog";
 import { useChatLoadingData } from "@/services/chatLoading";
+import { useDialogVisible } from "@/hooks/useDialogVisible";
 
 export default function ChatBubble(props: {
   message: ChatHistoryMessage;
   isLast: boolean;
+  order: number;
 }) {
-  const { message } = props;
+  const { message, order } = props;
   const header = message.type === "human" ? "User" : "Agent";
   const sender = message.type === "human" ? "pi pi-user" : "pi pi-microchip-ai";
   const placement = message.type === "human" ? "start" : "end";
@@ -22,7 +24,10 @@ export default function ChatBubble(props: {
     message.type === "ai" &&
     message.mode === AgentMode.Plan &&
     (!props.isLast || loading === false);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useDialogVisible(
+    DialogType.CreatePlan,
+    order.toString(),
+  );
 
   return (
     <Bubble

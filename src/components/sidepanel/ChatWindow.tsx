@@ -59,6 +59,7 @@ export default function ChatWindow() {
               message={item}
               key={i}
               isLast={i === history.length - 1}
+              order={i}
             />
           ))}
           <div ref={bottomAnchor} />

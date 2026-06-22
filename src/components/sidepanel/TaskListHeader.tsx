@@ -1,7 +1,9 @@
+import { DialogType } from "@/common/enums";
 import CreateTaskDialog from "./CreateTaskDialog";
+import { useDialogVisible } from "@/hooks/useDialogVisible";
 
 export default function TaskListHeader() {
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useDialogVisible(DialogType.CreateTask);
   return (
     <div onClick={(e) => e.stopPropagation()}>
       <div className="flex justify-between items-center">

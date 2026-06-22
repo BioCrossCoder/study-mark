@@ -7,8 +7,9 @@ import { DataView } from "primereact/dataview";
 import UpdateLibraryDialog from "./UpdateLibraryDialog";
 import { removeLibrary } from "@/services/storage/library";
 import { useUiStateData } from "@/services/uiState";
-import { ListStyle } from "@/common/enums";
+import { DialogType, ListStyle } from "@/common/enums";
 import { Chip } from "primereact/chip";
+import { useDialogVisible } from "@/hooks/useDialogVisible";
 
 export default function LibraryList() {
   const data = useLibraryData();
@@ -22,7 +23,7 @@ export default function LibraryList() {
 function DataItem(data: Library) {
   const { listStyle } = useUiStateData();
   const { id, name, description, source: url } = data;
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useDialogVisible(DialogType.UpdateLibrary, id);
 
   function handleRemove(event: React.MouseEvent<HTMLElement>) {
     confirmPopup({

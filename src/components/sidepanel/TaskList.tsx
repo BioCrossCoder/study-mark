@@ -1,4 +1,4 @@
-import { ExecStatus, ListStyle, statusIcon } from "@/common/enums";
+import { DialogType, ExecStatus, ListStyle, statusIcon } from "@/common/enums";
 import { Task } from "@/common/types";
 import { sortBy } from "@/common/utils";
 import { useTaskData, useUpdateTaskStatus } from "@/services/task";
@@ -17,6 +17,7 @@ import { Chip } from "primereact/chip";
 import React from "react";
 import StatusButton from "../common/StatusButton";
 import { useToast } from "@/hooks/common/useToast";
+import { useDialogVisible } from "@/hooks/useDialogVisible";
 
 export default function TaskList() {
   const data = useTaskData();
@@ -41,7 +42,7 @@ function DataItem(data: Task) {
     });
   }
 
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useDialogVisible(DialogType.UpdateTask, id);
 
   const relations = useRelationsOfAllTasks();
   const targetNames = useTargetNames();

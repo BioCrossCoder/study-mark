@@ -1,7 +1,9 @@
+import { DialogType } from "@/common/enums";
 import CreateTargetDialog from "./CreateTargetDialog";
+import { useDialogVisible } from "@/hooks/useDialogVisible";
 
 export default function TargetListHeader() {
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useDialogVisible(DialogType.CreateTarget);
   return (
     <div onClick={(e) => e.stopPropagation()}>
       <div className="flex justify-between items-center">

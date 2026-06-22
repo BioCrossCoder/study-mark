@@ -1,4 +1,4 @@
-import { ListStyle, statusIcon } from "@/common/enums";
+import { DialogType, ListStyle, statusIcon } from "@/common/enums";
 import { Target } from "@/common/types";
 import { sortBy } from "@/common/utils";
 import { useRelationsOfAllTargets } from "@/services/relation";
@@ -16,6 +16,7 @@ import { useUiStateData } from "@/services/uiState";
 import { Chip } from "primereact/chip";
 import StatusButton from "../common/StatusButton";
 import { useToast } from "@/hooks/common/useToast";
+import { useDialogVisible } from "@/hooks/useDialogVisible";
 
 export default function TargetList() {
   const data = useTargetData();
@@ -29,7 +30,7 @@ export default function TargetList() {
 function DataItem(data: Target) {
   const { listStyle } = useUiStateData();
   const { id, name, status, description } = data;
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useDialogVisible(DialogType.UpdateTarget, id);
 
   const relations = useRelationsOfAllTargets();
   const taskNames = useTaskNames();
