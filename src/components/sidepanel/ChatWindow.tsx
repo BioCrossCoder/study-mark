@@ -4,7 +4,7 @@ import ChatInputBox from "./ChatInputBox";
 import { chatHistoryData, clearHistory } from "@/services/storage/chatHistory";
 import ChatBubble from "./ChatBubble";
 import { Toolbar } from "primereact/toolbar";
-import { confirmDialog, ConfirmDialog } from "primereact/confirmdialog";
+import { confirmDialog } from "primereact/confirmdialog";
 import { ScrollTop } from "primereact/scrolltop";
 import { useChatHistoryData } from "@/services/chatHistory";
 
@@ -44,7 +44,6 @@ export default function ChatWindow() {
               className="pi pi-trash hover:cursor-pointer hover:text-red-300"
               onClick={handleClear}
             />
-            <ConfirmDialog />
           </>
         }
       />

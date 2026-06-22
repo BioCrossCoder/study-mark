@@ -2,7 +2,7 @@ import { Library } from "@/common/types";
 import { sortBy } from "@/common/utils";
 import { useLibraryData } from "@/services/library";
 import { Card } from "primereact/card";
-import { ConfirmPopup, confirmPopup } from "primereact/confirmpopup";
+import { confirmPopup } from "primereact/confirmpopup";
 import { DataView } from "primereact/dataview";
 import UpdateLibraryDialog from "./UpdateLibraryDialog";
 import { removeLibrary } from "@/services/storage/library";
@@ -61,7 +61,6 @@ function DataItem(data: Library) {
                   className="pi pi-trash hover:cursor-pointer hover:text-red-400"
                   onClick={handleRemove}
                 />
-                <ConfirmPopup />
               </div>
             </div>
           }

@@ -3,7 +3,7 @@ import { Task } from "@/common/types";
 import { sortBy } from "@/common/utils";
 import { useTaskData, useUpdateTaskStatus } from "@/services/task";
 import { Card } from "primereact/card";
-import { confirmPopup, ConfirmPopup } from "primereact/confirmpopup";
+import { confirmPopup } from "primereact/confirmpopup";
 import { DataView } from "primereact/dataview";
 import UpdateTaskDialog from "./UpdateTaskDialog";
 import { Tag } from "primereact/tag";
@@ -110,7 +110,6 @@ function DataItem(data: Task) {
                   className="pi pi-trash hover:cursor-pointer hover:text-red-400"
                   onClick={handleRemove}
                 />
-                <ConfirmPopup />
               </div>
             </div>
           }
