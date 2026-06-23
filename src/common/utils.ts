@@ -81,3 +81,7 @@ export function registerSingleUseMutationHandler(callback: () => void) {
     characterData: true,
   });
 }
+
+export function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

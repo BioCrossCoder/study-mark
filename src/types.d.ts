@@ -27,6 +27,6 @@ declare module "mcp-web-bridge" {
   export class WebMCPBridge {
     constructor(serverUrl: string);
     connect: () => Promise<{ tools: WebMcpTool[] }>;
-    callTool(name: string, ...args: any);
+    callTool(name: string, ...args: any): Promise<unknown>;
   }
 }
