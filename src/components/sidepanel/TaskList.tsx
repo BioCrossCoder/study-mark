@@ -1,5 +1,5 @@
-import { DialogType, ExecStatus, ListStyle, statusIcon } from "@/common/enums";
-import { Task } from "@/common/types";
+import { DialogType, ListStyle, statusIcon } from "@/common/enums";
+import { Task, UpdateTaskForm } from "@/common/types";
 import { sortBy } from "@/common/utils";
 import { useTaskData, useUpdateTaskStatus } from "@/services/task";
 import { Card } from "primereact/card";
@@ -17,7 +17,8 @@ import { Chip } from "primereact/chip";
 import React from "react";
 import StatusButton from "../common/StatusButton";
 import { useToast } from "@/hooks/common/useToast";
-import { useDialogVisible } from "@/hooks/useDialogVisible";
+import { useDialogVisible } from "@/services/uiState";
+import { closeDialog, openDialog } from "@/services/storage/uiState";
 
 export default function TaskList() {
   const data = useTaskData();
@@ -42,10 +43,18 @@ function DataItem(data: Task) {
     });
   }
 
-  const [visible, setVisible] = useDialogVisible(DialogType.UpdateTask, id);
-
+  const visible = useDialogVisible(DialogType.UpdateTask, id);
   const relations = useRelationsOfAllTasks();
   const targetNames = useTargetNames();
+  const targets = relations[id] ?? [];
+  function handleOpen() {
+    const form: UpdateTaskForm = {
+      name,
+      description,
+      targets,
+    };
+    openDialog(DialogType.UpdateTask, id, form);
+  }
 
   function handleRemove(event: React.MouseEvent<HTMLElement>) {
     confirmPopup({
@@ -68,12 +77,6 @@ function DataItem(data: Task) {
     await updateTaskStatus(id, event.value);
     setOption(event.value);
   }
-
-  const items = Object.entries(statusIcon).map(([label, icon]) => ({
-    icon,
-    label,
-    command: () => updateTaskStatus(id, label as ExecStatus),
-  }));
 
   switch (listStyle) {
     case ListStyle.Card:
@@ -98,13 +101,13 @@ function DataItem(data: Task) {
               <div className="flex justify-between items-center gap-4">
                 <i
                   className="pi pi-pen-to-square hover:cursor-pointer hover:text-(--primary-color)"
-                  onClick={() => setVisible(true)}
+                  onClick={handleOpen}
                 />
                 {visible && (
                   <UpdateTaskDialog
-                    close={() => setVisible(false)}
+                    close={closeDialog}
                     data={data}
-                    relatedItemIds={relations[id] ?? []}
+                    relatedItemIds={targets}
                   />
                 )}
                 <i
@@ -116,7 +119,7 @@ function DataItem(data: Task) {
           }
           subTitle={
             <div className="grid grid-cols-3 gap-4">
-              {(relations[id] ?? []).map((targetId) => (
+              {targets.map((targetId) => (
                 <Tag value={targetNames[targetId]} className="break-all" />
               ))}
             </div>

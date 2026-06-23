@@ -9,7 +9,7 @@ import {
   taskSchema,
 } from "./schemas";
 import type { LanguageCode } from "iso-639-1";
-import { AgentMode } from "./enums";
+import { AgentMode, DialogType } from "./enums";
 
 export type Bookmark = z.infer<typeof bookmarkSchema>;
 
@@ -92,4 +92,40 @@ export type Comment = {
   url: string;
   range: XPathRange;
   content: string;
+};
+
+export type CreateTaskForm = {
+  name: string;
+  description: string;
+  source: string;
+  targets: string[];
+};
+
+export type UpdateTaskForm = {
+  name: string;
+  description: string;
+  targets: string[];
+};
+
+export type SaveTargetForm = {
+  name: string;
+  description: string;
+  tasks: string[];
+};
+
+export type SaveLibraryForm = {
+  name: string;
+  description: string;
+  source: string;
+};
+
+export type DialogForm = {
+  [DialogType.None]: {};
+  [DialogType.CreateTask]: CreateTaskForm;
+  [DialogType.CreateTarget]: SaveTargetForm;
+  [DialogType.CreateLibrary]: SaveLibraryForm;
+  [DialogType.UpdateTask]: UpdateTaskForm;
+  [DialogType.UpdateTarget]: SaveTargetForm;
+  [DialogType.UpdateLibrary]: SaveLibraryForm;
+  [DialogType.CreatePlan]: Plan;
 };

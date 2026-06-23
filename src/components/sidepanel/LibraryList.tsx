@@ -1,4 +1,4 @@
-import { Library } from "@/common/types";
+import { Library, SaveLibraryForm } from "@/common/types";
 import { sortBy } from "@/common/utils";
 import { useLibraryData } from "@/services/library";
 import { Card } from "primereact/card";
@@ -9,7 +9,8 @@ import { removeLibrary } from "@/services/storage/library";
 import { useUiStateData } from "@/services/uiState";
 import { DialogType, ListStyle } from "@/common/enums";
 import { Chip } from "primereact/chip";
-import { useDialogVisible } from "@/hooks/useDialogVisible";
+import { useDialogVisible } from "@/services/uiState";
+import { closeDialog, openDialog } from "@/services/storage/uiState";
 
 export default function LibraryList() {
   const data = useLibraryData();
@@ -23,7 +24,15 @@ export default function LibraryList() {
 function DataItem(data: Library) {
   const { listStyle } = useUiStateData();
   const { id, name, description, source: url } = data;
-  const [visible, setVisible] = useDialogVisible(DialogType.UpdateLibrary, id);
+  const visible = useDialogVisible(DialogType.UpdateLibrary, id);
+  function handleOpen() {
+    const form: SaveLibraryForm = {
+      name,
+      description,
+      source: url,
+    };
+    openDialog(DialogType.UpdateLibrary, id, form);
+  }
 
   function handleRemove(event: React.MouseEvent<HTMLElement>) {
     confirmPopup({
@@ -50,13 +59,10 @@ function DataItem(data: Library) {
                 />
                 <i
                   className="pi pi-pen-to-square hover:cursor-pointer hover:text-(--primary-color)"
-                  onClick={() => setVisible(true)}
+                  onClick={handleOpen}
                 />
                 {visible && (
-                  <UpdateLibraryDialog
-                    close={() => setVisible(false)}
-                    data={data}
-                  />
+                  <UpdateLibraryDialog close={closeDialog} data={data} />
                 )}
                 <i
                   className="pi pi-trash hover:cursor-pointer hover:text-red-400"

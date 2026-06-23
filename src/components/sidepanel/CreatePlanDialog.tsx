@@ -1,21 +1,23 @@
-import { ChatAIMessage, ChatMessage, Plan } from "@/common/types";
+import { ChatAIMessage, ChatMessage } from "@/common/types";
 import { Tag } from "primereact/tag";
 import { extractPlanOutline } from "@/common/logics";
 import { Button } from "primereact/button";
 import { getLastHumanMessageInHistory } from "@/services/storage/chatHistory";
-import { AgentMode } from "@/common/enums";
+import { AgentMode, DialogType } from "@/common/enums";
 import { Dialog } from "primereact/dialog";
 import { useCreatePlan } from "@/hooks/useCreatePlan";
 import TargetFormCard from "./TargetFormCard";
 import TaskFormCard from "./TaskFormCard";
 import { useToast } from "@/hooks/common/useToast";
+import { useDialogForm } from "@/services/uiState";
+import { updateDialogForm } from "@/services/storage/uiState";
 
 export default function CreatePlanDialog(props: {
   close: () => void;
   message: ChatAIMessage;
 }) {
   const plan = extractPlanOutline(props.message);
-  const [form, setForm] = useState(plan as Plan);
+  const form = useDialogForm<DialogType.CreatePlan>();
 
   function handleAddItem() {
     form.tasks.push({
@@ -23,7 +25,7 @@ export default function CreatePlanDialog(props: {
       description: "",
       source: "",
     });
-    setForm({ ...form });
+    updateDialogForm({ ...form });
   }
 
   const toast = useToast();
@@ -76,19 +78,19 @@ export default function CreatePlanDialog(props: {
         <div className="flex flex-col gap-4">
           <TargetFormCard
             value={form.target}
-            onChange={(target) => setForm({ ...form, target })}
+            onChange={(target) => updateDialogForm({ ...form, target })}
           />
           {form.tasks.map((task, i) => (
             <TaskFormCard
               value={task}
               onChange={(task) => {
                 form.tasks[i] = task;
-                setForm({ ...form });
+                updateDialogForm({ ...form });
               }}
               order={i + 1}
               onRemove={() => {
                 form.tasks.splice(i, 1);
-                setForm({ ...form });
+                updateDialogForm({ ...form });
               }}
             />
           ))}

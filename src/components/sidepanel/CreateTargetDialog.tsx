@@ -7,13 +7,21 @@ import { MultiSelect } from "primereact/multiselect";
 import { useId } from "react";
 import { createRelations } from "@/services/storage/relation";
 import { useToast } from "@/hooks/common/useToast";
+import { DialogType } from "@/common/enums";
+import { useDialogFormField } from "@/hooks/useDialogFormField";
 
 export default function CreateTargetDialog(props: { close: () => void }) {
-  const [name, setName] = useState("");
+  const [name, setName] = useDialogFormField(DialogType.CreateTarget, "name");
   const nameId = useId();
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useDialogFormField(
+    DialogType.CreateTarget,
+    "description",
+  );
   const descriptionId = useId();
-  const [tasks, setTasks] = useState(new Array<string>());
+  const [tasks, setTasks] = useDialogFormField(
+    DialogType.CreateTarget,
+    "tasks",
+  );
   const tasksId = useId();
   const options = useTaskOptions();
   const toast = useToast();

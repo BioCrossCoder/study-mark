@@ -1,6 +1,6 @@
 import { Bubble, Sources, Think } from "@ant-design/x";
 import { Avatar } from "primereact/avatar";
-import { ChatHistoryMessage } from "@/common/types";
+import { ChatAIMessage, ChatHistoryMessage, Plan } from "@/common/types";
 import { XMarkdown } from "@ant-design/x-markdown";
 import { Chip } from "primereact/chip";
 import { tryFormatAsJson } from "@/common/utils";
@@ -8,7 +8,9 @@ import { AgentMode, DialogType } from "@/common/enums";
 import { Button } from "primereact/button";
 import CreatePlanDialog from "./CreatePlanDialog";
 import { useChatLoadingData } from "@/services/chatLoading";
-import { useDialogVisible } from "@/hooks/useDialogVisible";
+import { useDialogVisible } from "@/services/uiState";
+import { closeDialog, openDialog } from "@/services/storage/uiState";
+import { extractPlanOutline } from "@/common/logics";
 
 export default function ChatBubble(props: {
   message: ChatHistoryMessage;
@@ -24,10 +26,14 @@ export default function ChatBubble(props: {
     message.type === "ai" &&
     message.mode === AgentMode.Plan &&
     (!props.isLast || loading === false);
-  const [visible, setVisible] = useDialogVisible(
-    DialogType.CreatePlan,
-    order.toString(),
-  );
+  const visible = useDialogVisible(DialogType.CreatePlan, order.toString());
+  function handleOpen() {
+    openDialog(
+      DialogType.CreatePlan,
+      order.toString(),
+      extractPlanOutline(message as ChatAIMessage) ?? ({} as Plan),
+    );
+  }
 
   return (
     <Bubble
@@ -96,12 +102,9 @@ export default function ChatBubble(props: {
             })}
             {canCreatePlan && (
               <>
-                <Button label="Create Plan" onClick={() => setVisible(true)} />
+                <Button label="Create Plan" onClick={handleOpen} />
                 {visible && (
-                  <CreatePlanDialog
-                    close={() => setVisible(false)}
-                    message={message}
-                  />
+                  <CreatePlanDialog close={closeDialog} message={message} />
                 )}
               </>
             )}

@@ -8,21 +8,38 @@ import { getCurrentTab } from "@/common/utils";
 import { useId } from "react";
 import { createRelations } from "@/services/storage/relation";
 import { useToast } from "@/hooks/common/useToast";
+import { updateDialogForm } from "@/services/storage/uiState";
+import { useDialogForm } from "@/services/uiState";
+import { DialogType } from "@/common/enums";
+import { useDialogFormField } from "@/hooks/useDialogFormField";
 
 export default function CreateTaskDialog(props: { close: () => void }) {
-  const [name, setName] = useState("");
+  const [name, setName] = useDialogFormField(DialogType.CreateTask, "name");
   const nameId = useId();
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useDialogFormField(
+    DialogType.CreateTask,
+    "description",
+  );
   const descriptionId = useId();
-  const [source, setSource] = useState("");
+  const [source, setSource] = useDialogFormField(
+    DialogType.CreateTask,
+    "source",
+  );
   const sourceId = useId();
-  const [targets, setTargets] = useState(new Array<string>());
+  const [targets, setTargets] = useDialogFormField(
+    DialogType.CreateTask,
+    "targets",
+  );
   const targetsId = useId();
   const options = useTargetOptions();
+  const form = useDialogForm<DialogType.CreateTask>();
   async function handleSetSource() {
     const tab = await getCurrentTab();
-    setSource(tab?.url ?? source);
-    setName(tab?.title ?? name);
+    updateDialogForm({
+      ...form,
+      source: tab?.url ?? source,
+      name: tab?.title ?? name,
+    });
   }
 
   const toast = useToast();

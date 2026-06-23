@@ -1,5 +1,5 @@
 import { DialogType, ListStyle, statusIcon } from "@/common/enums";
-import { Target } from "@/common/types";
+import { SaveTargetForm, Target } from "@/common/types";
 import { sortBy } from "@/common/utils";
 import { useRelationsOfAllTargets } from "@/services/relation";
 import { useTargetData, useUpdateTargetStatus } from "@/services/target";
@@ -16,7 +16,8 @@ import { useUiStateData } from "@/services/uiState";
 import { Chip } from "primereact/chip";
 import StatusButton from "../common/StatusButton";
 import { useToast } from "@/hooks/common/useToast";
-import { useDialogVisible } from "@/hooks/useDialogVisible";
+import { useDialogVisible } from "@/services/uiState";
+import { closeDialog, openDialog } from "@/services/storage/uiState";
 
 export default function TargetList() {
   const data = useTargetData();
@@ -30,10 +31,18 @@ export default function TargetList() {
 function DataItem(data: Target) {
   const { listStyle } = useUiStateData();
   const { id, name, status, description } = data;
-  const [visible, setVisible] = useDialogVisible(DialogType.UpdateTarget, id);
-
+  const visible = useDialogVisible(DialogType.UpdateTarget, id);
   const relations = useRelationsOfAllTargets();
   const taskNames = useTaskNames();
+  const tasks = relations[id] ?? [];
+  function handleOpen() {
+    const form: SaveTargetForm = {
+      name,
+      description,
+      tasks,
+    };
+    openDialog(DialogType.UpdateTarget, id, form);
+  }
 
   function handleRemove(event: React.MouseEvent<HTMLElement>) {
     confirmPopup({
@@ -76,13 +85,13 @@ function DataItem(data: Target) {
               <div className="flex justify-between items-center gap-4">
                 <i
                   className="pi pi-pen-to-square hover:cursor-pointer hover:text-(--primary-color)"
-                  onClick={() => setVisible(true)}
+                  onClick={handleOpen}
                 />
                 {visible && (
                   <UpdateTargetDialog
-                    close={() => setVisible(false)}
+                    close={closeDialog}
                     data={data}
-                    relatedItemIds={relations[id] ?? []}
+                    relatedItemIds={tasks}
                   />
                 )}
                 <i
@@ -94,7 +103,7 @@ function DataItem(data: Target) {
           }
           subTitle={
             <div className="grid grid-cols-3 gap-4">
-              {(relations[id] ?? []).map((taskId) => (
+              {tasks.map((taskId) => (
                 <Tag value={taskNames[taskId]} className="break-all" />
               ))}
             </div>

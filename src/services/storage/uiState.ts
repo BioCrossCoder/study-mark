@@ -5,6 +5,7 @@ import {
   StoreKey,
   TabIndex,
 } from "@/common/enums";
+import { DialogForm } from "@/common/types";
 
 export const uiStateData = storage.defineItem(StoreKey.UiState, {
   fallback: {
@@ -14,6 +15,7 @@ export const uiStateData = storage.defineItem(StoreKey.UiState, {
     activeDialog: {
       type: DialogType.None,
       id: "",
+      form: {} as DialogForm[DialogType],
     },
   },
 });
@@ -36,8 +38,28 @@ export async function updateListStyle(style: ListStyle) {
   await uiStateData.setValue(data);
 }
 
-export async function updateActiveDialog(type: DialogType, id: string) {
+export async function openDialog<T extends DialogType>(
+  type: T,
+  id: string,
+  form: DialogForm[T],
+) {
   const data = await uiStateData.getValue();
-  data.activeDialog = { type, id };
+  data.activeDialog = { type, id, form };
+  await uiStateData.setValue(data);
+}
+
+export async function closeDialog() {
+  const data = await uiStateData.getValue();
+  data.activeDialog = {
+    type: DialogType.None,
+    id: "",
+    form: {},
+  };
+  await uiStateData.setValue(data);
+}
+
+export async function updateDialogForm(form: DialogForm[DialogType]) {
+  const data = await uiStateData.getValue();
+  data.activeDialog.form = form;
   await uiStateData.setValue(data);
 }

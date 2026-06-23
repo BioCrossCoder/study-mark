@@ -6,13 +6,21 @@ import { useGetWebsiteMetadata } from "@/hooks/useGetWebsiteMetadata";
 import { getCurrentTab } from "@/common/utils";
 import { useId } from "react";
 import { useToast } from "@/hooks/common/useToast";
+import { useDialogFormField } from "@/hooks/useDialogFormField";
+import { DialogType } from "@/common/enums";
 
 export default function CreateLibraryDialog(props: { close: () => void }) {
-  const [name, setName] = useState("");
+  const [name, setName] = useDialogFormField(DialogType.CreateLibrary, "name");
   const nameId = useId();
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useDialogFormField(
+    DialogType.CreateLibrary,
+    "description",
+  );
   const descriptionId = useId();
-  const [source, setSource] = useState("");
+  const [source, setSource] = useDialogFormField(
+    DialogType.CreateLibrary,
+    "source",
+  );
   const sourceId = useId();
   const [loading, setLoading] = useState(false);
   const toast = useToast();
