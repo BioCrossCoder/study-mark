@@ -1,5 +1,5 @@
 import {
-  AgentMode,
+  AgentCommand,
   ContextMenuItemID,
   MessageID,
   Signal,
@@ -67,11 +67,11 @@ export default defineBackground(() => {
       const { mode, message: content } = chatMessage.data;
       await updateHistory(
         { type: "human", content } as ChatHumanMessage,
-        AgentMode.Plan,
+        AgentCommand.Plan,
       );
       await chatLoadingData.setValue(true);
       switch (mode) {
-        case AgentMode.Plan:
+        case AgentCommand.Plan:
           const result = await plannerAgent.run(content);
           const notice = Error.isError(result) ? "Failed" : "Succeeded";
           const message = Error.isError(result)
@@ -85,8 +85,7 @@ export default defineBackground(() => {
             message,
           });
           break;
-        case AgentMode.Chat:
-          // TODO
+        default:
           break;
       }
     }

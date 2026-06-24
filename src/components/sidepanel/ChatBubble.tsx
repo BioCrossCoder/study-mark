@@ -4,7 +4,7 @@ import { ChatAIMessage, ChatHistoryMessage, Plan } from "@/common/types";
 import { XMarkdown } from "@ant-design/x-markdown";
 import { Chip } from "primereact/chip";
 import { tryFormatAsJson } from "@/common/utils";
-import { AgentMode, DialogType } from "@/common/enums";
+import { AgentCommand, DialogType } from "@/common/enums";
 import { Button } from "primereact/button";
 import CreatePlanDialog from "./CreatePlanDialog";
 import { useChatLoadingData } from "@/services/chatLoading";
@@ -24,7 +24,7 @@ export default function ChatBubble(props: {
   const loading = useChatLoadingData();
   const canCreatePlan =
     message.type === "ai" &&
-    message.mode === AgentMode.Plan &&
+    message.mode === AgentCommand.Plan &&
     (!props.isLast || loading === false);
   const visible = useDialogVisible(DialogType.CreatePlan, order.toString());
   function handleOpen() {

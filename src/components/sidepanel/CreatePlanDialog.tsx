@@ -3,7 +3,7 @@ import { Tag } from "primereact/tag";
 import { extractPlanOutline } from "@/common/logics";
 import { Button } from "primereact/button";
 import { getLastHumanMessageInHistory } from "@/services/storage/chatHistory";
-import { AgentMode, DialogType } from "@/common/enums";
+import { AgentCommand, DialogType } from "@/common/enums";
 import { Dialog } from "primereact/dialog";
 import { useCreatePlan } from "@/hooks/useCreatePlan";
 import TargetFormCard from "./TargetFormCard";
@@ -44,7 +44,7 @@ export default function CreatePlanDialog(props: {
     const content = await getLastHumanMessageInHistory();
     if (content) {
       const message: ChatMessage = {
-        mode: AgentMode.Plan,
+        mode: AgentCommand.Plan,
         message: content.content,
       };
       browser.runtime.sendMessage(message);

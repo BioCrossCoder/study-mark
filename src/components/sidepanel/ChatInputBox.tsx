@@ -1,4 +1,4 @@
-import { AgentMode, Signal } from "@/common/enums";
+import { AgentCommand, Signal } from "@/common/enums";
 import { ChatMessage } from "@/common/types";
 import { useChatLoadingData } from "@/services/chatLoading";
 import { Sender } from "@ant-design/x";
@@ -9,7 +9,7 @@ export default function ChatInputBox() {
   const loading = useChatLoadingData();
   function handleSubmit() {
     const message: ChatMessage = {
-      mode: AgentMode.Plan,
+      mode: AgentCommand.Plan,
       message: question,
     };
     browser.runtime.sendMessage(message);

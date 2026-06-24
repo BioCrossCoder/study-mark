@@ -9,7 +9,7 @@ import {
 } from "@/services/storage/chatHistory";
 import { planSchema } from "@/common/schemas";
 import { webSearchTool } from "../tools/webSearch";
-import { AgentMode } from "@/common/enums";
+import { AgentCommand } from "@/common/enums";
 import { systemPrompt } from "../prompts/planner";
 import { loadLibraryTool } from "../tools/loadLibrary";
 import { extractPlanOutline } from "@/common/logics";
@@ -37,7 +37,7 @@ async function run(content: string) {
         agent,
         [new HumanMessage(content)],
         abortController,
-        (message) => updateHistory(message, AgentMode.Plan),
+        (message) => updateHistory(message, AgentCommand.Plan),
       );
     } catch (e) {
       err = e as Error;

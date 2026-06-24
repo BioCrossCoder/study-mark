@@ -1,4 +1,4 @@
-import { AgentMode, StoreKey } from "@/common/enums";
+import { AgentCommand, StoreKey } from "@/common/enums";
 import {
   ChatAIMessageItem,
   ChatHistoryMessage,
@@ -15,7 +15,7 @@ export const chatHistoryData = storage.defineItem<ChatHistoryMessage[]>(
 
 export async function updateHistory(
   message: ChatHumanMessage | ChatAIMessageItem,
-  mode: AgentMode,
+  mode: AgentCommand,
 ) {
   const history = await chatHistoryData.getValue();
   const lastMessage = history.at(-1);

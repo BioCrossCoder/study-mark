@@ -1,9 +1,9 @@
-import { AgentMode } from "./enums";
+import { AgentCommand } from "./enums";
 import { planSchema } from "./schemas";
 import { ChatAIMessage, Plan } from "./types";
 
 export function extractPlanOutline(message: ChatAIMessage): Plan | null {
-  if (message.mode !== AgentMode.Plan) {
+  if (message.mode !== AgentCommand.Plan) {
     return null;
   }
   for (let i = message.content.length - 1; i >= 0; i--) {

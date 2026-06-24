@@ -1,5 +1,5 @@
 import z from "zod";
-import { AgentMode, ExecStatus, ModelProviderProtocol, Signal } from "./enums";
+import { AgentCommand, ExecStatus, ModelProviderProtocol, Signal } from "./enums";
 
 const nonEmptyStringSchema = z.string().refine((val) => val.trim() !== "");
 
@@ -68,7 +68,7 @@ export const planSchema = z.object({
 });
 
 export const chatMessageSchema = z.object({
-  mode: z.enum(AgentMode),
+  mode: z.enum(AgentCommand),
   message: nonEmptyStringSchema,
 });
 

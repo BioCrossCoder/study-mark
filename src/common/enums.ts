@@ -40,8 +40,7 @@ export enum ModelProviderProtocol {
   Anthropic = "anthropic",
 }
 
-export enum AgentMode {
-  Chat,
+export enum AgentCommand {
   Plan,
 }
 
