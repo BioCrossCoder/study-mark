@@ -3,7 +3,7 @@ import App from "./App.tsx";
 import ReactContainer from "@/components/common/ReactContainer.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <ReactContainer>
+  <ReactContainer toastPosition="center">
     <App />
   </ReactContainer>,
 );

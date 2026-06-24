@@ -1,7 +1,7 @@
 import { ExecStatus } from "@/common/enums";
 import { statusSchema, taskSchema } from "@/common/schemas";
 import { Task } from "@/common/types";
-import { isItemExist, mergeObj } from "@/common/utils";
+import { isItemExist, mergeObj, positionMatch } from "@/common/utils";
 import { useWxtStore } from "@/hooks/common/useWxtStore";
 import { taskData } from "@/services/storage/task";
 import { Toast } from "primereact/toast";
@@ -158,4 +158,16 @@ export function useUpdateTaskStatus(toast: RefObject<Toast | null>) {
     await taskData.setValue(tasks);
     return id;
   };
+}
+
+export function useTasksByPositionUrl(url: string) {
+  const data = useTaskData();
+  return Object.values(data).filter((item) =>
+    positionMatch(url, item.position.url),
+  );
+}
+
+export function useTaskById(id: string): Task | undefined {
+  const data = useTaskData();
+  return data[id];
 }
