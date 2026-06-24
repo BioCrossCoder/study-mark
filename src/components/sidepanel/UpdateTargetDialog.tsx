@@ -12,30 +12,37 @@ import {
 } from "@/services/storage/relation";
 import { Target } from "@/common/types";
 import { useToast } from "@/hooks/common/useToast";
+import { useDialogFormField } from "@/hooks/sidepanel/useDialogFormField";
+import { DialogType } from "@/common/enums";
 
 export default function UpdateTargetDialog(props: {
   close: () => void;
-  data: Target;
-  relatedItemIds: string[];
+  id: string;
 }) {
-  const { data, close, relatedItemIds } = props;
-  const [name, setName] = useState(data.name);
+  const { id, close } = props;
+  const [name, setName] = useDialogFormField(DialogType.UpdateTarget, "name");
   const nameId = useId();
-  const [description, setDescription] = useState(data.description);
+  const [description, setDescription] = useDialogFormField(
+    DialogType.UpdateTarget,
+    "description",
+  );
   const descriptionId = useId();
 
-  const [tasks, setTasks] = useState(relatedItemIds);
+  const [tasks, setTasks] = useDialogFormField(
+    DialogType.UpdateTarget,
+    "tasks",
+  );
   const tasksId = useId();
   const options = useTaskOptions();
 
   const toast = useToast();
   const updateTarget = useUpdateTarget(toast);
   async function handleSubmit() {
-    const result = await updateTarget(data.id, { name, description });
+    const result = await updateTarget(id, { name, description });
     if (Error.isError(result)) {
       return result;
     }
-    await removeRelationsOfTarget(data.id);
+    await removeRelationsOfTarget(id);
     return await createRelations(
       tasks.map((taskId) => ({
         targetId: result,

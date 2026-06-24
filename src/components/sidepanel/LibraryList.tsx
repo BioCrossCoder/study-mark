@@ -61,9 +61,7 @@ function DataItem(data: Library) {
                   className="pi pi-pen-to-square hover:cursor-pointer hover:text-(--primary-color)"
                   onClick={handleOpen}
                 />
-                {visible && (
-                  <UpdateLibraryDialog close={closeDialog} data={data} />
-                )}
+                {visible && <UpdateLibraryDialog close={closeDialog} id={id} />}
                 <i
                   className="pi pi-trash hover:cursor-pointer hover:text-red-400"
                   onClick={handleRemove}

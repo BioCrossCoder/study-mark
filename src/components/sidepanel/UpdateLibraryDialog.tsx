@@ -4,19 +4,26 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { useGetWebsiteMetadata } from "@/hooks/sidepanel/useGetWebsiteMetadata";
 import { useId } from "react";
-import { Library } from "@/common/types";
 import { useToast } from "@/hooks/common/useToast";
+import { useDialogFormField } from "@/hooks/sidepanel/useDialogFormField";
+import { DialogType } from "@/common/enums";
 
 export default function UpdateLibraryDialog(props: {
+  id: string;
   close: () => void;
-  data: Library;
 }) {
-  const { data, close } = props;
-  const [name, setName] = useState(data.name);
+  const { id, close } = props;
+  const [name, setName] = useDialogFormField(DialogType.UpdateLibrary, "name");
   const nameId = useId();
-  const [description, setDescription] = useState(data.description);
+  const [description, setDescription] = useDialogFormField(
+    DialogType.UpdateLibrary,
+    "description",
+  );
   const descriptionId = useId();
-  const [source, setSource] = useState(data.source);
+  const [source, setSource] = useDialogFormField(
+    DialogType.UpdateLibrary,
+    "source",
+  );
   const sourceId = useId();
   const [loading, setLoading] = useState(false);
   const toast = useToast();
@@ -33,7 +40,7 @@ export default function UpdateLibraryDialog(props: {
 
   const updateLibrary = useUpdateLibrary(toast);
   async function handleSubmit() {
-    return await updateLibrary(data.id, { name, description, source });
+    return await updateLibrary(id, { name, description, source });
   }
 
   return (
