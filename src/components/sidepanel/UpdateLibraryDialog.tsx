@@ -2,7 +2,7 @@ import { useUpdateLibrary } from "@/services/library";
 import FormDialog from "../common/FormDialog";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
-import { useGetWebsiteMetadata } from "@/hooks/useGetWebsiteMetadata";
+import { useGetWebsiteMetadata } from "@/hooks/sidepanel/useGetWebsiteMetadata";
 import { useId } from "react";
 import { Library } from "@/common/types";
 import { useToast } from "@/hooks/common/useToast";

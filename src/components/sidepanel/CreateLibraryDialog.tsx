@@ -2,11 +2,11 @@ import { useCreateLibrary } from "@/services/library";
 import FormDialog from "../common/FormDialog";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
-import { useGetWebsiteMetadata } from "@/hooks/useGetWebsiteMetadata";
+import { useGetWebsiteMetadata } from "@/hooks/sidepanel/useGetWebsiteMetadata";
 import { getCurrentTab } from "@/common/utils";
 import { useId } from "react";
 import { useToast } from "@/hooks/common/useToast";
-import { useDialogFormField } from "@/hooks/useDialogFormField";
+import { useDialogFormField } from "@/hooks/sidepanel/useDialogFormField";
 import { DialogType } from "@/common/enums";
 
 export default function CreateLibraryDialog(props: { close: () => void }) {

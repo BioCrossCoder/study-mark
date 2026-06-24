@@ -5,7 +5,7 @@ import { Button } from "primereact/button";
 import { getLastHumanMessageInHistory } from "@/services/storage/chatHistory";
 import { AgentCommand, DialogType } from "@/common/enums";
 import { Dialog } from "primereact/dialog";
-import { useCreatePlan } from "@/hooks/useCreatePlan";
+import { useCreatePlan } from "@/hooks/sidepanel/useCreatePlan";
 import TargetFormCard from "./TargetFormCard";
 import TaskFormCard from "./TaskFormCard";
 import { useToast } from "@/hooks/common/useToast";

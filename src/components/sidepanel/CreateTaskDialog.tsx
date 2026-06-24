@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/common/useToast";
 import { updateDialogForm } from "@/services/storage/uiState";
 import { useDialogForm } from "@/services/uiState";
 import { DialogType } from "@/common/enums";
-import { useDialogFormField } from "@/hooks/useDialogFormField";
+import { useDialogFormField } from "@/hooks/sidepanel/useDialogFormField";
 
 export default function CreateTaskDialog(props: { close: () => void }) {
   const [name, setName] = useDialogFormField(DialogType.CreateTask, "name");
