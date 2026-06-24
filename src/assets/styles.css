@@ -1,15 +1,17 @@
-@layer tailwind-base, primereact;
+@layer tailwind, primereact;
 
-@media (prefers-color-scheme: light) {
-    @import 'primereact/resources/themes/lara-light-blue/theme';
-}
-
-@media (prefers-color-scheme: dark) {
-    @import "primereact/resources/themes/lara-dark-blue/theme";
-}
-
-@layer tailwind-base {
+@layer tailwind {
     @import "tailwindcss";
 }
 
-@import "primeicons/primeicons";
+@layer primereact {
+    @media (prefers-color-scheme: light) {
+        @import 'primereact/resources/themes/lara-light-blue/theme';
+    }
+
+    @media (prefers-color-scheme: dark) {
+        @import "primereact/resources/themes/lara-dark-blue/theme";
+    }
+
+    @import "primeicons/primeicons";
+}
