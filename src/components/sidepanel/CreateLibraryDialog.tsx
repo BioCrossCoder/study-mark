@@ -8,6 +8,8 @@ import { useId } from "react";
 import { useToast } from "@/hooks/common/useToast";
 import { useDialogFormField } from "@/hooks/sidepanel/useDialogFormField";
 import { DialogType } from "@/common/enums";
+import { updateDialogForm } from "@/services/storage/uiState";
+import { useDialogForm } from "@/services/uiState";
 
 export default function CreateLibraryDialog(props: { close: () => void }) {
   const [name, setName] = useDialogFormField(DialogType.CreateLibrary, "name");
@@ -25,21 +27,25 @@ export default function CreateLibraryDialog(props: { close: () => void }) {
   const [loading, setLoading] = useState(false);
   const toast = useToast();
   const getWebsiteMetadata = useGetWebsiteMetadata(toast);
+  const form = useDialogForm<DialogType.CreateLibrary>();
   async function handleSetSource() {
     const tab = await getCurrentTab();
-    setName(tab?.title ?? name);
+    form.name = tab?.title ?? name;
+    await updateDialogForm(form);
     const newSource = tab?.url ?? source;
     if (!newSource) {
       return;
     }
-    setSource(newSource);
+    form.source = newSource;
+    await updateDialogForm(form);
     setLoading(true);
     const result = await getWebsiteMetadata(newSource);
     setLoading(false);
     if (Error.isError(result)) {
       return;
     }
-    setDescription(result.description ?? description);
+    form.description = result.description ?? description;
+    await updateDialogForm(form);
   }
 
   const createLibrary = useCreateLibrary(toast);
