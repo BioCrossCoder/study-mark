@@ -82,3 +82,7 @@ export const enum DialogType {
   UpdateLibrary,
   CreatePlan,
 }
+
+export const enum CustomEventName {
+  UpdateComment = "study-mark-update-comment",
+}

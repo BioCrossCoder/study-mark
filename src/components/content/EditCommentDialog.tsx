@@ -1,58 +1,34 @@
-import { InputTextarea } from "primereact/inputtextarea";
-import SingleButtonDialog from "./SingleButtonDialog";
 import { useToast } from "@/hooks/content/useToast";
-import { fromRange } from "xpath-range";
-import { tryInsertCommentBlock } from "@/entrypoints/content/logics/comment";
-import { insertComment } from "@/services/storage/comment";
+import { removeComment, updateComment } from "@/services/storage/comment";
+import { Instance, Props } from "tippy.js";
+import SingleButtonDialog from "./SingleButtonDialog";
+import { InputTextarea } from "primereact/inputtextarea";
 
 export default function EditCommentDialog(props: {
   close: () => void;
-  range: Range;
+  id: string;
 }) {
-  const [content, setContent] = useState("");
+  const comment = document.getElementById(props.id)!;
+  const tippyInst = (comment as any)._tippy as Instance<Props>;
+  const [content, setContent] = useState(tippyInst.popper.textContent);
   const toast = useToast();
-
   async function handleSubmit() {
-    const summary = "Edit Comment Failed";
-    // [AvoidCommentBlockCrossElement]
-    const range = fromRange(props.range);
-    if (range.start !== range.end) {
+    if (content) {
+      tippyInst.setContent(content);
+      await updateComment(comment.id, content);
       toast.current?.show({
-        severity: "error",
-        summary,
-        detail: "Comment blocks cannot cross paragraph",
+        severity: "success",
+        summary: "Update Comment Succeeded",
       });
-      return;
-    } // [/]
-    if (!content) {
-      // TODO 删除当前批注
-      return;
+    } else {
+      tippyInst.destroy();
+      comment.remove();
+      await removeComment(comment.id);
+      toast.current?.show({
+        severity: "success",
+        summary: "Remove Comment Succeeded",
+      });
     }
-    // [InsertCommentBlock]
-    const result = tryInsertCommentBlock(
-      `study-mark-${crypto.randomUUID()}-${Date.now()}`,
-      props.range,
-      content,
-    );
-    if (Error.isError(result)) {
-      toast.current?.show({
-        severity: "error",
-        summary,
-        detail: result.message,
-      });
-      return;
-    } // [/]
-    // [SaveCommentBlockData]
-    await insertComment({
-      id: result.id,
-      url: window.location.href,
-      content,
-      range,
-    }); // [/]
-    toast.current?.show({
-      severity: "success",
-      summary: "Edit Comment Succeeded",
-    });
     props.close();
   }
   return (

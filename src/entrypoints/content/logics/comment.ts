@@ -1,11 +1,8 @@
 import { toRange } from "xpath-range";
 import tippy from "tippy.js";
-import {
-  getCommentsByUrl,
-  removeComment,
-  updateComment,
-} from "@/services/storage/comment";
+import { getCommentsByUrl } from "@/services/storage/comment";
 import { registerSingleUseMutationHandler } from "@/common/utils";
+import { CustomEventName } from "@/common/enums";
 
 const commentLineCssClassName = "study-mark-comment-line";
 
@@ -17,6 +14,9 @@ export function injectCommentLineStyle() {
       background-color: orange;
       position: absolute;
       border-radius: 2px;
+      &:hover {
+        cursor: pointer;
+      }
     }
   `;
   document.head.appendChild(style);
@@ -59,23 +59,12 @@ export function tryInsertCommentBlock(
   } catch (e) {
     return e as Error;
   }
-  const inst = tippy(`#${id}`, { content, placement: "bottom" }).at(0)!;
-  comment.onclick = async () => {
-    const content = window.prompt(
-      "Update this comment or leave empty to remove it?",
-      inst.popper.textContent,
-    );
-    if (content === null) {
-      return;
-    }
-    if (content.trim() === "") {
-      inst.destroy();
-      comment.remove();
-      await removeComment(comment.id);
-    } else {
-      inst.setContent(content);
-      updateComment(comment.id, content);
-    }
+  tippy(`#${id}`, { content, placement: "bottom" });
+  comment.onclick = () => {
+    const event = new CustomEvent(CustomEventName.UpdateComment, {
+      detail: id,
+    });
+    document.dispatchEvent(event);
   };
   return comment;
 }
