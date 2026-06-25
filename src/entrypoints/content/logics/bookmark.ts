@@ -1,10 +1,5 @@
 import { registerSingleUseMutationHandler } from "@/common/utils";
-import {
-  getTaskByName,
-  getTasksByPositionUrl,
-  updateTaskProgress,
-} from "@/services/storage/task";
-import { fromRange } from "xpath-range";
+import { getTasksByPositionUrl } from "@/services/storage/task";
 
 async function queryBookmark(url: string) {
   const tasks = await getTasksByPositionUrl(url);
@@ -51,48 +46,7 @@ function tryInsertBookmark(xpath: string, offset: number, id: string) {
   return anchor;
 }
 
-export async function saveBookmark() {
-  const selection = window.getSelection();
-  if (!selection || selection.rangeCount === 0) {
-    return;
-  }
-  let tasks = await getTasksByPositionUrl(window.location.href);
-  if (tasks.length === 0) {
-    // [AskUserToInputTaskTitle]
-    const name = window.prompt("Enter a Task title")?.trim();
-    if (!name) {
-      window.alert("Task Not Specified!");
-      return;
-    } // [/]
-    // [QueryTask]
-    const task = await getTaskByName(name ?? "");
-    if (!task) {
-      window.alert("Task Not Found!");
-      return;
-    } // [/]
-    tasks = [task];
-  }
-  // [InsertNewBookmark]
-  const bookmark = createBookmark(`study-mark-${crypto.randomUUID()}`);
-  const range = selection.getRangeAt(0);
-  range.insertNode(bookmark); // [/]
-  // [SaveBookmarkPosition]
-  const { start, startOffset } = fromRange(range);
-  const taskIds = tasks.map((task) => task.id);
-  await updateTaskProgress(taskIds, window.location.href, {
-    id: bookmark.id,
-    xpath: start,
-    offset: startOffset,
-  }); // [/]
-  // [RemoveOldBookmark]
-  const id = tasks.at(0)?.position.bookmark?.id;
-  if (id !== undefined) {
-    document.getElementById(id)?.remove();
-  } // [/]
-  window.confirm("Task Progress Updated");
-}
-
-function createBookmark(id: string) {
+export function createBookmark(id: string) {
   const bookmark = document.createElement("span");
   bookmark.textContent = "🔖";
   bookmark.id = id;

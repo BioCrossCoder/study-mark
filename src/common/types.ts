@@ -129,12 +129,3 @@ export type DialogForm = {
   [DialogType.UpdateLibrary]: SaveLibraryForm;
   [DialogType.CreatePlan]: Plan;
 };
-
-export type Position =
-  | "center"
-  | "top-center"
-  | "top-left"
-  | "top-right"
-  | "bottom-center"
-  | "bottom-left"
-  | "bottom-right";

@@ -6,6 +6,7 @@ import { loadComments } from "./logics/comment";
 import { onMessage } from "webext-bridge/content-script";
 import { MessageID } from "@/common/enums.ts";
 import "tippy.js/dist/tippy.css";
+import { ToastContextProvider } from "@/contexts/content/ToastContext.tsx";
 
 export default defineContentScript({
   matches: ["<all_urls>"],
@@ -20,8 +21,10 @@ export default defineContentScript({
         container.append(app);
         const root = ReactDOM.createRoot(app);
         root.render(
-          <ReactContainer toastPosition="top-center">
-            <App />
+          <ReactContainer>
+            <ToastContextProvider>
+              <App />
+            </ToastContextProvider>
           </ReactContainer>,
         );
         return root;
