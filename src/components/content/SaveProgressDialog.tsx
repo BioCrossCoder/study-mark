@@ -78,7 +78,7 @@ export default function SaveProgressDialog(props: { close: () => void }) {
           </div>
         }
         footer={
-          <div className="flex justify-end">
+          <div className="flex justify-center">
             <Button
               label="Save"
               onClick={handleSubmit}

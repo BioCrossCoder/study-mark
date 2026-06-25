@@ -52,7 +52,7 @@ export default function ModelConfigDialog() {
     <Panel
       header="Model Config"
       footer={
-        <div className="flex justify-end">
+        <div className="flex justify-center">
           <Button label="Save" onClick={handleSubmit} />
         </div>
       }
