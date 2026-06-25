@@ -6,7 +6,10 @@ import TaskDropdown from "./TaskDropdown";
 import { useToast } from "@/hooks/content/useToast";
 import SingleButtonDialog from "./SingleButtonDialog";
 
-export default function SaveProgressDialog(props: { close: () => void }) {
+export default function SaveProgressDialog(props: {
+  close: () => void;
+  range: Range;
+}) {
   const defaultTasks = useTasksByPositionUrl(window.location.href);
   const [option, setOption] = useState<string | undefined>(undefined);
   useEffect(() => {
@@ -19,32 +22,20 @@ export default function SaveProgressDialog(props: { close: () => void }) {
   const tasks = useTasksByPositionUrl(task?.position.url ?? "");
   const toast = useToast();
   async function handleSubmit() {
-    // [CheckSelection]
-    const summary = "Save Progress Failed";
-    const selection = window.getSelection();
-    if (!selection || selection.rangeCount === 0) {
-      toast.current?.show({
-        severity: "error",
-        summary,
-        detail: "No Valid Position",
-      });
-      return;
-    } // [/]
     // [CheckOption]
     if (tasks.length === 0) {
       toast.current?.show({
         severity: "error",
-        summary,
+        summary: "Save Progress Failed",
         detail: "No Task Selected",
       });
       return;
     } // [/]
     // [InsertNewBookmark]
     const bookmark = createBookmark(`study-mark-${crypto.randomUUID()}`);
-    const range = selection.getRangeAt(0);
-    range.insertNode(bookmark); // [/]
+    props.range.insertNode(bookmark); // [/]
     // [SaveBookmarkPosition]
-    const { start, startOffset } = fromRange(range);
+    const { start, startOffset } = fromRange(props.range);
     const taskIds = tasks.map((task) => task.id);
     await updateTaskProgress(taskIds, window.location.href, {
       id: bookmark.id,

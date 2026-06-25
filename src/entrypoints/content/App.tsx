@@ -14,7 +14,10 @@ export default function App() {
     (spdVisible || acdVisible) && (
       <div className="fixed left-0 top-0 w-screen h-screen z-50">
         {spdVisible && (
-          <SaveProgressDialog close={() => setSpdVisible(false)} />
+          <SaveProgressDialog
+            close={() => setSpdVisible(false)}
+            range={window.getSelection()!.getRangeAt(0)}
+          />
         )}
         {acdVisible && <EditCommentDialog close={() => setAcdVisible(false)} />}
       </div>
