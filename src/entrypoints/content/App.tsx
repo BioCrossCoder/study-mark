@@ -6,9 +6,16 @@ import EditCommentDialog from "@/components/content/EditCommentDialog";
 export default function App() {
   const [spdVisible, setSpdVisible] = useState(false);
   const [acdVisible, setAcdVisible] = useState(false);
+  const [range, setRange] = useState(new Range());
   useEffect(() => {
-    onMessage(MessageID.SaveProgress, () => setSpdVisible(true));
-    onMessage(MessageID.AddComment, () => setAcdVisible(true));
+    onMessage(MessageID.SaveProgress, () => {
+      setRange(window.getSelection()!.getRangeAt(0));
+      setSpdVisible(true);
+    });
+    onMessage(MessageID.AddComment, () => {
+      setRange(window.getSelection()!.getRangeAt(0));
+      setAcdVisible(true);
+    });
   }, []);
   return (
     (spdVisible || acdVisible) && (
@@ -16,10 +23,12 @@ export default function App() {
         {spdVisible && (
           <SaveProgressDialog
             close={() => setSpdVisible(false)}
-            range={window.getSelection()!.getRangeAt(0)}
+            range={range}
           />
         )}
-        {acdVisible && <EditCommentDialog close={() => setAcdVisible(false)} />}
+        {acdVisible && (
+          <EditCommentDialog close={() => setAcdVisible(false)} range={range} />
+        )}
       </div>
     )
   );

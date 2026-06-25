@@ -1,7 +1,6 @@
-import { fromRange, toRange } from "xpath-range";
+import { toRange } from "xpath-range";
 import tippy from "tippy.js";
 import {
-  insertComment,
   getCommentsByUrl,
   removeComment,
   updateComment,
@@ -40,42 +39,11 @@ export async function loadComments() {
   }
 }
 
-export async function addComment() {
-  const selection = window.getSelection();
-  if (!selection || selection.rangeCount === 0) {
-    return;
-  }
-  const selectionRange = selection.getRangeAt(0);
-  // [AvoidCommentBlockCrossElement]
-  const range = fromRange(selectionRange);
-  if (range.start !== range.end) {
-    window.alert("Comment blocks cannot cross paragraph");
-    return;
-  } // [/]
-  const content = window.prompt("Enter comment content");
-  if (!content) {
-    return;
-  }
-  // [InsertCommentBlock]
-  const result = tryInsertCommentBlock(
-    `study-mark-${crypto.randomUUID()}-${Date.now()}`,
-    selectionRange,
-    content,
-  ); // [/]
-  if (Error.isError(result)) {
-    window.alert(result.message);
-    return;
-  }
-  // [SaveCommentBlockData]
-  await insertComment({
-    id: result.id,
-    url: window.location.href,
-    content,
-    range,
-  }); // [/]
-}
-
-function tryInsertCommentBlock(id: string, range: Range, content: string) {
+export function tryInsertCommentBlock(
+  id: string,
+  range: Range,
+  content: string,
+) {
   const comment = document.createElement("div");
   comment.id = id;
   comment.className = commentLineCssClassName;
