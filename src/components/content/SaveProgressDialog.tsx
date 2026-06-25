@@ -2,11 +2,9 @@ import { useTaskById, useTasksByPositionUrl } from "@/services/task";
 import { fromRange } from "xpath-range";
 import { updateTaskProgress } from "@/services/storage/task";
 import { createBookmark } from "@/entrypoints/content/logics/bookmark";
-import { Panel } from "primereact/panel";
-import { Button } from "primereact/button";
-import { X } from "lucide-react";
 import TaskDropdown from "./TaskDropdown";
 import { useToast } from "@/hooks/content/useToast";
+import SingleButtonDialog from "./SingleButtonDialog";
 
 export default function SaveProgressDialog(props: { close: () => void }) {
   const defaultTasks = useTasksByPositionUrl(window.location.href);
@@ -66,40 +64,15 @@ export default function SaveProgressDialog(props: { close: () => void }) {
   }
 
   return (
-    <div className="w-full h-full flex justify-center items-center">
-      <Panel
-        header={
-          <div className="flex justify-between items-center">
-            <p className="font-semibold text-[20px]">Save Progress</p>
-            <X
-              className="hover:cursor-pointer hover:text-red-300"
-              onClick={props.close}
-            />
-          </div>
-        }
-        footer={
-          <div className="flex justify-center">
-            <Button
-              label="Save"
-              onClick={handleSubmit}
-              className="text-[14px]! hover:cursor-pointer"
-            />
-          </div>
-        }
-        pt={{
-          header: {
-            className: "rounded-tl-[10px]! rounded-tr-[10px]!",
-          },
-          footer: {
-            className: "rounded-bl-[10px] rounded-br-[10px]",
-          },
-        }}
-      >
-        <TaskDropdown
-          value={option}
-          onChange={(event) => setOption(event.value ?? "")}
-        />
-      </Panel>
-    </div>
+    <SingleButtonDialog
+      close={props.close}
+      title="Save Progress"
+      onSubmit={handleSubmit}
+    >
+      <TaskDropdown
+        value={option}
+        onChange={(event) => setOption(event.value ?? "")}
+      />
+    </SingleButtonDialog>
   );
 }
