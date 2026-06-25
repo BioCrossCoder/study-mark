@@ -70,7 +70,7 @@ export default function SaveProgressDialog(props: { close: () => void }) {
       <Panel
         header={
           <div className="flex justify-between items-center">
-            <p className="font-bold text-[20px]">Save Progress</p>
+            <p className="font-semibold text-[20px]">Save Progress</p>
             <X
               className="hover:cursor-pointer hover:text-red-300"
               onClick={props.close}
@@ -86,6 +86,14 @@ export default function SaveProgressDialog(props: { close: () => void }) {
             />
           </div>
         }
+        pt={{
+          header: {
+            className: "rounded-tl-[10px]! rounded-tr-[10px]!",
+          },
+          footer: {
+            className: "rounded-bl-[10px] rounded-br-[10px]",
+          },
+        }}
       >
         <TaskDropdown
           value={option}
