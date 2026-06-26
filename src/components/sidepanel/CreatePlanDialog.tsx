@@ -77,10 +77,12 @@ export default function CreatePlanDialog(props: {
       {plan ? (
         <div className="flex flex-col gap-4">
           <TargetFormCard
-            value={form.target}
+            // Avoid the Exception caused by undefined target from async state change
+            value={form.target ?? {}}
             onChange={(target) => updateDialogForm({ ...form, target })}
           />
-          {form.tasks.map((task, i) => (
+          {/* Avoid the Exception caused by undefined tasks from async state change */}
+          {(form.tasks ?? []).map((task, i) => (
             <TaskFormCard
               value={task}
               onChange={(task) => {
