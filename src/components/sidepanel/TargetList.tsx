@@ -118,7 +118,7 @@ function DataItem(data: Target) {
       );
     case ListStyle.Line:
       return (
-        <div className="flex justify-between items-center gap-2">
+        <div className="flex justify-between items-center gap-2 my-1">
           <Chip label={name} className="break-all" />
           <StatusButton
             status={status}

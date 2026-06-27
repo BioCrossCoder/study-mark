@@ -11,7 +11,7 @@ function DataItem(url: string) {
   return (
     <Chip
       label={url}
-      className="break-all my-2 hover:cursor-pointer hover:text-(--primary-color)!"
+      className="break-all my-1 hover:cursor-pointer hover:text-(--primary-color)!"
       onClick={() => browser.tabs.create({ url })}
     />
   );
