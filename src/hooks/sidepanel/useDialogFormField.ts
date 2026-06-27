@@ -8,9 +8,12 @@ export function useDialogFormField<
   K extends keyof DialogForm[T],
 >(_type: T, field: K) {
   const form = useDialogForm<T>();
-  const [value, setValue] = useState(form[field] as DialogForm[T][K]);
+  const [value, setValue] = useState(form[field]);
   useEffect(() => {
     updateDialogForm({ ...form, [field]: value });
   }, [value]);
+  useEffect(() => {
+    setValue(form[field]);
+  }, [form]);
   return [value, setValue] as const;
 }
