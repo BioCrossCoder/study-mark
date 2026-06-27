@@ -19,10 +19,11 @@ export default function TaskFormCard(props: {
   const nameId = useId();
   const [description, setDescription] = useState(value.description);
   const descriptionId = useId();
+  const [source, setSource] = useState(value.source);
   const sourceId = useId();
   useEffect(() => {
-    onChange({ ...value, name, description });
-  }, [name, description]);
+    onChange({ name, description, source });
+  }, [name, description, source]);
 
   return (
     <Card
@@ -60,11 +61,8 @@ export default function TaskFormCard(props: {
           <label htmlFor={sourceId}>Source</label>
           <InputText
             id={sourceId}
-            value={value.source}
-            onChange={(event) => {
-              value.source = event.target.value;
-              onChange(value);
-            }}
+            value={source}
+            onChange={(event) => setSource(event.target.value)}
             autoComplete="off"
           />
         </div>

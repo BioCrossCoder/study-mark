@@ -1,6 +1,5 @@
-import { ChatAIMessage, ChatMessage } from "@/common/types";
+import { ChatMessage } from "@/common/types";
 import { Tag } from "primereact/tag";
-import { extractPlanOutline } from "@/common/logics";
 import { Button } from "primereact/button";
 import { getLastHumanMessageInHistory } from "@/services/storage/chatHistory";
 import { AgentCommand, DialogType } from "@/common/enums";
@@ -14,11 +13,9 @@ import { updateDialogForm } from "@/services/storage/uiState";
 
 export default function CreatePlanDialog(props: {
   close: () => void;
-  message: ChatAIMessage;
+  existPlan: boolean;
 }) {
-  const plan = extractPlanOutline(props.message);
   const form = useDialogForm<DialogType.CreatePlan>();
-
   function handleAddItem() {
     form.tasks.push({
       name: "",
@@ -31,7 +28,7 @@ export default function CreatePlanDialog(props: {
   const toast = useToast();
   const createPlan = useCreatePlan(toast);
   async function handleSubmit() {
-    if (!form) {
+    if (!form || Object.keys(form).length === 0) {
       return new Error("Empty Plan");
     }
     const result = await createPlan(form);
@@ -66,7 +63,7 @@ export default function CreatePlanDialog(props: {
             severity="secondary"
             onClick={props.close}
           />
-          {plan ? (
+          {props.existPlan ? (
             <Button label="Submit" size="small" onClick={handleSubmit} />
           ) : (
             <Button label="Retry" size="small" onClick={handleRetry} />
@@ -74,13 +71,15 @@ export default function CreatePlanDialog(props: {
         </div>
       }
     >
-      {plan ? (
+      {props.existPlan ? (
         <div className="flex flex-col gap-4">
-          <TargetFormCard
-            // Avoid the Exception caused by undefined target from async state change
-            value={form.target ?? {}}
-            onChange={(target) => updateDialogForm({ ...form, target })}
-          />
+          {/* Avoid the Exception caused by undefined target from async state change */}
+          {form.target && (
+            <TargetFormCard
+              value={form.target}
+              onChange={(target) => updateDialogForm({ ...form, target })}
+            />
+          )}
           {/* Avoid the Exception caused by undefined tasks from async state change */}
           {(form.tasks ?? []).map((task, i) => (
             <TaskFormCard

@@ -27,12 +27,9 @@ export default function ChatBubble(props: {
     message.mode === AgentCommand.Plan &&
     (!props.isLast || loading === false);
   const visible = useDialogVisible(DialogType.CreatePlan, order.toString());
+  const plan = extractPlanOutline(message as ChatAIMessage);
   function handleOpen() {
-    openDialog(
-      DialogType.CreatePlan,
-      order.toString(),
-      extractPlanOutline(message as ChatAIMessage) ?? ({} as Plan),
-    );
+    openDialog(DialogType.CreatePlan, order.toString(), plan ?? ({} as Plan));
   }
 
   return (
@@ -104,7 +101,10 @@ export default function ChatBubble(props: {
               <>
                 <Button label="Create Plan" onClick={handleOpen} />
                 {visible && (
-                  <CreatePlanDialog close={closeDialog} message={message} />
+                  <CreatePlanDialog
+                    close={closeDialog}
+                    existPlan={plan !== null}
+                  />
                 )}
               </>
             )}
