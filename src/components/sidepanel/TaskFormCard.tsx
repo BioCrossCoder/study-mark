@@ -15,9 +15,15 @@ export default function TaskFormCard(props: {
   onRemove: () => void;
 }) {
   const { value, onChange, order, onRemove } = props;
+  const [name, setName] = useState(value.name);
   const nameId = useId();
+  const [description, setDescription] = useState(value.description);
   const descriptionId = useId();
   const sourceId = useId();
+  useEffect(() => {
+    onChange({ ...value, name, description });
+  }, [name, description]);
+
   return (
     <Card
       className="bg-(--highlight-bg)!"
@@ -36,11 +42,8 @@ export default function TaskFormCard(props: {
           <label htmlFor={nameId}>Name</label>
           <InputText
             id={nameId}
-            value={value.name}
-            onChange={(event) => {
-              value.name = event.target.value;
-              onChange(value);
-            }}
+            value={name}
+            onChange={(event) => setName(event.target.value)}
             autoComplete="off"
           />
         </div>
@@ -48,11 +51,8 @@ export default function TaskFormCard(props: {
           <label htmlFor={descriptionId}>Description</label>
           <InputTextarea
             id={descriptionId}
-            value={value.description}
-            onChange={(event) => {
-              value.description = event.target.value;
-              onChange(value);
-            }}
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
             autoComplete="off"
           />
         </div>

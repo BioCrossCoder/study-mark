@@ -9,8 +9,14 @@ export default function TargetFormCard(props: {
   onChange: (value: { name: string; description: string }) => void;
 }) {
   const { value, onChange } = props;
+  const [name, setName] = useState(value.name);
   const nameId = useId();
+  const [description, setDescription] = useState(value.description);
   const descriptionId = useId();
+  useEffect(() => {
+    onChange({ name, description });
+  }, [name, description]);
+
   return (
     <Card className="bg-(--highlight-bg)!" title={<Chip label="Target" />}>
       <div className="flex flex-col gap-2">
@@ -18,11 +24,8 @@ export default function TargetFormCard(props: {
           <label htmlFor={nameId}>Name</label>
           <InputText
             id={nameId}
-            value={value.name}
-            onChange={(event) => {
-              value.name = event.target.value;
-              onChange(value);
-            }}
+            value={name}
+            onChange={(event) => setName(event.target.value)}
             autoComplete="off"
           />
         </div>
@@ -30,11 +33,8 @@ export default function TargetFormCard(props: {
           <label htmlFor={descriptionId}>Description</label>
           <InputTextarea
             id={descriptionId}
-            value={value.description}
-            onChange={(event) => {
-              value.description = event.target.value;
-              onChange(value);
-            }}
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
             autoComplete="off"
           />
         </div>
