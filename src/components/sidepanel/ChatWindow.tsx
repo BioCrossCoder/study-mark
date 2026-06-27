@@ -7,6 +7,7 @@ import { Toolbar } from "primereact/toolbar";
 import { confirmDialog } from "primereact/confirmdialog";
 import { ScrollTop } from "primereact/scrolltop";
 import { useChatHistoryData } from "@/services/chatHistory";
+import { useChatLoadingData } from "@/services/chatLoading";
 
 export default function ChatWindow() {
   const history = useChatHistoryData();
@@ -24,6 +25,7 @@ export default function ChatWindow() {
     [bottomAnchor],
   );
 
+  const loading = useChatLoadingData();
   function handleClear() {
     confirmDialog({
       message: "Clear Chat History?",
@@ -39,12 +41,14 @@ export default function ChatWindow() {
       <Toolbar
         className="border-0! rounded-none! border-b! "
         end={
-          <>
+          loading ? (
+            <i className="pi pi-trash text-gray-500 hover:cursor-not-allowed" />
+          ) : (
             <i
-              className="pi pi-trash hover:cursor-pointer hover:text-red-300"
+              className="pi pi-trash hover:text-red-300 hover:cursor-pointer"
               onClick={handleClear}
             />
-          </>
+          )
         }
       />
       {history.length === 0 ? (

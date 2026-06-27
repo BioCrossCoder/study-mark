@@ -5,7 +5,9 @@ import {
   ChatHumanMessage,
   ChatToolCallingMessage,
 } from "@/common/types";
+import { Mutex } from "async-mutex";
 
+const mutex = new Mutex();
 export const chatHistoryData = storage.defineItem<ChatHistoryMessage[]>(
   StoreKey.ChatHistory,
   {
@@ -17,6 +19,7 @@ export async function updateHistory(
   message: ChatHumanMessage | ChatAIMessageItem,
   mode: AgentCommand,
 ) {
+  const release = await mutex.acquire();
   const history = await chatHistoryData.getValue();
   const lastMessage = history.at(-1);
   if (lastMessage?.type === "ai") {
@@ -57,7 +60,8 @@ export async function updateHistory(
         : { type: "ai", content: [message], mode },
     );
   }
-  return await chatHistoryData.setValue(history);
+  chatHistoryData.setValue(history);
+  return release();
 }
 
 export async function clearHistory() {
@@ -69,6 +73,7 @@ export async function getLastHistoryMessage() {
 }
 
 export async function stopLoadingInHistory() {
+  const release = await mutex.acquire();
   const data = await chatHistoryData.getValue();
   const record = data.findLast((item) => item.type === "ai");
   if (!record) {
@@ -79,7 +84,8 @@ export async function stopLoadingInHistory() {
       item.loading = false;
     }
   });
-  return await chatHistoryData.setValue(data);
+  await chatHistoryData.setValue(data);
+  return release();
 }
 
 export async function getLastHumanMessageInHistory() {
