@@ -10,10 +10,11 @@ export function useDialogFormField<
   const form = useDialogForm<T>();
   const [value, setValue] = useState(form[field]);
   useEffect(() => {
-    updateDialogForm({ ...form, [field]: value });
-  }, [value]);
-  useEffect(() => {
     setValue(form[field]);
   }, [form]);
-  return [value, setValue] as const;
+  function setValueWithPersist(value: DialogForm[T][K]) {
+    setValue(value);
+    updateDialogForm({ ...form, [field]: value });
+  }
+  return [value, setValueWithPersist] as const;
 }
