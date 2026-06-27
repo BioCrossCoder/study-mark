@@ -32,6 +32,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.100.14
         version: 5.100.14(react@19.2.6)
+      async-mutex:
+        specifier: ^0.5.0
+        version: 0.5.0
       iso-639-1:
         specifier: ^3.1.5
         version: 3.1.5
