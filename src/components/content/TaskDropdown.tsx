@@ -37,7 +37,7 @@ export default function TaskDropdown(props: {
           options={options}
           optionLabel="name"
           optionValue="code"
-          className="fixed max-h-[300px] text-[16px]!"
+          className="fixed max-h-[300px] text-[16px]! overflow-scroll scrollbar-none"
           style={{ width: inputRef.current.offsetWidth }}
         />
       )}
