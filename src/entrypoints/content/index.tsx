@@ -16,6 +16,7 @@ export default defineContentScript({
       name: "study-mark-ui",
       position: "overlay",
       anchor: "body",
+      mode: "closed",
       onMount(container) {
         // [InjectTippyStyle]
         const style = document.createElement("style");

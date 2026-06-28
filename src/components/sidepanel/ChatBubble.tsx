@@ -78,7 +78,10 @@ export default function ChatBubble(props: {
                                 : "pi pi-wrench"
                             }
                           />
-                          <Chip label={item.name} className="h-5 text-xs!" />
+                          <Chip
+                            label={(item as any).name ?? ""}
+                            className="h-5 text-xs!"
+                          />
                         </div>
                       }
                       expandIconPosition="end"
@@ -90,7 +93,7 @@ export default function ChatBubble(props: {
                       }}
                     >
                       <XMarkdown
-                        content={`**Params**\n\`\`\`json\n${tryFormatAsJson(item.params)}\n\`\`\`\n**Result**\n\`\`\`json\n${tryFormatAsJson(item.result)}\n\`\`\``}
+                        content={`**Params**\n\`\`\`json\n${tryFormatAsJson((item as any).params ?? "")}\n\`\`\`\n**Result**\n\`\`\`json\n${tryFormatAsJson((item as any).result ?? "")}\n\`\`\``}
                         className="text-(--primary-color-text)!"
                       />
                     </Sources>

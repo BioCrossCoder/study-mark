@@ -2,7 +2,8 @@ import {
   ChatAIReasoningMessage,
   ChatAIMessageItem,
   ChatAITextMessage,
-  ChatToolCallingMessage,
+  ChatToolCallingOutputMessage,
+  ChatToolCallingInputMessage,
 } from "@/common/types";
 import {
   AIMessageChunk,
@@ -28,11 +29,12 @@ export async function execAgentLoop(
     if (AIMessageChunk.isInstance(chunk)) {
       const msg = chunk as AIMessageChunk;
       if (msg.additional_kwargs.reasoning_content) {
-        await send({
+        const msgToSend: ChatAIReasoningMessage = {
           type: "think",
-          content: msg.additional_kwargs.reasoning_content,
+          content: msg.additional_kwargs.reasoning_content as string,
           loading: true,
-        } as ChatAIReasoningMessage);
+        };
+        await send(msgToSend);
       } else if (
         msg.tool_calls?.length ||
         msg.tool_call_chunks?.length ||
@@ -43,43 +45,44 @@ export async function execAgentLoop(
           args && Object.keys(args).length > 0
             ? JSON.stringify(args)
             : undefined;
-        await send({
+        const msgToSend: ChatToolCallingInputMessage = {
           type: "tool",
           name:
             msg.tool_calls?.at(0)?.name ??
             msg.tool_call_chunks?.at(0)?.name ??
+            msg.invalid_tool_calls?.at(0)?.name ??
             "",
           params: toolCallArgs ?? msg.tool_call_chunks?.at(0)?.args ?? "",
-          result: "",
           loading: true,
-        } as ChatToolCallingMessage);
+        };
+        await send(msgToSend);
       } else if (msg.content.length > 0) {
-        await send({
+        const msgToSend: ChatAITextMessage = {
           type: "text",
-          content: msg.content,
-        } as ChatAITextMessage);
+          content: msg.content as string,
+        };
+        await send(msgToSend);
       }
     } else if (ToolMessageChunk.isInstance(chunk)) {
       const msg = chunk as ToolMessageChunk;
       const output = msg.contentBlocks.at(0)?.output;
       const result =
         output && Object.keys(output).length > 0 ? JSON.stringify(output) : "";
-      await send({
+      const msgToSend: ChatToolCallingOutputMessage = {
         type: "tool",
-        params: "",
         result,
+        full: false,
         loading: true,
-        fullResult: false,
-      } as ChatToolCallingMessage);
+      };
+      await send(msgToSend);
     } else if (ToolMessage.isInstance(chunk)) {
-      const msg = chunk as ToolMessage;
-      await send({
+      const msgToSend: ChatToolCallingOutputMessage = {
         type: "tool",
-        params: "",
-        result: msg.content as string,
+        result: chunk.content as string,
+        full: true,
         loading: false,
-        fullResult: true,
-      } as ChatToolCallingMessage);
+      };
+      await send(msgToSend);
     }
   }
 }

@@ -71,14 +71,29 @@ export type ChatAIReasoningMessage = {
   loading: boolean;
 };
 
-export type ChatToolCallingMessage = {
+export type ChatToolCallingInputMessage = {
   type: "tool";
   name: string;
   params: string;
-  result: string;
-  loading: boolean;
-  fullResult: boolean;
+  loading: true;
 };
+
+export type ChatToolCallingOutputMessage = {
+  type: "tool";
+  result: string;
+  full: boolean;
+  loading: boolean;
+};
+
+export type ChatToolCallingMessage =
+  | ChatToolCallingInputMessage
+  | ChatToolCallingOutputMessage;
+
+export function isChatToolCallingOutputMessage(
+  msg: ChatToolCallingMessage,
+): msg is ChatToolCallingOutputMessage {
+  return Object.hasOwn(msg, "result");
+}
 
 export type ChatAIMessageItem =
   | ChatAITextMessage

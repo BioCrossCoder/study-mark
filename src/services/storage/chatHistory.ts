@@ -4,6 +4,7 @@ import {
   ChatHistoryMessage,
   ChatHumanMessage,
   ChatToolCallingMessage,
+  isChatToolCallingOutputMessage,
 } from "@/common/types";
 import { Mutex } from "async-mutex";
 
@@ -35,15 +36,21 @@ export async function updateHistory(
           lastItem.content += (message as any).content;
         } else {
           const toolMsg = message as ChatToolCallingMessage;
-          lastItem.name = (lastItem.name || toolMsg.name) ?? "";
-          lastItem.params += toolMsg.params;
-          if (toolMsg.fullResult) {
-            lastItem.result = toolMsg.result;
+          if (isChatToolCallingOutputMessage(lastItem)) {
+            if (!isChatToolCallingOutputMessage(toolMsg)) {
+              lastItem.loading = false;
+              lastMessage.content.push(toolMsg);
+            } else if (toolMsg.full) {
+              lastItem.result = toolMsg.result;
+            } else {
+              lastItem.result += toolMsg.result;
+            }
           } else {
-            lastItem.result += toolMsg.result;
-          }
-          if (lastItem.result && !toolMsg.result) {
-            lastMessage.content.push({ type: "text", content: "" });
+            if (!isChatToolCallingOutputMessage(toolMsg)) {
+              lastItem.params += toolMsg.params;
+            } else {
+              (lastItem as any).result = toolMsg.result;
+            }
           }
         }
       } else {
