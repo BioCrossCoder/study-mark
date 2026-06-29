@@ -2,7 +2,7 @@
   "name": "study-mark",
   "description": "The knowledge management tools required by self-learners",
   "private": true,
-  "version": "0.1.0-beta2",
+  "version": "0.1.0-beta3",
   "type": "module",
   "scripts": {
     "dev": "wxt",
