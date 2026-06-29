@@ -1,49 +1,44 @@
 import { useToast } from "@/hooks/content/useToast";
-import { removeComment, updateComment } from "@/services/storage/comment";
-import { Instance, Props } from "tippy.js";
 import SingleButtonDialog from "./SingleButtonDialog";
 import { InputTextarea } from "primereact/inputtextarea";
+import { commentStore } from "@/entrypoints/content/logics/comment";
+import { useUpdateFormStore } from "@/stores/content/updateForm";
 
-export default function EditCommentDialog(props: {
-  close: () => void;
-  id: string;
-}) {
-  const comment = document.getElementById(props.id)!;
-  const tippyInst = (comment as any)._tippy as Instance<Props>;
-  const [content, setContent] = useState(tippyInst.popper.textContent);
+export default function EditCommentDialog() {
+  const { visible, id, close } = useUpdateFormStore();
+  const [content, setContent] = useState(commentStore.get(id)?.content);
   const toast = useToast();
   async function handleSubmit() {
-    if (content) {
-      tippyInst.setContent(content);
-      await updateComment(comment.id, content);
+    if (content?.trim()) {
+      await commentStore.update(id, content);
       toast.current?.show({
         severity: "success",
         summary: "Update Comment Succeeded",
       });
     } else {
-      tippyInst.destroy();
-      comment.remove();
-      await removeComment(comment.id);
+      await commentStore.remove(id);
       toast.current?.show({
         severity: "success",
         summary: "Remove Comment Succeeded",
       });
     }
-    props.close();
+    close();
   }
   return (
-    <SingleButtonDialog
-      close={props.close}
-      title="Edit Comment"
-      onSubmit={handleSubmit}
-    >
-      <InputTextarea
-        value={content}
-        onChange={(event) => setContent(event.target.value)}
-        rows={5}
-        cols={30}
-        className="text-[16px]!"
-      />
-    </SingleButtonDialog>
+    visible && (
+      <SingleButtonDialog
+        close={close}
+        title="Edit Comment"
+        onSubmit={handleSubmit}
+      >
+        <InputTextarea
+          value={content}
+          onChange={(event) => setContent(event.target.value)}
+          rows={5}
+          cols={30}
+          className="text-[16px]!"
+        />
+      </SingleButtonDialog>
+    )
   );
 }

@@ -5,7 +5,6 @@ import { gotoBookmark, loadBookmark } from "./logics/bookmark";
 import { loadComments } from "./logics/comment";
 import { onMessage } from "webext-bridge/content-script";
 import { MessageID } from "@/common/enums.ts";
-import tippyStyle from "tippy.js/dist/tippy.css?raw";
 import { ToastContextProvider } from "@/contexts/content/ToastContext.tsx";
 
 export default defineContentScript({
@@ -18,10 +17,6 @@ export default defineContentScript({
       anchor: "body",
       mode: "closed",
       onMount(container) {
-        // [InjectTippyStyle]
-        const style = document.createElement("style");
-        style.textContent = tippyStyle;
-        document.getElementsByTagName("head").item(0)?.append(style); // [/]
         const app = document.createElement("div");
         container.append(app);
         const root = ReactDOM.createRoot(app);

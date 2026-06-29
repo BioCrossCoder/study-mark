@@ -1,25 +1,70 @@
-import { toRange } from "xpath-range";
-import tippy from "tippy.js";
-import { getCommentsByUrl } from "@/services/storage/comment";
+import { fromRange, toRange } from "xpath-range";
+import {
+  getCommentsByUrl,
+  upsertComment,
+  removeComment,
+  updateComment,
+} from "@/services/storage/comment";
 import { registerSingleUseMutationHandler } from "@/common/utils";
-import { CustomEventName } from "@/common/enums";
+import { useHoverMessageStore } from "@/stores/content/hoverMessage";
+import { useUpdateFormStore } from "@/stores/content/updateForm";
+
+class CommentStore {
+  constructor(
+    public readonly highlight = new Highlight(),
+    private ranges = new Map<string, Range>(),
+    private contents = new Map<string, string>(),
+  ) {}
+  public async set(id: string, range: Range, content: string) {
+    if (!this.highlight.has(range)) {
+      this.highlight.add(range);
+    }
+    this.ranges.set(id, range);
+    this.contents.set(id, content);
+    await upsertComment({
+      id,
+      url: window.location.href,
+      content,
+      range: fromRange(range),
+    });
+  }
+  public async remove(id: string) {
+    const range = this.ranges.get(id);
+    if (range) {
+      this.highlight.delete(range);
+      this.ranges.delete(id);
+    }
+    this.contents.delete(id);
+    await removeComment(id);
+  }
+  public has(id: string) {
+    return this.contents.has(id);
+  }
+  public async update(id: string, content: string) {
+    this.contents.set(id, content);
+    await updateComment(id, content);
+  }
+  public get(id: string) {
+    const range = this.ranges.get(id);
+    if (!range) {
+      return null;
+    }
+    const content = this.contents.get(id)!;
+    return { range, content };
+  }
+}
 
 const commentLineCssClassName = "study-mark-comment-line";
-
+export const commentStore = new CommentStore();
 export function injectCommentLineStyle() {
   const style = document.createElement("style");
   style.innerHTML = /*css*/ `
-    .${commentLineCssClassName} {
-      height: 3px;
+    ::highlight(${commentLineCssClassName}) {
       background-color: orange;
-      position: absolute;
-      border-radius: 2px;
-      &:hover {
-        cursor: pointer;
-      }
     }
   `;
   document.head.appendChild(style);
+  CSS.highlights.set(commentLineCssClassName, commentStore.highlight);
 }
 
 export async function loadComments() {
@@ -33,38 +78,55 @@ export async function loadComments() {
     const range = toRange(start, startOffset, end, endOffset, document);
     registerSingleUseMutationHandler(() => {
       if (!document.getElementById(comment.id)) {
-        tryInsertCommentBlock(comment.id, range, comment.content);
+        insertCommentBlock(comment.id, range, comment.content);
       }
     });
   }
 }
 
-export function tryInsertCommentBlock(
+export async function insertCommentBlock(
   id: string,
   range: Range,
   content: string,
 ) {
-  const comment = document.createElement("div");
-  comment.id = id;
-  comment.className = commentLineCssClassName;
-  const rect = range.getBoundingClientRect();
-  comment.style.width = rect.width + "px";
-  try {
-    const parent = range.commonAncestorContainer.parentElement!;
-    const parentRect = parent.getBoundingClientRect()!;
-    parent.style.position = "relative";
-    comment.style.left = rect.left - parentRect.left + "px";
-    comment.style.top = rect.top - parentRect.top + rect.height + "px";
-    parent.appendChild(comment);
-  } catch (e) {
-    return e as Error;
+  await commentStore.set(id, range, content);
+
+  function handleClick(event: MouseEvent) {
+    const position = document.caretPositionFromPoint(
+      event.clientX,
+      event.clientY,
+    );
+    if (
+      !position ||
+      !range.isPointInRange(position.offsetNode, position.offset)
+    ) {
+      return;
+    }
+    useUpdateFormStore.getState().open(id);
   }
-  tippy(`#${id}`, { content, placement: "bottom" });
-  comment.onclick = () => {
-    const event = new CustomEvent(CustomEventName.UpdateComment, {
-      detail: id,
-    });
-    document.dispatchEvent(event);
-  };
-  return comment;
+  document.addEventListener("click", handleClick);
+
+  function handleHover(event: MouseEvent) {
+    useHoverMessageStore.getState().update("");
+    const position = document.caretPositionFromPoint(
+      event.clientX,
+      event.clientY,
+    );
+    if (
+      !position ||
+      !range.isPointInRange(position.offsetNode, position.offset)
+    ) {
+      return;
+    }
+    if (!commentStore.has(id)) {
+      document.removeEventListener("mousemove", handleHover);
+      document.removeEventListener("click", handleClick);
+    } else {
+      const { content } = commentStore.get(id)!;
+      useHoverMessageStore.getState().update(content);
+    }
+  }
+  document.addEventListener("mousemove", handleHover);
+
+  return id;
 }

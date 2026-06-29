@@ -11,9 +11,14 @@ export async function getCommentsByUrl(url: string) {
   return data.filter((item) => positionMatch(url, item.url));
 }
 
-export async function insertComment(comment: Comment) {
+export async function upsertComment(comment: Comment) {
   const data = await commentData.getValue();
-  data.push(comment);
+  const index = data.findIndex((item) => item.id === comment.id);
+  if (index !== -1) {
+    data[index] = comment;
+  } else {
+    data.push(comment);
+  }
   await commentData.setValue(data);
 }
 
