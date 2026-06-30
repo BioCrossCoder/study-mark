@@ -116,7 +116,7 @@ function DataItem(data: Target) {
           <p className="text-xs">{description}</p>
         </Card>
       );
-    case ListStyle.Line:
+    case ListStyle.Chip:
       return (
         <div className="flex justify-between items-center gap-2 my-1">
           <Chip label={name} className="break-all" />

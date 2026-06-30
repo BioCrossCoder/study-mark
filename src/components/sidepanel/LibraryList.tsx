@@ -73,7 +73,7 @@ function DataItem(data: Library) {
           <p className="text-xs">{description}</p>
         </Card>
       );
-    case ListStyle.Line:
+    case ListStyle.Chip:
       return (
         <div className="flex my-1">
           <Chip

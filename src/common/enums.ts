@@ -69,7 +69,7 @@ export const enum AccordionIndex {
 
 export enum ListStyle {
   Card = "card",
-  Line = "line",
+  Chip = "chip",
 }
 
 export const enum DialogType {
