@@ -14,6 +14,8 @@ export const uiStateData = storage.defineItem(StoreKey.UiState, {
     listStyle: ListStyle.Card,
     taskSearchQuery: "",
     targetSearchQuery: "",
+    scrollToTargetId: "",
+    scrollToTaskId: "",
     activeDialog: {
       type: DialogType.None,
       id: "",
@@ -75,5 +77,35 @@ export async function updateTaskSearchQuery(query: string) {
 export async function updateTargetSearchQuery(query: string) {
   const data = await uiStateData.getValue();
   data.targetSearchQuery = query;
+  await uiStateData.setValue(data);
+}
+
+export async function navigateToTarget(targetId: string) {
+  const data = await uiStateData.getValue();
+  data.tabIndex = TabIndex.List;
+  data.accordionIndex = AccordionIndex.Targets;
+  data.targetSearchQuery = "";
+  data.scrollToTargetId = targetId;
+  await uiStateData.setValue(data);
+}
+
+export async function clearScrollToTargetId() {
+  const data = await uiStateData.getValue();
+  data.scrollToTargetId = "";
+  await uiStateData.setValue(data);
+}
+
+export async function navigateToTask(taskId: string) {
+  const data = await uiStateData.getValue();
+  data.tabIndex = TabIndex.List;
+  data.accordionIndex = AccordionIndex.Tasks;
+  data.taskSearchQuery = "";
+  data.scrollToTaskId = taskId;
+  await uiStateData.setValue(data);
+}
+
+export async function clearScrollToTaskId() {
+  const data = await uiStateData.getValue();
+  data.scrollToTaskId = "";
   await uiStateData.setValue(data);
 }

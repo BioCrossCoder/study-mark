@@ -22,7 +22,13 @@ import { Chip } from "primereact/chip";
 import StatusButton from "../common/StatusButton";
 import { useToast } from "@/hooks/common/useToast";
 import { useDialogVisible } from "@/services/uiState";
-import { closeDialog, openDialog } from "@/services/storage/uiState";
+import {
+  clearScrollToTargetId,
+  closeDialog,
+  navigateToTask,
+  openDialog,
+} from "@/services/storage/uiState";
+import { useScrollIntoView } from "@/hooks/common/useScrollIntoView";
 
 export default function TargetList() {
   const data = useTargetData();
@@ -42,7 +48,7 @@ export default function TargetList() {
 }
 
 function DataItem(data: Target) {
-  const { listStyle } = useUiStateData();
+  const { listStyle, scrollToTargetId } = useUiStateData();
   const { id, name, status, description } = data;
   const visible = useDialogVisible(DialogType.UpdateTarget, id);
   const relations = useRelationsOfAllTargets();
@@ -81,6 +87,15 @@ function DataItem(data: Target) {
     setOption(event.value);
   }
 
+  const anchorRef = useRef(document.createElement("p"));
+  const scrollIntoView = useScrollIntoView(anchorRef);
+  useEffect(() => {
+    if (scrollToTargetId === id) {
+      scrollIntoView();
+      clearScrollToTargetId();
+    }
+  }, [scrollToTargetId]);
+
   switch (listStyle) {
     case ListStyle.Card:
       return (
@@ -115,7 +130,8 @@ function DataItem(data: Target) {
                 <Tag
                   value={taskNames[taskId]}
                   severity={statusSeverity[taskStatuses[taskId]]}
-                  className="break-all"
+                  className="break-all hover:cursor-pointer"
+                  onClick={() => navigateToTask(taskId)}
                 />
               ))}
             </div>
@@ -131,7 +147,9 @@ function DataItem(data: Target) {
             </div>
           }
         >
-          <p className="text-xs break-all">{description}</p>
+          <p ref={anchorRef} className="text-xs break-all">
+            {description}
+          </p>
         </Card>
       );
     case ListStyle.Chip:

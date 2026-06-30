@@ -13,12 +13,18 @@ import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { removeRelationsOfTask } from "@/services/storage/relation";
 import { removeTask } from "@/services/storage/task";
 import { useUiStateData } from "@/services/uiState";
+import { useScrollIntoView } from "@/hooks/common/useScrollIntoView";
 import { Chip } from "primereact/chip";
 import React from "react";
 import StatusButton from "../common/StatusButton";
 import { useToast } from "@/hooks/common/useToast";
 import { useDialogVisible } from "@/services/uiState";
-import { closeDialog, openDialog } from "@/services/storage/uiState";
+import {
+  closeDialog,
+  openDialog,
+  clearScrollToTaskId,
+  navigateToTarget,
+} from "@/services/storage/uiState";
 
 export default function TaskList() {
   const data = useTaskData();
@@ -38,7 +44,7 @@ export default function TaskList() {
 }
 
 function DataItem(data: Task) {
-  const { listStyle } = useUiStateData();
+  const { listStyle, scrollToTaskId } = useUiStateData();
   const { id, name, status, position, source, description } = data;
   const { url } = position;
 
@@ -86,6 +92,15 @@ function DataItem(data: Task) {
     setOption(event.value);
   }
 
+  const anchorRef = useRef(document.createElement("p"));
+  const scrollIntoView = useScrollIntoView(anchorRef);
+  useEffect(() => {
+    if (scrollToTaskId === id) {
+      scrollIntoView();
+      clearScrollToTaskId();
+    }
+  }, [scrollToTaskId]);
+
   switch (listStyle) {
     case ListStyle.Card:
       return (
@@ -122,7 +137,11 @@ function DataItem(data: Task) {
           subTitle={
             <div className="grid grid-cols-3 gap-4">
               {targets.map((targetId) => (
-                <Tag value={targetNames[targetId]} className="break-all" />
+                <Tag
+                  value={targetNames[targetId]}
+                  className="break-all hover:cursor-pointer"
+                  onClick={() => navigateToTarget(targetId)}
+                />
               ))}
             </div>
           }
@@ -151,7 +170,9 @@ function DataItem(data: Task) {
             </div>
           }
         >
-          <p className="text-xs break-all">{description}</p>
+          <p ref={anchorRef} className="text-xs break-all">
+            {description}
+          </p>
         </Card>
       );
     case ListStyle.Chip:
