@@ -8,6 +8,9 @@ export default function SearchBox(props: {
   onChange: (v: string) => void;
 }) {
   const [value, setValue] = useState(props.value);
+  useEffect(() => {
+    setValue(props.value);
+  }, [props.value]);
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     setValue(event.target.value);
     props.onChange(event.target.value);

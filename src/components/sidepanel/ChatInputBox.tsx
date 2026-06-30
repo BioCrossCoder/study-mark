@@ -1,11 +1,22 @@
 import { AgentCommand, Signal } from "@/common/enums";
 import { ChatMessage } from "@/common/types";
 import { useChatLoadingData } from "@/services/chatLoading";
+import { useUiStateData } from "@/services/uiState";
+import { updateChatInputQuery } from "@/services/storage/uiState";
 import { Sender } from "@ant-design/x";
 
 export default function ChatInputBox() {
-  const [question, setQuestion] = useState("");
-  const isQuestionEmpty = useMemo(() => question.length === 0, [question]);
+  const { chatInputQuery } = useUiStateData();
+  const [question, setQuestion] = useState(chatInputQuery);
+  useEffect(() => {
+    setQuestion(chatInputQuery);
+  }, [chatInputQuery]);
+
+  function handleChange(value: string) {
+    setQuestion(value);
+    updateChatInputQuery(value);
+  }
+
   const loading = useChatLoadingData();
   function handleSubmit() {
     const message: ChatMessage = {
@@ -20,8 +31,10 @@ export default function ChatInputBox() {
     browser.runtime.sendMessage(Signal.Stop);
   }
 
+  const isQuestionEmpty = useMemo(() => question.length === 0, [question]);
   function handleClear() {
     setQuestion("");
+    updateChatInputQuery("");
   }
 
   return (
@@ -29,7 +42,7 @@ export default function ChatInputBox() {
       <Sender
         placeholder="Input your demand to ask AI for a Study Plan"
         value={question}
-        onChange={setQuestion}
+        onChange={handleChange}
         loading={loading ?? true}
         onSubmit={handleSubmit}
         onCancel={handleCancel}

@@ -14,6 +14,7 @@ export const uiStateData = storage.defineItem(StoreKey.UiState, {
     listStyle: ListStyle.Card,
     taskSearchQuery: "",
     targetSearchQuery: "",
+    chatInputQuery: "",
     scrollToTargetId: "",
     scrollToTaskId: "",
     activeDialog: {
@@ -77,6 +78,12 @@ export async function updateTaskSearchQuery(query: string) {
 export async function updateTargetSearchQuery(query: string) {
   const data = await uiStateData.getValue();
   data.targetSearchQuery = query;
+  await uiStateData.setValue(data);
+}
+
+export async function updateChatInputQuery(query: string) {
+  const data = await uiStateData.getValue();
+  data.chatInputQuery = query;
   await uiStateData.setValue(data);
 }
 
