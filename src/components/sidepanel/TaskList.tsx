@@ -22,9 +22,17 @@ import { closeDialog, openDialog } from "@/services/storage/uiState";
 
 export default function TaskList() {
   const data = useTaskData();
+  const { taskSearchQuery } = useUiStateData();
   const list = useMemo(
-    () => (data ? Object.values(data).toSorted(sortBy("lastVisit", true)) : []),
-    [data],
+    () =>
+      data
+        ? Object.values(data)
+            .filter(({ name }) =>
+              name.toLowerCase().includes(taskSearchQuery.toLowerCase()),
+            )
+            .toSorted(sortBy("lastVisit", true))
+        : [],
+    [data, taskSearchQuery],
   );
   return <DataView value={list} itemTemplate={DataItem} rows={list.length} />;
 }

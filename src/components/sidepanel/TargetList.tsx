@@ -21,9 +21,17 @@ import { closeDialog, openDialog } from "@/services/storage/uiState";
 
 export default function TargetList() {
   const data = useTargetData();
+  const { targetSearchQuery } = useUiStateData();
   const list = useMemo(
-    () => (data ? Object.values(data).toSorted(sortBy("createdAt", true)) : []),
-    [data],
+    () =>
+      data
+        ? Object.values(data)
+            .filter(({ name }) =>
+              name.toLowerCase().includes(targetSearchQuery.toLowerCase()),
+            )
+            .toSorted(sortBy("createdAt", true))
+        : [],
+    [data, targetSearchQuery],
   );
   return <DataView value={list} itemTemplate={DataItem} rows={list.length} />;
 }

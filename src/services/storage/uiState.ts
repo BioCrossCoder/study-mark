@@ -12,6 +12,8 @@ export const uiStateData = storage.defineItem(StoreKey.UiState, {
     tabIndex: TabIndex.Plan,
     accordionIndex: AccordionIndex.Tasks,
     listStyle: ListStyle.Card,
+    taskSearchQuery: "",
+    targetSearchQuery: "",
     activeDialog: {
       type: DialogType.None,
       id: "",
@@ -61,5 +63,17 @@ export async function closeDialog() {
 export async function updateDialogForm(form: DialogForm[DialogType]) {
   const data = await uiStateData.getValue();
   data.activeDialog.form = form;
+  await uiStateData.setValue(data);
+}
+
+export async function updateTaskSearchQuery(query: string) {
+  const data = await uiStateData.getValue();
+  data.taskSearchQuery = query;
+  await uiStateData.setValue(data);
+}
+
+export async function updateTargetSearchQuery(query: string) {
+  const data = await uiStateData.getValue();
+  data.targetSearchQuery = query;
   await uiStateData.setValue(data);
 }

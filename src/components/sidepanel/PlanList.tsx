@@ -1,6 +1,8 @@
 import {
   updateAccordionIndex,
   updateListStyle,
+  updateTaskSearchQuery,
+  updateTargetSearchQuery,
 } from "@/services/storage/uiState";
 import { useUiStateData } from "@/services/uiState";
 import {
@@ -18,9 +20,11 @@ import CommentHistoryList from "./CommentHistoryList";
 import { SelectButton } from "primereact/selectbutton";
 import { ListStyle } from "@/common/enums";
 import { ScrollPanel } from "primereact/scrollpanel";
+import SearchBox from "@/components/common/SearchBox";
 
 export default function PlanList() {
-  const { accordionIndex, listStyle } = useUiStateData();
+  const { accordionIndex, listStyle, taskSearchQuery, targetSearchQuery } =
+    useUiStateData();
   const height = 250;
 
   function handleTabChange(event: AccordionTabChangeEvent) {
@@ -46,15 +50,36 @@ export default function PlanList() {
         }}
       />
       <Accordion activeIndex={accordionIndex} onTabChange={handleTabChange}>
-        <AccordionTab header={<TaskListHeader />}>
-          <ScrollPanel style={{ height }}>
-            <TaskList />
-          </ScrollPanel>
+        <AccordionTab
+          header={<TaskListHeader />}
+          pt={{ content: { className: "p-0!" } }}
+        >
+          <SearchBox value={taskSearchQuery} onChange={updateTaskSearchQuery} />
+          <div className="p-4">
+            <ScrollPanel
+              style={{ height }}
+              pt={{ content: { className: "scrollbar-none" } }}
+            >
+              <TaskList />
+            </ScrollPanel>
+          </div>
         </AccordionTab>
-        <AccordionTab header={<TargetListHeader />}>
-          <ScrollPanel style={{ height }}>
-            <TargetList />
-          </ScrollPanel>
+        <AccordionTab
+          header={<TargetListHeader />}
+          pt={{ content: { className: "p-0!" } }}
+        >
+          <SearchBox
+            value={targetSearchQuery}
+            onChange={updateTargetSearchQuery}
+          />
+          <div className="p-4">
+            <ScrollPanel
+              style={{ height }}
+              pt={{ content: { className: "scrollbar-none" } }}
+            >
+              <TargetList />
+            </ScrollPanel>
+          </div>
         </AccordionTab>
         <AccordionTab header={<LibraryListHeader />}>
           <ScrollPanel style={{ height }}>
