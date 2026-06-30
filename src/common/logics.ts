@@ -1,6 +1,6 @@
 import { AgentCommand } from "./enums";
 import { planSchema } from "./schemas";
-import { ChatAIMessage, Plan } from "./types";
+import { ChatAIMessage, isChatToolCallingOutputMessage, Plan } from "./types";
 
 export function extractPlanOutline(message: ChatAIMessage): Plan | null {
   if (message.mode !== AgentCommand.Plan) {
@@ -8,7 +8,7 @@ export function extractPlanOutline(message: ChatAIMessage): Plan | null {
   }
   for (let i = message.content.length - 1; i >= 0; i--) {
     const item = message.content[i];
-    if (item.type !== "tool") {
+    if (item.type !== "tool" || !isChatToolCallingOutputMessage(item)) {
       continue;
     }
     try {
