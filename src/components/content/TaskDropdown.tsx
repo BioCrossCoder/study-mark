@@ -1,4 +1,4 @@
-import { useTaskNames, useTaskOptions } from "@/services/task";
+import { useTaskFields, useTaskOptions } from "@/services/task";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { InputText } from "primereact/inputtext";
@@ -10,7 +10,7 @@ export default function TaskDropdown(props: {
 }) {
   const inputRef = useRef(document.createElement("input"));
   const [visible, setVisible] = useState(false);
-  const taskNames = useTaskNames();
+  const taskNames = useTaskFields("name");
   const { value, onChange } = props;
   const options = useTaskOptions();
   function handleChange(event: ListBoxChangeEvent) {

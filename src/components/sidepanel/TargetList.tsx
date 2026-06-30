@@ -1,9 +1,14 @@
-import { DialogType, ListStyle, statusIcon } from "@/common/enums";
+import {
+  DialogType,
+  ListStyle,
+  statusIcon,
+  statusSeverity,
+} from "@/common/enums";
 import { SaveTargetForm, Target } from "@/common/types";
 import { sortBy } from "@/common/utils";
 import { useRelationsOfAllTargets } from "@/services/relation";
 import { useTargetData, useUpdateTargetStatus } from "@/services/target";
-import { useTaskNames } from "@/services/task";
+import { useTaskFields } from "@/services/task";
 import { Card } from "primereact/card";
 import { confirmPopup } from "primereact/confirmpopup";
 import { DataView } from "primereact/dataview";
@@ -41,7 +46,8 @@ function DataItem(data: Target) {
   const { id, name, status, description } = data;
   const visible = useDialogVisible(DialogType.UpdateTarget, id);
   const relations = useRelationsOfAllTargets();
-  const taskNames = useTaskNames();
+  const taskNames = useTaskFields("name");
+  const taskStatuses = useTaskFields("status");
   const tasks = relations[id] ?? [];
   function handleOpen() {
     const form: SaveTargetForm = {
@@ -106,7 +112,11 @@ function DataItem(data: Target) {
           subTitle={
             <div className="grid grid-cols-3 gap-4">
               {tasks.map((taskId) => (
-                <Tag value={taskNames[taskId]} className="break-all" />
+                <Tag
+                  value={taskNames[taskId]}
+                  severity={statusSeverity[taskStatuses[taskId]]}
+                  className="break-all"
+                />
               ))}
             </div>
           }

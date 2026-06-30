@@ -124,10 +124,10 @@ export function useUpdateTask(toast: RefObject<Toast | null>) {
   };
 }
 
-export function useTaskNames() {
+export function useTaskFields<K extends keyof Task>(field: K) {
   const data = useTaskData();
   return Object.values(data ?? {})
-    .map(({ id, name }) => ({ [id]: name }))
+    .map((task) => ({ [task.id]: task[field] }))
     .reduce(mergeObj, {});
 }
 

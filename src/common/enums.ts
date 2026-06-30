@@ -22,6 +22,12 @@ export const statusIcon = {
   [ExecStatus.Done]: "pi pi-check-circle",
 };
 
+export const statusSeverity = {
+  [ExecStatus.Todo]: null,
+  [ExecStatus.Doing]: "info",
+  [ExecStatus.Done]: "success",
+} as const;
+
 export const enum ContextMenuItemID {
   UpdateProgress = "study-mark-update-progress",
   AddComment = "study-mark-add-comment",
