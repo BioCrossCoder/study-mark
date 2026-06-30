@@ -70,7 +70,7 @@ function DataItem(data: Library) {
             </div>
           }
         >
-          <p className="text-xs">{description}</p>
+          <p className="text-xs break-all">{description}</p>
         </Card>
       );
     case ListStyle.Chip:
